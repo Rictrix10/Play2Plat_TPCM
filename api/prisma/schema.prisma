@@ -1,0 +1,167 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int               @id @default(autoincrement())
+  email             String            @unique
+  username          String            @unique
+  password          String
+  avatar            String?
+  userType          UserType          @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
+  userTypeId        Int
+  platforms         Platform[]
+  avaliations       Avaliation[]
+  userPlatforms     UserPlatform[]
+  userGameFavorites UserGameFavorite[]
+  games             Game[]
+  userGames         UserGame[]
+  userGameComments  UserGameComment[]
+}
+
+model UserType {
+  id            Int         @id @default(autoincrement())
+  users         User[]
+}
+
+model Platform {
+  id            Int    @id @default(autoincrement())
+  name          String
+  users         User[]
+  games         Game[]
+  userPlatform  UserPlatform[]
+  platformGame  PlatformGame[]
+}
+
+model UserPlatform {
+  id         Int       @id @default(autoincrement())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform   Platform  @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  userId     Int
+  platformId Int
+
+  @@unique([userId, platformId])
+}
+
+model Company {
+  id      Int    @id @default(autoincrement())
+  name    String
+  games   Game[]
+}
+
+model Sequence {
+  id      Int    @id @default(autoincrement())
+  name    String
+  games   Game[]
+}
+
+model Genre {
+  id            Int    @id @default(autoincrement())
+  name          String
+  games         Game[]
+  gameGenres    GameGenre[]
+}
+
+model Game {
+  id                Int         @id @default(autoincrement())
+  name              String
+  isFree            Boolean
+  releaseDate       DateTime?
+  pegiInfo          Int
+  coverImage        String?
+  sequence          Sequence?   @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+  company           Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sequenceId        Int
+  companyId         Int
+  genres            Genre[]
+  dlcs              DLC[]
+  avaliations       Avaliation[]
+  users             User[]
+  platforms         Platform[]
+  gameGenres        GameGenre[]
+  platformGames     PlatformGame[]
+  userGameComments  UserGameComment[]
+  userGames         UserGame[]
+  userGameFavorites UserGameFavorite[]
+
+  @@unique([sequenceId, companyId])
+}
+
+model PlatformGame {
+  id         Int        @id @default(autoincrement())
+  platform   Platform   @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  game       Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId     Int
+  platformId Int
+
+  @@unique([platformId, gameId])
+}
+
+model UserGame {
+  id         Int    @id @default(autoincrement())
+  state      String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game       Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId     Int
+  gameId     Int
+
+  @@unique([userId, gameId])
+}
+
+model GameGenre {
+  id         Int        @id @default(autoincrement())
+  game       Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  genre      Genre      @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  gameId     Int
+  genreId    Int
+
+  @@unique([gameId, genreId])
+}
+
+model DLC {
+  id        Int         @id @default(autoincrement())
+  name      String
+  game      Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId    Int
+}
+
+
+model Avaliation {
+  id            Int         @id @default(autoincrement())
+  stars         Float
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game          Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId        Int
+  gameId        Int
+
+  @@unique([userId, gameId])
+}
+
+model UserGameComment {
+  id            Int         @id @default(autoincrement())
+  comments      String
+  image         String?
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game          Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId        Int
+  gameId        Int
+  latitude      Float
+  longitude     Float
+
+  @@unique([userId, gameId])
+}
+
+model UserGameFavorite {
+  id            Int        @id @default(autoincrement())
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game          Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId        Int
+  gameId        Int
+
+  @@unique([userId, gameId])
+}
