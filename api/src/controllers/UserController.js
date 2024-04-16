@@ -1,10 +1,10 @@
-const UserModel = require('../models/userModel');
+const UserModel = require('../models/UserModel');
 
 const UserController = {
     createUser: async (req, res) => {
         try {
-            const { name, email, password, username, avatar } = req.body;
-            const newUser = await UserModel.createUser(name, email, password, username, avatar);
+            const { email, password, username, avatar, userTypeId  } = req.body;
+            const newUser = await UserModel.createUser(email, password, username, avatar, userTypeId );
             res.status(201).json(newUser);
         } catch (error) {
             console.error('Erro ao criar utilizador:', error);
