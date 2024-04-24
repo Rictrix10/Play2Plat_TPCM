@@ -16,17 +16,6 @@ const UserModel = {
     getUsers: async () => {
             return await prisma.user.findMany();
     },
-    updateUser: async (id, data) => {
-       return await prisma.user.update({
-              where: { id },
-              data,
-            });
-        },
-    deleteUser: async (id) => {
-         return await prisma.user.delete({
-            where: { id },
-            });
-        },
 };
 
 module.exports = UserModel;
