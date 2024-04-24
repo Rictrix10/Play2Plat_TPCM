@@ -15,7 +15,6 @@ const UserModel = {
     },
     getUsers: async () => {
             return await prisma.user.findMany();
-    }
 };
 
 module.exports = UserModel;
