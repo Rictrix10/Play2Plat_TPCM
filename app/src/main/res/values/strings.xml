@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Play2Plat_TPCM</string>
+    <string name="title_activity_main_page">Main_Page</string>
 </resources>
