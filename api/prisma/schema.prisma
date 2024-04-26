@@ -71,6 +71,7 @@ model genre {
 model game {
   id                Int         @id @default(autoincrement())
   name              String
+  description       String
   isFree            Boolean
   releaseDate       DateTime?
   pegiInfo          Int
@@ -90,7 +91,6 @@ model game {
   userGames         userGame[]
   userGameFavorites userGameFavorite[]
 
-  @@unique([sequenceId, companyId])
 }
 
 model platformGame {
