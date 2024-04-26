@@ -3,8 +3,8 @@ const GameModel = require('../models/GameModel');
 const GameController = {
     createGame: async (req, res) => {
         try {
-            const { name, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId  } = req.body;
-            const newGame = await GameModel.createGame(name, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId );
+            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId  } = req.body;
+            const newGame = await GameModel.createGame(name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId );
             res.status(201).json(newGame);
         } catch (error) {
             console.error('Erro ao criar jogo:', error);

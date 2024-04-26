@@ -2,10 +2,11 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const GameModel = {
-    createGame: async (name, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId ) => {
+    createGame: async (name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId ) => {
         return await prisma.game.create({
             data: {
                 name,
+                description,
                 isFree,
                 releaseDate,
                 pegiInfo,
