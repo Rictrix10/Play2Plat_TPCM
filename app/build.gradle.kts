@@ -74,10 +74,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.2.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.6.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.room:room-runtime:2.6.1")
     kapt ("androidx.room:room-compiler:2.6.1")
     testImplementation("androidx.room:room-testing:2.6.1")
+
+
 }
