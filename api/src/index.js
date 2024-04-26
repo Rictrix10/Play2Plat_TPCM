@@ -7,6 +7,7 @@ const platformRoute = require('./routes/PlatformRoute');
 const companyRoute = require('./routes/CompanyRoute');
 const sequenceRoute = require('./routes/SequenceRoute');
 const gameRoute = require('./routes/GameRoute');
+const dlcRoute = require('./routes/DLCRoute');
 
 const app = express();
 
@@ -24,6 +25,7 @@ apiRouter.use(platformRoute);
 apiRouter.use(companyRoute);
 apiRouter.use(sequenceRoute);
 apiRouter.use(gameRoute);
+apiRouter.use(dlcRoute);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 const DLCModel = {
     createDLC: async (name, gameId ) => {
-        return await prisma.DLC.create({
+        return await prisma.dlc.create({
             data: {
                 name,
                 gameId
@@ -11,7 +11,7 @@ const DLCModel = {
         });
     },
     getDLCs: async () => {
-            return await prisma.DLC.findMany();
+            return await prisma.dlc.findMany();
     },
 
 };
