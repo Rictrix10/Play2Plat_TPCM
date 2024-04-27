@@ -8,6 +8,13 @@ const companyRoute = require('./routes/CompanyRoute');
 const sequenceRoute = require('./routes/SequenceRoute');
 const gameRoute = require('./routes/GameRoute');
 const dlcRoute = require('./routes/DLCRoute');
+const avaliationRoute = require('./routes/AvaliationRoute');
+const usergamecommentsRoute = require('./routes/UserGameCommentsRoute');
+const usergameRoute = require('./routes/UserGameRoute');
+const usergameFavoriteRoute = require('./routes/UserGameFavoriteRoute');
+const gameGenreRoute = require('./routes/GameGenreRoute');
+const platformGameRoute = require('./routes/PlatformGameRoute');
+const userPlatformRoute = require('./routes/UserPlatformRoute');
 
 const app = express();
 
@@ -26,6 +33,13 @@ apiRouter.use(companyRoute);
 apiRouter.use(sequenceRoute);
 apiRouter.use(gameRoute);
 apiRouter.use(dlcRoute);
+apiRouter.use(avaliationRoute);
+apiRouter.use(usergamecommentsRoute);
+apiRouter.use(usergameRoute);
+apiRouter.use(usergameFavoriteRoute);
+apiRouter.use(gameGenreRoute);
+apiRouter.use(platformGameRoute);
+apiRouter.use(userPlatformRoute);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
