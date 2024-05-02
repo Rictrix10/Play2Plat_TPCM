@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Border -->
+    <item android:drawable="@drawable/details" />
+
+    <!-- Background -->
+    <item android:drawable="@drawable/background"
+        android:left="3dp"
+        android:right="3dp"
+        android:top="3dp"
+        android:bottom="3dp"/>
+</layer-list>
