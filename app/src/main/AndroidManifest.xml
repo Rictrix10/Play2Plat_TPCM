@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -16,11 +17,11 @@
         android:theme="@style/Theme.Play2Plat_TPCM"
         tools:targetApi="31">
         <activity
-            android:name=".AddNewGame"
+            android:name=".Intro_Page"
             android:exported="false"
             />
         <activity
-            android:name=".Intro_Page"
+            android:name=".AddNewGame"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
