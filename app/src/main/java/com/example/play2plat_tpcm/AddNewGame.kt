@@ -1,12 +1,15 @@
 package com.example.play2plat_tpcm
 
-import android.icu.text.SimpleDateFormat
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Game
@@ -14,56 +17,65 @@ import com.example.play2plat_tpcm.R
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.Date
-import java.util.Locale
 
 class AddNewGame : AppCompatActivity() {
+
+    private lateinit var selectedImageUri: Uri // URI da imagem selecionada
+
+    private val pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            selectedImageUri = uri // Salva a URI da imagem selecionada
+            Log.d("AddNewGame", "Selected image URI: $selectedImageUri")
+            imageView.setImageURI(selectedImageUri)
+        } else {
+            Log.d("AddNewGame", "No image URI received")
+        }
+    }
+
+
     private lateinit var gameTitleEditText: EditText
     private lateinit var descriptionEditText: EditText
     private lateinit var companySpinner: Spinner
     private lateinit var pegiInfoSpinner: Spinner
     private lateinit var saveButton: Button
-
-    private fun formatDate(dateTimeString: String): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-
-        val date: Date = inputFormat.parse(dateTimeString) ?: Date()
-
-        return outputFormat.format(date)
-    }
+    private lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_add_new_game)
 
+        imageView = findViewById(R.id.image_view) // Assuming your ImageView has this id
+
+        val pickImageButton = findViewById<Button>(R.id.pick_image)
+
+        pickImageButton.setOnClickListener {
+            Log.d("AddNewGame", "Pick image button clicked")
+            selectVisualMedia()
+        }
+
         gameTitleEditText = findViewById(R.id.game_title)
         descriptionEditText = findViewById(R.id.description)
-        companySpinner = findViewById(R.id.company)
+        //companySpinner = findViewById(R.id.company)
         pegiInfoSpinner = findViewById(R.id.pegi_info)
         saveButton = findViewById(R.id.save)
 
         saveButton.setOnClickListener {
-
             val gameTitle = gameTitleEditText.text.toString()
             val description = descriptionEditText.text.toString()
-            /*
-            val company = companySpinner.selectedItem.toString()
-            val pegiInfo = pegiInfoSpinner.selectedItem.toString().toInt()
-             */
-            //val releaseDate = formatDate("2024-04-24T12:00:00Z")
+            //val companyId = companySpinner.selectedItemId // Obtém o ID da empresa selecionada
+            //val pegiInfo = pegiInfoSpinner.selectedItem.toString().toInt() // Obtém a classificação PEGI selecionada
 
             val newGame = Game(
                 name = gameTitle,
                 description = description,
                 isFree = false,
-                //releaseDate = releaseDate,
                 releaseDate = "2024-04-24T00:00:00Z",
                 pegiInfo = 18,
-                coverImage = "gta5.png",
+                coverImage = selectedImageUri.toString(), 
+                //coverImage = "image.png",
                 sequenceId = 1,
-                companyId = 1
+                companyId = 1,
             )
 
             Log.d("AddNewGame", "Novo jogo: $newGame")
@@ -84,5 +96,9 @@ class AddNewGame : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    private fun selectVisualMedia() {
+        pickVisualMediaLauncher.launch("image/*") // Inicia a seleção de imagem
     }
 }
