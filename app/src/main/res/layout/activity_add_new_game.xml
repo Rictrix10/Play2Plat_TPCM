@@ -19,6 +19,7 @@
             android:id="@+id/pick_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:text="Upload Cover" />
 
         <ImageView
@@ -55,7 +56,7 @@
              />
 
         <Spinner
-            android:id="@+id/pegi_info"
+            android:id="@+id/sequence"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"

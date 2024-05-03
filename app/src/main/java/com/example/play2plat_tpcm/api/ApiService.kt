@@ -7,9 +7,11 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
-    @FormUrlEncoded
-    @GET("/games")
-    fun getGames(): Call<List<Game>>
+    @GET("companies")
+    fun getCompanies(): Call<List<Company>>
+
+    @GET("sequences")
+    fun getSequences(): Call<List<Sequence>>
 
     @POST("games")
     fun createGame(@Body game: Game): Call<Game>
