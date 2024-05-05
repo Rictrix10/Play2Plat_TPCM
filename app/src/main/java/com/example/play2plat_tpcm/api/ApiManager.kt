@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient
 object ApiManager {
     private val client = OkHttpClient.Builder().build()
 
-    private const val BASE_URL = "http://10.0.2.2:3001/api/"
+    private const val BASE_URL = "https://play2-plat-tpcm.vercel.app/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
