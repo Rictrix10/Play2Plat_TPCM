@@ -2,25 +2,26 @@ const express = require('express');
 const { put } = require('@vercel/blob');
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer');
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' }); // Define o diretório onde os arquivos serão temporariamente salvos
 
-router.post('/upload', upload.single('image'), async (req, res) => {
+router.post('/upload', async (req, res) => {
   try {
-    const imageFile = req.file;
+    const imageName = req.body.imageName;
 
-    if (!imageFile) {
-      return res.status(400).json({ error: 'Nenhuma imagem foi enviada' });
+    if (!imageName) {
+      return res.status(400).json({ error: 'O nome da imagem é obrigatório no corpo da requisição' });
     }
 
-    const fileName = imageFile.originalname;
-    const filePath = imageFile.path;
+    const filePath = path.join(__dirname, '../../images/', imageName);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'Arquivo não encontrado' });
+    }
 
     const fileContent = fs.readFileSync(filePath);
 
-    const blob = await put(fileName, fileContent, { access: 'public' });
+    const blob = await put(imageName, fileContent, { access: 'public' });
 
     res.json({ url: blob.url });
   } catch (error) {
