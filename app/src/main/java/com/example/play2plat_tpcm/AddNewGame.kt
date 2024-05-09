@@ -4,7 +4,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
@@ -15,6 +17,10 @@ import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Sequence
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,26 +31,30 @@ import java.io.OutputStream
 
 class AddNewGame : AppCompatActivity() {
 
-    private lateinit var selectedImageUri: Uri
+    //private lateinit var selectedImageUri: Uri
+    private var selectedImageUri: Uri? = null
+
 
     private val pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             selectedImageUri = uri // Salva a URI da imagem selecionada
             Log.d("AddNewGame", "Selected image URI: $selectedImageUri")
             imageView.setImageURI(selectedImageUri)
-            saveImageToFolder(selectedImageUri)
         } else {
             Log.d("AddNewGame", "No image URI received")
         }
     }
 
 
+
     private lateinit var gameTitleEditText: EditText
     private lateinit var descriptionEditText: EditText
     private lateinit var companySpinner: Spinner
     private lateinit var sequenceSpinner: Spinner
+    private lateinit var pegiInfoSpinner: Spinner
     private lateinit var saveButton: Button
     private lateinit var imageView: ImageView
+    private lateinit var isFreeCheckBox: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,25 +74,31 @@ class AddNewGame : AppCompatActivity() {
         descriptionEditText = findViewById(R.id.description)
         companySpinner = findViewById(R.id.company)
         sequenceSpinner = findViewById(R.id.sequence)
+        pegiInfoSpinner = findViewById(R.id.pegi_info)
         saveButton = findViewById(R.id.save)
+        isFreeCheckBox = findViewById(R.id.is_free_checkbox)
 
 
         loadCompanies()
         loadSequences()
+        loadPegiInfo()
 
         saveButton.setOnClickListener {
             val gameTitle = gameTitleEditText.text.toString()
             val description = descriptionEditText.text.toString()
-            val selectedCompany = companySpinner.selectedItem as Company // Obter a empresa selecionada
+            val selectedCompany = companySpinner.selectedItem as Company
+            val selectedSequence = sequenceSpinner.selectedItem as Sequence
+            val selectedPegiInfo = pegiInfoSpinner.selectedItem.toString().toInt()
+            val isFree = isFreeCheckBox.isChecked
 
             val newGame = Game(
                 name = gameTitle,
                 description = description,
-                isFree = false,
+                isFree = isFree,
                 releaseDate = "2024-04-24T00:00:00Z",
-                pegiInfo = 18,
+                pegiInfo = selectedPegiInfo,
                 coverImage = selectedImageUri.toString(),
-                sequenceId = 1,
+                sequenceId = selectedSequence.id,
                 companyId = selectedCompany.id,
             )
 
@@ -146,28 +162,19 @@ class AddNewGame : AppCompatActivity() {
         })
     }
 
-    private fun saveImageToFolder(imageUri: Uri) {
-        val inputStream: InputStream? = contentResolver.openInputStream(imageUri)
-        val outputStream: OutputStream
-        try {
-            val folder = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "images-games")
-            if (!folder.exists()) {
-                folder.mkdirs() // Cria o diretório se não existir
-            }
-            val imageFile = File(folder, "image.jpg")
-            outputStream = FileOutputStream(imageFile)
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-            while (inputStream?.read(buffer).also { bytesRead = it!! } != -1) {
-                outputStream.write(buffer, 0, bytesRead)
-            }
-            inputStream?.close()
-            outputStream.close()
-            Log.d("AddNewGame", "Imagem salva em: ${imageFile.absolutePath}")
-        } catch (e: Exception) {
-            Log.e("AddNewGame", "Erro ao salvar imagem: ${e.message}")
-        }
+    private fun loadPegiInfo() {
+        val pegiInfoValues = resources.getStringArray(R.array.pegi_info_values)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, pegiInfoValues)
+        pegiInfoSpinner.adapter = adapter
     }
+
+
+
+
+    private fun saveGameWithImage(imageUrl: String?) {
+        // Aqui você salva o jogo com a URL da imagem retornada pelo Vercel
+    }
+
 
 
     private fun selectVisualMedia() {
