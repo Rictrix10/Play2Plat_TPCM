@@ -8,12 +8,15 @@ const router = express.Router();
 router.post('/upload', async (req, res) => {
   try {
     // Verifica se o corpo da requisição contém o parâmetro 'filePath'
-    const filePath = req.body.filePath;
+    const filePathFromBody = req.body.filePath;
 
-    if (!filePath) {
+    if (!filePathFromBody) {
       // Se o parâmetro 'filePath' não estiver presente no corpo da requisição, retorna um erro
       return res.status(400).json({ error: 'O parâmetro "filePath" é obrigatório' });
     }
+
+    // Constrói o caminho completo da imagem usando o caminho fornecido no corpo da requisição
+    const filePath = path.join(__dirname, '..', '..', filePathFromBody);
 
     // Verifica se o arquivo especificado existe
     if (!fs.existsSync(filePath)) {
