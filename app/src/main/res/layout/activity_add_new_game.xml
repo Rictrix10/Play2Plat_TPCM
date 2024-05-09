@@ -48,11 +48,23 @@
             android:background="@drawable/edittext_bg"
             />
 
+        <CheckBox
+            android:id="@+id/is_free_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free"
+            android:textColor="@color/white"
+            android:checked="false"
+            android:layoutDirection="rtl"
+            android:buttonTint="@color/white"
+        />
+
         <Spinner
             android:id="@+id/company"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:background="@drawable/edittext_bg"
              />
 
         <Spinner
@@ -60,7 +72,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:background="@drawable/edittext_bg"
              />
+
+        <Spinner
+            android:id="@+id/pegi_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@drawable/edittext_bg"
+            />
 
         <Button
             android:id="@+id/save"
