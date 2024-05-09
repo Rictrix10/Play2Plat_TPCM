@@ -28,6 +28,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.UUID
 
 class AddNewGame : AppCompatActivity() {
 
@@ -39,6 +40,8 @@ class AddNewGame : AppCompatActivity() {
             selectedImageUri = uri // Salva a URI da imagem selecionada
             Log.d("AddNewGame", "Selected image URI: $selectedImageUri")
             imageView.setImageURI(selectedImageUri)
+            saveImageToProjectFolder(selectedImageUri!!)
+
         } else {
             Log.d("AddNewGame", "No image URI received")
         }
@@ -63,7 +66,6 @@ class AddNewGame : AppCompatActivity() {
         imageView = findViewById(R.id.image_view) // Assuming your ImageView has this id
 
         val pickImageButton = findViewById<Button>(R.id.pick_image)
-
         pickImageButton.setOnClickListener {
             Log.d("AddNewGame", "Pick image button clicked")
             selectVisualMedia()
@@ -167,12 +169,31 @@ class AddNewGame : AppCompatActivity() {
         pegiInfoSpinner.adapter = adapter
     }
 
+    private fun saveImageToProjectFolder(imageUri: Uri) {
+        val imageInputStream: InputStream? = contentResolver.openInputStream(imageUri)
 
+        if (imageInputStream != null) {
+            val imageFile = File(this.getExternalFilesDir(null), "saved_image.jpg")
 
-
-    private fun saveGameWithImage(imageUrl: String?) {
-        // Aqui você salva o jogo com a URL da imagem retornada pelo Vercel
+            try {
+                val outputStream: OutputStream = FileOutputStream(imageFile)
+                val buffer = ByteArray(4 * 1024)
+                var read: Int
+                while (imageInputStream.read(buffer).also { read = it } != -1) {
+                    outputStream.write(buffer, 0, read)
+                }
+                outputStream.flush()
+                outputStream.close()
+                imageInputStream.close()
+                Log.d("AddNewGame", "Imagem salva em: ${imageFile.absolutePath}")
+            } catch (e: Exception) {
+                Log.e("AddNewGame", "Erro ao salvar a imagem: ${e.message}")
+            }
+        } else {
+            Log.e("AddNewGame", "Imagem não encontrada no URI fornecido.")
+        }
     }
+
 
 
 

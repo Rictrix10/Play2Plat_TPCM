@@ -17,5 +17,5 @@ interface ApiService {
     fun createGame(@Body game: Game): Call<Game>
 
     @POST("upload")
-    fun uploadImage()
+    fun uploadImage(@Body imageName: String)
 }
