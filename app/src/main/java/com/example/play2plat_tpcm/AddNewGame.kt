@@ -31,7 +31,6 @@ import java.io.OutputStream
 
 class AddNewGame : AppCompatActivity() {
 
-    //private lateinit var selectedImageUri: Uri
     private var selectedImageUri: Uri? = null
 
 
