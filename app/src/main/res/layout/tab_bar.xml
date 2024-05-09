@@ -1,0 +1,151 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent">
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:background="@drawable/tab_background"
+        android:paddingTop="5dp">
+
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/games_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_games"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/games_icon"/>
+
+            <TextView
+                android:id="@+id/games_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Games"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/favorites_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/favorites_icon"/>
+
+            <TextView
+                android:id="@+id/favorites_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Favorites"
+                />
+        </LinearLayout>
+
+        <!-- Aqui está a adição da opção para o usuário administrador -->
+        <LinearLayout
+            android:id="@+id/admin_lay"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/button_background2"
+            android:visibility="gone"
+            android:gravity="center"
+            android:padding="8dp"> <!-- Adiciona um preenchimento de 16dp em todos os lados do LinearLayout -->
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_add"
+                android:id="@+id/admin_icon"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+        <!-- Fim da adição da opção para o usuário administrador -->
+
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/search_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_search"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/search_icon"/>
+
+            <TextView
+                android:id="@+id/search_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Search"
+                />
+        </LinearLayout>
+
+        <!-- Novo LinearLayout para o novo item -->
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/profile_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/profile_icon"/>
+
+            <TextView
+                android:id="@+id/profile_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Profile"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</merge>

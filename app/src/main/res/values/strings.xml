@@ -1,11 +1,6 @@
 <resources>
     <string name="app_name">Play2Plat_TPCM</string>
     <string name="title_activity_main_page">Main_Page</string>
-    <string-array name="pegi_info_values">
-        <item>3</item>
-        <item>7</item>
-        <item>12</item>
-        <item>16</item>
-        <item>18</item>
-    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
