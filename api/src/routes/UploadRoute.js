@@ -1,13 +1,14 @@
 const express = require('express');
 const { put } = require('@vercel/blob');
 const fs = require('fs');
+const path = require('path'); // Importe o módulo path
 
 const router = express.Router();
 
 router.post('/upload', async (req, res) => {
   try {
     // Caminho para a imagem local
-    const filePath = '../images/imagegame.png';
+    const filePath = path.join(__dirname, '../../images/imagegame.png'); // Use o módulo path para construir o caminho
 
     // Lê o conteúdo do arquivo
     const fileContent = fs.readFileSync(filePath);
