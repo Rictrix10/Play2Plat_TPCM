@@ -27,6 +27,9 @@ const GameController = {
                 if (!game) {
                     return res.status(404).json({ error: 'Jogo não encontrado' });
                 }
+
+                const genres = game.genres.map(genre => genre.name);
+
                 res.json({
                     id: game.id,
                     name: game.name,
@@ -37,12 +40,14 @@ const GameController = {
                     coverImage: game.coverImage,
                     sequence: game.sequence.name,
                     company: game.company.name,
+                    genres: genres,
                 });
             } catch (error) {
                 console.error('Erro ao buscar jogo por ID:', error);
                 res.status(500).json({ error: 'Erro ao buscar jogo por ID' });
             }
         },
+
 
 
     updateGame: async (req, res) => {

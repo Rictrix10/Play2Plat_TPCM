@@ -25,6 +25,7 @@ const GameModel = {
             include: {
                 sequence: true,
                 company: true,
+                genres: true,
             },
         });
     },
