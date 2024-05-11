@@ -19,6 +19,15 @@ const GameModel = {
     getGames: async () => {
             return await prisma.game.findMany();
     },
+    getGameById: async (id) => {
+        return await prisma.game.findUnique({
+            where: { id },
+            include: {
+                sequence: true,
+                company: true,
+            },
+        });
+    },
     updateGame: async (id, data) => {
        return await prisma.game.update({
               where: { id },
