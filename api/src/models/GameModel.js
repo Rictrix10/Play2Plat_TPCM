@@ -25,11 +25,7 @@ getGameById: async (id) => {
         include: {
             sequence: true,
             company: true,
-            genres: {
-                select: {
-                    name: true
-                }
-            },
+            genres: true,
         },
     });
 },
