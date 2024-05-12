@@ -10,9 +10,11 @@ router.post('/upload', async (req, res) => {
     const imageContent = req.body.imageContent;
     const imageName = req.body.imageName;
 
+    /*
     if (!imageContent || !imageName) {
       return res.status(400).json({ error: 'O conteúdo e o nome da imagem são obrigatórios no corpo da requisição' });
     }
+    */
 
     const blob = await put(imageName, imageContent, { access: 'public' });
 
