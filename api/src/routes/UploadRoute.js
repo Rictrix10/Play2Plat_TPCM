@@ -21,7 +21,6 @@ router.post('/upload', async (req, res) => {
     res.json({ url: blob.url });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro ao fazer upload da imagem' });
   }
 });
 
