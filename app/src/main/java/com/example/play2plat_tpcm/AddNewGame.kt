@@ -18,8 +18,10 @@ import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Sequence
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,7 +42,7 @@ class AddNewGame : AppCompatActivity() {
             selectedImageUri = uri // Salva a URI da imagem selecionada
             Log.d("AddNewGame", "Selected image URI: $selectedImageUri")
             imageView.setImageURI(selectedImageUri)
-            saveImageToProjectFolder(selectedImageUri!!)
+            uploadImageToServer(selectedImageUri!!)
 
         } else {
             Log.d("AddNewGame", "No image URI received")
@@ -169,11 +171,19 @@ class AddNewGame : AppCompatActivity() {
         pegiInfoSpinner.adapter = adapter
     }
 
-    private fun saveImageToProjectFolder(imageUri: Uri) {
+
+
+
+    private fun selectVisualMedia() {
+        pickVisualMediaLauncher.launch("image/*") // Inicia a seleção de imagem
+    }
+
+    private fun uploadImageToServer(imageUri: Uri) {
         val imageInputStream: InputStream? = contentResolver.openInputStream(imageUri)
 
-        if (imageInputStream != null) {
-            val imageFile = File(this.getExternalFilesDir(null), "saved_image.jpg")
+        imageInputStream?.let {
+            val imageName = UUID.randomUUID().toString() + ".jpg" // Nome único para a imagem
+            val imageFile = File(cacheDir, imageName) // Armazenar temporariamente a imagem no cache
 
             try {
                 val outputStream: OutputStream = FileOutputStream(imageFile)
@@ -184,20 +194,34 @@ class AddNewGame : AppCompatActivity() {
                 }
                 outputStream.flush()
                 outputStream.close()
-                imageInputStream.close()
-                Log.d("AddNewGame", "Imagem salva em: ${imageFile.absolutePath}")
+
+                // Agora temos o arquivo da imagem para enviar para o servidor
+                val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+                val imagePart = MultipartBody.Part.createFormData("image", imageFile.name, requestBody)
+
+                ApiManager.apiService.uploadImage(imagePart).enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        if (response.isSuccessful) {
+                            Log.d("AddNewGame", "Image uploaded successfully")
+                            // Lidar com o upload de imagem bem-sucedido aqui
+                        } else {
+                            Log.e("AddNewGame", "Error uploading image: ${response.message()}")
+                            // Lidar com falha no upload de imagem aqui
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Log.e("AddNewGame", "Image upload failed: ${t.message}")
+                        // Lidar com falha no upload de imagem aqui
+                    }
+                })
             } catch (e: Exception) {
                 Log.e("AddNewGame", "Erro ao salvar a imagem: ${e.message}")
+                // Lidar com exceção ao salvar a imagem aqui
+            } finally {
+                imageInputStream.close()
             }
-        } else {
-            Log.e("AddNewGame", "Imagem não encontrada no URI fornecido.")
-        }
+        } ?: Log.e("AddNewGame", "Imagem não encontrada no URI fornecido.")
     }
 
-
-
-
-    private fun selectVisualMedia() {
-        pickVisualMediaLauncher.launch("image/*") // Inicia a seleção de imagem
-    }
 }

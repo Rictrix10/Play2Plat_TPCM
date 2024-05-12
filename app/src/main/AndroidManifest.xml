@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ViewGame"
+            android:name=".AddNewGame"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -29,7 +29,7 @@
             android:name=".Intro_Page"
             android:exported="false" />
         <activity
-            android:name=".AddNewGame"
+            android:name=".ViewGame"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>

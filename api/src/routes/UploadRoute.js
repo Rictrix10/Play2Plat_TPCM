@@ -7,21 +7,14 @@ const router = express.Router();
 
 router.post('/upload', async (req, res) => {
   try {
+    const imageContent = req.body.imageContent;
     const imageName = req.body.imageName;
 
-    if (!imageName) {
-      return res.status(400).json({ error: 'O nome da imagem é obrigatório no corpo da requisição' });
+    if (!imageContent || !imageName) {
+      return res.status(400).json({ error: 'O conteúdo e o nome da imagem são obrigatórios no corpo da requisição' });
     }
 
-    const filePath = path.join(__dirname, '../../images/', imageName);
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'Arquivo não encontrado' });
-    }
-
-    const fileContent = fs.readFileSync(filePath);
-
-    const blob = await put(imageName, fileContent, { access: 'public' });
+    const blob = await put(imageName, imageContent, { access: 'public' });
 
     res.json({ url: blob.url });
   } catch (error) {
@@ -31,3 +24,4 @@ router.post('/upload', async (req, res) => {
 });
 
 module.exports = router;
+
