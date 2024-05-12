@@ -24,4 +24,3 @@ router.post('/upload', async (req, res) => {
 });
 
 module.exports = router;
-
