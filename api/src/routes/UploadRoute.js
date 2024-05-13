@@ -1,29 +1,32 @@
 const express = require('express');
 const { put } = require('@vercel/blob');
-const multer = require('multer');
+const fs = require('fs');
 const path = require('path');
 
 const router = express.Router();
 
-// Configurando o armazenamento com multer
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
-router.post('/upload', upload.single('image'), async (req, res) => {
+router.post('/upload', async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Nenhuma imagem enviada' });
+    const imageName = req.body.imageName;
+
+    if (!imageName) {
+      return res.status(400).json({ error: 'O nome da imagem é obrigatório no corpo da requisição' });
     }
 
-    const imageContent = req.file.buffer;
-    const imageName = req.file.originalname;
+    const filePath = path.join(__dirname, '../../images/', imageName);
 
-    const blob = await put(imageName, imageContent, { access: 'public' });
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'Arquivo não encontrado' });
+    }
+
+    const fileContent = fs.readFileSync(filePath);
+
+    const blob = await put(imageName, fileContent, { access: 'public' });
 
     res.json({ url: blob.url });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Ocorreu um erro no servidor' });
+    res.status(500).json({ error: 'Erro ao fazer upload da imagem' });
   }
 });
 
