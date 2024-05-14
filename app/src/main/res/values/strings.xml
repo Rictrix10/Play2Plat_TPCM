@@ -2,4 +2,5 @@
     <string name="app_name">Play2Plat_TPCM</string>
     <string name="title_activity_main_page">Main_Page</string>
     <string name="sign_up_prompt">New Here? <font color="#D10341">Sign Up</font></string>
+    <string name="sign_in_prompt">Have an account? <font color="#D10341">Sign In</font></string>
 </resources>

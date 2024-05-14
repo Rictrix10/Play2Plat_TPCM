@@ -42,6 +42,19 @@
                 android:textColor="#000000" />
 
             <EditText
+                android:id="@+id/et_email"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_btn"
+                android:fontFamily="@font/m_plus_rounded_1c_medium"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:padding="10dp"
+                android:textColor="#000000" />
+
+            <EditText
                 android:id="@+id/et_password"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
@@ -54,6 +67,19 @@
                 android:padding="10dp"
                 android:textColor="#000000" />
 
+            <EditText
+                android:id="@+id/et_confirm_password"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/round_btn"
+                android:fontFamily="@font/m_plus_rounded_1c_medium"
+                android:hint="Confirm Password"
+                android:inputType="textPassword"
+                android:padding="10dp"
+                android:textColor="#000000" />
+
             <Button
                 android:id="@+id/btn_sign_in"
                 android:layout_width="250dp"
@@ -61,23 +87,23 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="45dp"
                 android:background="@drawable/gradient"
-                android:text="Sign In"
+                android:text="Sign Up"
                 android:fontFamily="@font/m_plus_rounded_1c_black"
                 android:textSize="30sp"
                 android:textColor="#FFFFFF"
                 android:textAllCaps="false"
-             />
+                />
             <View
                 android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/background_border" />
+                android:layout_height="3dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/background_border" />
 
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/sign_up_prompt"
+                android:text="@string/sign_in_prompt"
                 android:textColor="#FFFFFF"
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/m_plus_rounded_1c_extrabold"
