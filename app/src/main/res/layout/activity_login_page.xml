@@ -73,6 +73,34 @@
             android:layout_marginTop="30dp"
             android:background="@drawable/background_border" />
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/circle"
+                    android:src="@drawable/Google"
+                    android:scaleType="centerCrop" />
+
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginStart="56dp"
+                    android:background="@drawable/circle"
+                    android:src="@drawable/facebook"
+                    android:scaleType="centerCrop"
+                    android:backgroundTint="#1F6BFF" />
+            </LinearLayout>
+
+
+
+
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
