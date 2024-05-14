@@ -13,7 +13,8 @@ router.post('/upload', async (req, res) => {
       return res.status(400).json({ error: 'O nome da imagem é obrigatório no corpo da requisição' });
     }
 
-    const filePath = path.join(__dirname, '../../images/', imageName);
+    // Altere o diretório de destino aqui
+    const filePath = '/storage/emulated/0/Android/data/com.example.play2plat_tpcm/files/Pictures/' + imageName;
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: 'Arquivo não encontrado' });

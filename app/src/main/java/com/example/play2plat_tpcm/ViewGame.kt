@@ -2,6 +2,7 @@ package com.example.play2plat_tpcm
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,12 +13,14 @@ import com.example.play2plat_tpcm.api.GameInfo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.squareup.picasso.Picasso
 
 class ViewGame : AppCompatActivity() {
     private lateinit var nameTextView: TextView
     private lateinit var companyTextView: TextView
     private lateinit var genresTextView: TextView
     private lateinit var descriptionTextView: TextView
+    private lateinit var gameImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,10 +32,11 @@ class ViewGame : AppCompatActivity() {
         companyTextView = findViewById(R.id.company)
         genresTextView = findViewById(R.id.genres)
         descriptionTextView = findViewById(R.id.api_description)
+        gameImageView = findViewById(R.id.game)
 
         // Obtenha o ID do jogo da intenção que iniciou esta atividade
-        val gameId = intent.getIntExtra("gameId", 1)
-        if (gameId == 1) {
+        val gameId = intent.getIntExtra("gameId", 19)
+        if (gameId == 19) {
             ApiManager.apiService.getGameById(gameId).enqueue(object : Callback<GameInfo> {
                 override fun onResponse(call: Call<GameInfo>, response: Response<GameInfo>) {
                     if (response.isSuccessful) {
@@ -44,6 +48,7 @@ class ViewGame : AppCompatActivity() {
                             companyTextView.text = game.company
                             genresTextView.text = game.genres.joinToString(", ")
                             descriptionTextView.text = game.description
+                            Picasso.get().load(game.coverImage).into(gameImageView)
                         } else {
                             Log.e("ViewGame", "Resposta da API não retornou dados do jogo.")
                         }

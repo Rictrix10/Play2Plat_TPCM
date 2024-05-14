@@ -30,6 +30,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 
+
 class AddNewGame : AppCompatActivity() {
 
     private var selectedImageUri: Uri? = null
@@ -40,7 +41,7 @@ class AddNewGame : AppCompatActivity() {
             selectedImageUri = uri // Salva a URI da imagem selecionada
             Log.d("AddNewGame", "Selected image URI: $selectedImageUri")
             imageView.setImageURI(selectedImageUri)
-            saveImageToProjectFolder(selectedImageUri!!)
+            saveImageToExternalStorage(selectedImageUri!!)
 
         } else {
             Log.d("AddNewGame", "No image URI received")
@@ -169,11 +170,12 @@ class AddNewGame : AppCompatActivity() {
         pegiInfoSpinner.adapter = adapter
     }
 
-    private fun saveImageToProjectFolder(imageUri: Uri) {
+    private fun saveImageToExternalStorage(imageUri: Uri) {
         val imageInputStream: InputStream? = contentResolver.openInputStream(imageUri)
 
         if (imageInputStream != null) {
-            val imageFile = File(this.getExternalFilesDir(null), "saved_image.jpg")
+            val imageName = "${UUID.randomUUID()}.jpg" // Gera um nome único para a imagem
+            val imageFile = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageName)
 
             try {
                 val outputStream: OutputStream = FileOutputStream(imageFile)
@@ -193,7 +195,6 @@ class AddNewGame : AppCompatActivity() {
             Log.e("AddNewGame", "Imagem não encontrada no URI fornecido.")
         }
     }
-
 
 
 
