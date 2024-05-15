@@ -1,18 +1,18 @@
 const express = require('express');
+const multer = require('multer');
 const { put } = require('@vercel/blob');
 
 const router = express.Router();
+const upload = multer();
 
-router.post('/upload', async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    if (!req.files || Object.keys(req.files).length === 0) {
+    if (!req.file) {
       return res.status(400).json({ error: 'Nenhum arquivo enviado' });
     }
 
-    const uploadedFile = req.files.image;
-
-    const fileBuffer = uploadedFile.data;
-    const fileName = uploadedFile.name;
+    const fileBuffer = req.file.buffer;
+    const fileName = req.file.originalname;
 
     const blob = await put(fileName, fileBuffer, { access: 'public' });
 
