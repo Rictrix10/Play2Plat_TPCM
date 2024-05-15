@@ -5,6 +5,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.content.Intent
+import android.widget.Button
+
 
 class Intro_Page : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,6 +20,18 @@ class Intro_Page : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        // Localiza o botão "Get Started" pelo ID
+        val btnGetStarted = findViewById<Button>(R.id.btn_get_started)
+
+        // Define um ouvinte de clique para o botão "Get Started"
+        btnGetStarted.setOnClickListener {
+            // Cria uma intenção para iniciar a atividade MainActivity
+            val intent = Intent(this, MainActivity::class.java)
+
+            // Inicia a atividade MainActivity
+            startActivity(intent)
         }
     }
 }

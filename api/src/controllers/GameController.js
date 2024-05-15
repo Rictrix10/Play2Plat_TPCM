@@ -20,6 +20,39 @@ const GameController = {
                 res.status(500).json({ error: 'Erro ao buscar jogos' });
             }
         },
+   getGameById: async (req, res) => {
+       try {
+           const gameId = parseInt(req.params.id);
+           const game = await GameModel.getGameById(gameId);
+           if (!game) {
+               return res.status(404).json({ error: 'Jogo não encontrado' });
+           }
+
+           // Acessando diretamente os gêneros
+           const genres = game.genres;
+
+           res.json({
+               id: game.id,
+               name: game.name,
+               description: game.description,
+               isFree: game.isFree,
+               releaseDate: game.releaseDate,
+               pegiInfo: game.pegiInfo,
+               coverImage: game.coverImage,
+               sequence: game.sequence.name,
+               company: game.company.name,
+               genres: genres,
+           });
+       } catch (error) {
+           console.error('Erro ao buscar jogo por ID:', error);
+           res.status(500).json({ error: 'Erro ao buscar jogo por ID' });
+       }
+   },
+
+
+
+
+
     updateGame: async (req, res) => {
         try {
             const gameId = parseInt(req.params.id);

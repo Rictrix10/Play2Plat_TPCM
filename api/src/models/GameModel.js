@@ -19,6 +19,45 @@ const GameModel = {
     getGames: async () => {
             return await prisma.game.findMany();
     },
+    getGenresByGameId: async (gameId) => {
+        try {
+            const gameGenres = await prisma.gameGenre.findMany({
+                where: {
+                    gameId: gameId
+                },
+                include: {
+                    genre: true
+                }
+            });
+            const genres = gameGenres.map(gameGenre => gameGenre.genre.name);
+            return genres;
+        } catch (error) {
+            console.error('Erro ao buscar gêneros por ID de jogo:', error);
+            throw error;
+        }
+    },
+
+getGameById: async (id) => {
+    try {
+        const game = await prisma.game.findUnique({
+            where: { id },
+            include: {
+                sequence: true,
+                company: true,
+            },
+        });
+        if (!game) {
+            return null;
+        }
+        const genres = await GameModel.getGenresByGameId(id); // Chamando o novo método
+        game.genres = genres; // Adicionando os gêneros ao objeto do jogo
+        return game;
+    } catch (error) {
+        console.error('Erro ao buscar jogo por ID:', error);
+        throw error;
+    }
+},
+
     updateGame: async (id, data) => {
        return await prisma.game.update({
               where: { id },

@@ -1,46 +1,135 @@
 package com.example.play2plat_tpcm
 
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Shader
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.play2plat_tpcm.ui.theme.Play2Plat_TPCMTheme
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var isAdmin: IsAdmin // Declaração da variável para controlar o status de administração
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            Play2Plat_TPCMTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+        setContentView(R.layout.activity_main)
+
+        // Definindo que o usuário é administrador
+        isAdmin = IsAdmin(true)
+
+        // Iniciando o fragmento padrão
+        supportFragmentManager.beginTransaction()
+            .add(R.id.layout, Games_Fragment()).commit()
+
+        // Verifica se o usuário é administrador e atualiza a visibilidade do ícone de administração
+        updateAdminIconVisibility()
+    }
+
+    fun onClick(v: View) {
+        when (v.id) {
+            R.id.games_lay -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.layout, Games_Fragment())
+                    .commit()
+                changeTabsIcon(R.id.games_icon, R.drawable.icon_games_selected)
+                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
+                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
+                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
+                changeTabsText(R.id.games_text, true)
+                changeTabsText(R.id.favorites_text, false)
+                changeTabsText(R.id.profile_text, false)
+                changeTabsText(R.id.search_text, false)
+            }
+
+            R.id.favorites_lay -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.layout, Favorites_Fragment())
+                    .commit()
+                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
+                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites_selected)
+                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
+                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
+                changeTabsText(R.id.games_text, false)
+                changeTabsText(R.id.favorites_text, true)
+                changeTabsText(R.id.profile_text, false)
+                changeTabsText(R.id.search_text, false)
+            }
+
+            R.id.profile_lay -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.layout, Profile_Fragment())
+                    .commit()
+                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
+                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
+                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile_selected)
+                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
+                changeTabsText(R.id.games_text, false)
+                changeTabsText(R.id.favorites_text, false)
+                changeTabsText(R.id.profile_text, true)
+                changeTabsText(R.id.search_text, false)
+            }
+
+            R.id.search_lay -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.layout, Search_Fragment())
+                    .commit()
+                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
+                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
+                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
+                changeTabsIcon(R.id.search_icon, R.drawable.icon_search_selected)
+                changeTabsText(R.id.games_text, false)
+                changeTabsText(R.id.favorites_text, false)
+                changeTabsText(R.id.profile_text, false)
+                changeTabsText(R.id.search_text, true)
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Play2Plat_TPCMTheme {
-        Greeting("Android")
+    private fun changeTabsIcon(iconId: Int, drawableId: Int) {
+        findViewById<ImageView>(iconId)?.setImageResource(drawableId)
+    }
+
+    private fun changeTabsText(textViewId: Int, isSelected: Boolean) {
+        val textView = findViewById<TextView>(textViewId)
+        val selectedColorStart = Color.parseColor("#FF1F53")
+        val selectedColorEnd = Color.parseColor("#1F91E9")
+        val unselectedColor = Color.WHITE
+
+        if (isSelected) {
+            val text = textView.text.toString()
+            textView.text = text
+            val textPaint = textView.paint
+            val width = textPaint.measureText(text)
+            val textShader = LinearGradient(
+                0f, 0f, width, textView.textSize,
+                intArrayOf(selectedColorStart, selectedColorEnd),
+                null, Shader.TileMode.CLAMP
+            )
+            textPaint.shader = textShader
+        } else {
+            textView.text = textView.text.toString()
+            textView.setTextColor(unselectedColor)
+            textView.paint.shader = null
+        }
+    }
+
+
+
+
+
+
+
+
+    private fun updateAdminIconVisibility() {
+        val adminLayout = findViewById<View>(R.id.admin_lay)
+        if (isAdmin.isAdmin()) {
+            adminLayout.visibility = View.VISIBLE
+        } else {
+            adminLayout.visibility = View.GONE
+        }
     }
 }

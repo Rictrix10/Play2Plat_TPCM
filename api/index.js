@@ -15,6 +15,7 @@ const usergameFavoriteRoute = require('./src/routes/UserGameFavoriteRoute');
 const gameGenreRoute = require('./src/routes/GameGenreRoute');
 const platformGameRoute = require('./src/routes/PlatformGameRoute');
 const userPlatformRoute = require('./src/routes/UserPlatformRoute');
+const uploadRoute = require('./src/routes/UploadRoute');
 
 const app = express();
 
@@ -40,6 +41,7 @@ apiRouter.use(usergameFavoriteRoute);
 apiRouter.use(gameGenreRoute);
 apiRouter.use(platformGameRoute);
 apiRouter.use(userPlatformRoute);
+apiRouter.use(uploadRoute);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
