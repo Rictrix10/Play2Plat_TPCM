@@ -79,6 +79,8 @@ dependencies {
     implementation ("io.coil-kt:coil-compose:2.1.0")
     implementation ("androidx.activity:activity-ktx:1.3.0")
     implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("com.google.code.gson:gson:2.8.8")
+
 
 
 

@@ -1,8 +1,9 @@
 package com.example.play2plat_tpcm
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -18,14 +19,18 @@ import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Sequence
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
-import java.util.UUID
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 
 
 class AddNewGame : AppCompatActivity() {
@@ -38,7 +43,6 @@ class AddNewGame : AppCompatActivity() {
             selectedImageUri = uri // Salva a URI da imagem selecionada
             Log.d("AddNewGame", "Selected image URI: $selectedImageUri")
             imageView.setImageURI(selectedImageUri)
-            saveImageToExternalStorage(selectedImageUri!!)
 
         } else {
             Log.d("AddNewGame", "No image URI received")
@@ -82,6 +86,8 @@ class AddNewGame : AppCompatActivity() {
         loadSequences()
         loadPegiInfo()
 
+
+
         saveButton.setOnClickListener {
             val gameTitle = gameTitleEditText.text.toString()
             val description = descriptionEditText.text.toString()
@@ -90,34 +96,65 @@ class AddNewGame : AppCompatActivity() {
             val selectedPegiInfo = pegiInfoSpinner.selectedItem.toString().toInt()
             val isFree = isFreeCheckBox.isChecked
 
-            val newGame = Game(
-                name = gameTitle,
-                description = description,
-                isFree = isFree,
-                releaseDate = "2024-04-24T00:00:00Z",
-                pegiInfo = selectedPegiInfo,
-                coverImage = selectedImageUri.toString(),
-                sequenceId = selectedSequence.id,
-                companyId = selectedCompany.id,
-            )
+            val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImageUri)
+            val file = bitmapToFile(this, bitmap)
 
-            Log.d("AddNewGame", "Novo jogo: $newGame")
+            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-            // Fazer a chamada para a API para salvar o jogo
-            ApiManager.apiService.createGame(newGame).enqueue(object : Callback<Game> {
-                override fun onResponse(call: Call<Game>, response: Response<Game>) {
+            val call = ApiManager.apiService.uploadImage(imagePart)
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
-                        val createdGame = response.body()
-                        Log.d("AddNewGame", "Jogo criado com sucesso: $createdGame")
+                        val imageUrl = response.body()?.string()
+                        imageUrl?.let {
+                            val pattern = Regex("\"url\":\"(\\S+)\"") // Cria um padrão regex para extrair a URL
+                            val matchResult = pattern.find(it)
+
+                            matchResult?.let { result ->
+                                val coverImageUrl = result.groupValues[1] // Obtém o valor correspondente ao grupo capturado
+
+                                val newGame = Game(
+                                    name = gameTitle,
+                                    description = description,
+                                    isFree = isFree,
+                                    releaseDate = "2024-04-24T00:00:00Z",
+                                    pegiInfo = selectedPegiInfo,
+                                    coverImage = coverImageUrl, // Atribui a URL da imagem
+                                    sequenceId = selectedSequence.id,
+                                    companyId = selectedCompany.id,
+                                )
+
+                                Log.d("AddNewGame", "Novo jogo: $newGame")
+
+                                // Fazer a chamada para a API para salvar o jogo
+                                ApiManager.apiService.createGame(newGame).enqueue(object : Callback<Game> {
+                                    override fun onResponse(call: Call<Game>, response: Response<Game>) {
+                                        if (response.isSuccessful) {
+                                            val createdGame = response.body()
+                                            Log.d("AddNewGame", "Jogo criado com sucesso: $createdGame")
+                                        } else {
+                                            Log.e("AddNewGame", "Erro ao criar jogo: ${response.message()}")
+                                        }
+                                    }
+
+                                    override fun onFailure(call: Call<Game>, t: Throwable) {
+                                        Log.e("AddNewGame", "Falha na requisição: ${t.message}")
+                                    }
+                                })
+                            }
+                        }
                     } else {
-                        Log.e("AddNewGame", "Erro ao criar jogo: ${response.message()}")
+                        // Erro no upload
+                        Log.e("AddNewGame", "Erro no upload: ${response.message()}")
                     }
                 }
 
-                override fun onFailure(call: Call<Game>, t: Throwable) {
-                    Log.e("AddNewGame", "Falha na requisição: ${t.message}")
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    // Erro na requisição
                 }
             })
+
         }
     }
 
@@ -167,36 +204,24 @@ class AddNewGame : AppCompatActivity() {
         pegiInfoSpinner.adapter = adapter
     }
 
-    private fun saveImageToExternalStorage(imageUri: Uri) {
-        val imageInputStream: InputStream? = contentResolver.openInputStream(imageUri)
-
-        if (imageInputStream != null) {
-            val imageName = "${UUID.randomUUID()}.jpg" // Gera um nome único para a imagem
-            val imageFile = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageName)
-
-            try {
-                val outputStream: OutputStream = FileOutputStream(imageFile)
-                val buffer = ByteArray(4 * 1024)
-                var read: Int
-                while (imageInputStream.read(buffer).also { read = it } != -1) {
-                    outputStream.write(buffer, 0, read)
-                }
-                outputStream.flush()
-                outputStream.close()
-                imageInputStream.close()
-                Log.d("AddNewGame", "Imagem salva em: ${imageFile.absolutePath}")
-            } catch (e: Exception) {
-                Log.e("AddNewGame", "Erro ao salvar a imagem: ${e.message}")
-            }
-        } else {
-            Log.e("AddNewGame", "Imagem não encontrada no URI fornecido.")
-        }
-    }
-
 
 
     private fun selectVisualMedia() {
         pickVisualMediaLauncher.launch("image/*") // Inicia a seleção de imagem
     }
+
+    private fun bitmapToFile(context: Context, bitmap: Bitmap): File {
+        val filesDir = context.filesDir
+        val imageFile = File(filesDir, "image.jpg")
+
+        val outputStream = FileOutputStream(imageFile)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        outputStream.flush()
+        outputStream.close()
+
+        return imageFile
+    }
+
+
 
 }
