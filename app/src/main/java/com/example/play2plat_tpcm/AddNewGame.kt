@@ -3,6 +3,7 @@ package com.example.play2plat_tpcm
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -17,10 +18,6 @@ import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Sequence
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -174,8 +171,7 @@ class AddNewGame : AppCompatActivity() {
         val imageInputStream: InputStream? = contentResolver.openInputStream(imageUri)
 
         if (imageInputStream != null) {
-            val imageName = UUID.randomUUID().toString() + ".png"
-            //val imageName = "${UUID.randomUUID()}.png" // Gera um nome único para a imagem
+            val imageName = "${UUID.randomUUID()}.jpg" // Gera um nome único para a imagem
             val imageFile = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageName)
 
             try {
@@ -189,25 +185,6 @@ class AddNewGame : AppCompatActivity() {
                 outputStream.close()
                 imageInputStream.close()
                 Log.d("AddNewGame", "Imagem salva em: ${imageFile.absolutePath}")
-
-
-                //val imagemTeste = "f5f755ab-5edc-4793-9c0f-68c1d853cab2.png"
-                val imageNameMap = mapOf("imageName" to imageName)
-                // Envia apenas o nome do arquivo da imagem para o endpoint uploadImage()
-                ApiManager.apiService.uploadImage(imageNameMap).enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        if (response.isSuccessful) {
-                            Log.d("AddNewGame", "Imagem enviada com sucesso")
-                        } else {
-                            val errorBody = response.errorBody()?.string()
-                            Log.e("AddNewGame", "Erro ao enviar a imagem: $errorBody")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Log.e("AddNewGame", "Falha na requisição: ${t.message}")
-                    }
-                })
             } catch (e: Exception) {
                 Log.e("AddNewGame", "Erro ao salvar a imagem: ${e.message}")
             }
@@ -221,4 +198,5 @@ class AddNewGame : AppCompatActivity() {
     private fun selectVisualMedia() {
         pickVisualMediaLauncher.launch("image/*") // Inicia a seleção de imagem
     }
+
 }

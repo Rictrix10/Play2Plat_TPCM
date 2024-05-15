@@ -1,28 +1,20 @@
 const express = require('express');
 const { put } = require('@vercel/blob');
-const fs = require('fs');
-const path = require('path');
 
 const router = express.Router();
 
 router.post('/upload', async (req, res) => {
   try {
-    const imageName = req.body.imageName;
-
-    if (!imageName) {
-      return res.status(400).json({ error: 'O nome da imagem é obrigatório no corpo da requisição' });
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({ error: 'Nenhum arquivo enviado' });
     }
 
-    // Altere o diretório de destino aqui
-    const filePath = '/storage/emulated/0/Android/data/com.example.play2plat_tpcm/files/' + imageName;
+    const uploadedFile = req.files.image;
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'Arquivo não encontrado' });
-    }
+    const fileBuffer = uploadedFile.data;
+    const fileName = uploadedFile.name;
 
-    const fileContent = fs.readFileSync(filePath);
-
-    const blob = await put(imageName, fileContent, { access: 'public' });
+    const blob = await put(fileName, fileBuffer, { access: 'public' });
 
     res.json({ url: blob.url });
   } catch (error) {
