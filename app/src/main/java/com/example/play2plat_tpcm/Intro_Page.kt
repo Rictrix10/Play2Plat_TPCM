@@ -1,8 +1,5 @@
 package com.example.play2plat_tpcm
 
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
