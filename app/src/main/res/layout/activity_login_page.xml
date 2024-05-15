@@ -90,7 +90,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:background="@drawable/circle"
-                    android:src="@drawable/Google"
+                    android:src="@drawable/google"
                     android:scaleType="centerCrop" />
 
 

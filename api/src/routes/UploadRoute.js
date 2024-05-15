@@ -14,7 +14,7 @@ router.post('/upload', async (req, res) => {
     }
 
     // Altere o diretório de destino aqui
-    const filePath = '/storage/emulated/0/Android/data/com.example.play2plat_tpcm/files/Pictures/' + imageName;
+    const filePath = '/storage/emulated/0/Android/data/com.example.play2plat_tpcm/files/' + imageName;
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: 'Arquivo não encontrado' });
