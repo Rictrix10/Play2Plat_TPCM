@@ -18,6 +18,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".LoginPage"
+            android:exported="false" />
+        <activity
             android:name=".ViewGame"
             android:exported="false" />
         <activity
@@ -27,6 +30,9 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".Intro_Page"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterPage"
             android:exported="false" />
         <activity
             android:name=".AddNewGame"
