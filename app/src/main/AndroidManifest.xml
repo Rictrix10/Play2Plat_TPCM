@@ -22,7 +22,7 @@
             android:name=".RegisterPage"
             android:exported="false" />
         <activity
-            android:name=".Login_Page"
+            android:name=".LoginPage"
             android:exported="false" />
         <activity
             android:name=".Intro_Page"
