@@ -3,22 +3,6 @@ const prisma = new PrismaClient();
 
 const UserModel = {
     createUser: async (email, password, username, avatar, userTypeId) => {
-        const existingUserByEmail = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (existingUserByEmail) {
-            throw new Error('Email já está em uso');
-        }
-
-        const existingUserByUsername = await prisma.user.findUnique({
-            where: { username }
-        });
-
-        if (existingUserByUsername) {
-            throw new Error('Nome de usuário já está em uso');
-        }
-
         return await prisma.user.create({
             data: {
                 email,
@@ -51,6 +35,11 @@ const UserModel = {
     findUserByEmail: async (email) => {
         return await prisma.user.findUnique({
             where: { email }
+        });
+    },
+    findUserByUsername: async (username) => {
+        return await prisma.user.findUnique({
+            where: { username }
         });
     }
 };
