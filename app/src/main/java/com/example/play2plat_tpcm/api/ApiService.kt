@@ -31,14 +31,14 @@ interface ApiService {
     @GET("games/{id}")
     fun getGameById(@Path("id") id: Int): Call<GameInfo>
 
-    @POST("users")
-    fun createUser(@Body user: UserRegister): Call<UserRegister>
-
-    @POST("users/login")
-    fun loginUser(@Body userLogin: UserLogin): Call<UserLoginResponse>
-
-    @GET("users/{id}")
-    fun getUserById(@Path("id") id: Int): Call<User>
+//    @POST("users")
+//    fun createUser(@Body user: UserRegister): Call<UserRegister>
+//
+//    @POST("users/login")
+//    fun loginUser(@Body userLogin: UserLogin): Call<UserLoginResponse>
+//
+//    @GET("users/{id}")
+//    fun getUserById(@Path("id") id: Int): Call<User>
 
     @GET("genres")
     fun getGenres(): Call<List<Genre>>

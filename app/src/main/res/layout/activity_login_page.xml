@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_border">
+    android:background="@drawable/bg_border">
 
     <LinearLayout
         android:id="@+id/ll_main_layout_add_report"
@@ -34,7 +34,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/round_btn"
+                android:background="@drawable/text_input"
                 android:drawableLeft="@drawable/user"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
@@ -50,7 +50,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/round_btn"
+                android:background="@drawable/text_input"
                 android:drawableLeft="@drawable/password"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="45dp"
-                android:background="@drawable/gradient"
+                android:background="@drawable/details"
                 android:text="Sign In"
                 android:fontFamily="@font/m_plus_rounded_1c_black"
                 android:textSize="30sp"
@@ -77,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/background_border" />
+                android:background="@drawable/details" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
