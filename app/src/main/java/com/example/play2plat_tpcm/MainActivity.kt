@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
                 changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
+                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
                 changeTabsText(R.id.games_text, true)
                 changeTabsText(R.id.favorites_text, false)
                 changeTabsText(R.id.profile_text, false)
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites_selected)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
                 changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
+                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
                 changeTabsText(R.id.games_text, false)
                 changeTabsText(R.id.favorites_text, true)
                 changeTabsText(R.id.profile_text, false)
@@ -66,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile_selected)
                 changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
+                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
                 changeTabsText(R.id.games_text, false)
                 changeTabsText(R.id.favorites_text, false)
                 changeTabsText(R.id.profile_text, true)
@@ -80,10 +83,26 @@ class MainActivity : AppCompatActivity() {
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
                 changeTabsIcon(R.id.search_icon, R.drawable.icon_search_selected)
+                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
                 changeTabsText(R.id.games_text, false)
                 changeTabsText(R.id.favorites_text, false)
                 changeTabsText(R.id.profile_text, false)
                 changeTabsText(R.id.search_text, true)
+            }
+
+            R.id.new_game_lay -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.layout, Add_New_Game_Fragment())
+                    .commit()
+                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
+                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
+                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
+                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
+                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add_selected)
+                changeTabsText(R.id.games_text, false)
+                changeTabsText(R.id.favorites_text, false)
+                changeTabsText(R.id.profile_text, false)
+                changeTabsText(R.id.search_text, false)
             }
         }
     }
@@ -125,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun updateAdminIconVisibility() {
-        val adminLayout = findViewById<View>(R.id.admin_lay)
+        val adminLayout = findViewById<View>(R.id.new_game_lay)
         if (isAdmin.isAdmin()) {
             adminLayout.visibility = View.VISIBLE
         } else {

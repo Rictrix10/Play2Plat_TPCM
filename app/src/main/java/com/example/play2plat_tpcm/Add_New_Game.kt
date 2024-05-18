@@ -2,7 +2,6 @@ package com.example.play2plat_tpcm
 
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -17,10 +16,6 @@ import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Sequence
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,9 +23,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.UUID
 
-class AddNewGame : AppCompatActivity() {
+class Add_New_Game : AppCompatActivity() {
 
     private var selectedImageUri: Uri? = null
 
@@ -61,7 +55,7 @@ class AddNewGame : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_add_new_game)
+        setContentView(R.layout.add_new_game)
 
         imageView = findViewById(R.id.image_view) // Assuming your ImageView has this id
 
@@ -93,6 +87,7 @@ class AddNewGame : AppCompatActivity() {
             val isFree = isFreeCheckBox.isChecked
 
             val newGame = Game(
+                id = null,
                 name = gameTitle,
                 description = description,
                 isFree = isFree,
@@ -129,7 +124,7 @@ class AddNewGame : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val companies = response.body()
                     if (companies != null) {
-                        val adapter = CompanySpinnerAdapter(this@AddNewGame, android.R.layout.simple_spinner_item, companies)
+                        val adapter = CompanySpinnerAdapter(this@Add_New_Game, android.R.layout.simple_spinner_item, companies)
                         companySpinner.adapter = adapter
                     }
                 } else {
@@ -149,7 +144,7 @@ class AddNewGame : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val sequences = response.body()
                     if (sequences != null) {
-                        val adapter = SequenceSpinnerAdapter(this@AddNewGame, android.R.layout.simple_spinner_item, sequences)
+                        val adapter = SequenceSpinnerAdapter(this@Add_New_Game, android.R.layout.simple_spinner_item, sequences)
                         sequenceSpinner.adapter = adapter
                     }
                 } else {

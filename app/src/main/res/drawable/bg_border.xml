@@ -4,7 +4,7 @@
     <item android:drawable="@drawable/app_border" />
 
     <!-- Background -->
-    <item android:drawable="@drawable/background"
+    <item android:drawable="@drawable/bg"
         android:left="3dp"
         android:right="3dp"
         android:top="3dp"
