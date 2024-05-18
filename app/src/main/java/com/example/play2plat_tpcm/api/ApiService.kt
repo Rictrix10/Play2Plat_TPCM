@@ -21,21 +21,6 @@ interface ApiService {
     @POST("games")
     fun createGame(@Body game: Game): Call<Game>
 
-    /*
-    @POST("upload")
-    fun uploadImage(@Body imageName: String)
-
-
-
-    @POST("upload")
-    fun uploadImage(@Body imageName: String): Call<ResponseBody>
-
-
-
-    @POST("upload")
-    fun uploadImage(@Body imageData: Map<String, String>): Call<ResponseBody>
-    */
-
     @Multipart
     @POST("upload")
     fun uploadImage(
@@ -45,6 +30,11 @@ interface ApiService {
     @GET("games/{id}")
     fun getGameById(@Path("id") id: Int): Call<GameInfo>
 
+    @POST("users")
+    fun createUser(@Body user: User): Call<User>
+
+    @POST("users/login")
+    fun loginUser(@Body userLogin: UserLogin): Call<UserLogin>
 
 
 }
