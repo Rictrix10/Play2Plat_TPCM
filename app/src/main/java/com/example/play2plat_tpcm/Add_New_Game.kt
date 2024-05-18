@@ -63,7 +63,7 @@ class AddNewGame : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_add_new_game)
+        setContentView(R.layout.fragment_add_new_game)
 
         imageView = findViewById(R.id.image_view) // Assuming your ImageView has this id
 
@@ -75,9 +75,7 @@ class AddNewGame : AppCompatActivity() {
 
         gameTitleEditText = findViewById(R.id.game_title)
         descriptionEditText = findViewById(R.id.description)
-        companySpinner = findViewById(R.id.company)
-        sequenceSpinner = findViewById(R.id.sequence)
-        pegiInfoSpinner = findViewById(R.id.pegi_info)
+
         saveButton = findViewById(R.id.save)
         isFreeCheckBox = findViewById(R.id.is_free_checkbox)
 
@@ -115,6 +113,7 @@ class AddNewGame : AppCompatActivity() {
                                 val coverImageUrl = result.groupValues[1] // Obtém o valor correspondente ao grupo capturado
 
                                 val newGame = Game(
+                                    id = null,
                                     name = gameTitle,
                                     description = description,
                                     isFree = isFree,

@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.Play2Plat_TPCM" parent="android:Theme.Material.Light.NoActionBar" />
+
 </resources>
