@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/main"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="@drawable/bg_border">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_border">
 
     <!-- Conteúdo principal (FrameLayout) -->
     <FrameLayout
@@ -15,7 +14,87 @@ android:background="@drawable/bg_border">
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tab_bar"
+        android:layout_below="@+id/search_container"
         android:paddingBottom="50dp" />
+
+    <!-- Container para o SearchView e o quadrado preto -->
+    <RelativeLayout
+        android:id="@+id/search_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp">
+
+        <!-- Retângulo de Pesquisa (SearchView) -->
+        <SearchView
+            android:id="@+id/search_view"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:queryHint="Search Games"
+            android:background="@drawable/search_drawable_background"/>
+
+        <!-- Quadrado Preto -->
+        <ImageView
+            android:id="@+id/black_square"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@id/search_view"
+            android:src="@drawable/filtro"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/quadrado"
+            android:scaleType="center"/>
+
+    </RelativeLayout>
+
+    <!-- Seções de Jogos -->
+    <LinearLayout
+        android:id="@+id/game_sections"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_container"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp">
+
+        <!-- Action Games -->
+        <TextView
+            android:id="@+id/action_games"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Action Games:"
+            android:fontFamily="@font/m_plus_rounded_1c_medium"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Free Games -->
+        <TextView
+            android:id="@+id/free_games"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free Games:"
+            android:fontFamily="@font/m_plus_rounded_1c_medium"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Mobile Games -->
+        <TextView
+            android:id="@+id/mobile_games"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mobile Games:"
+            android:fontFamily="@font/m_plus_rounded_1c_medium"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+    </LinearLayout>
 
     <!-- Barra de abas -->
     <include
@@ -26,3 +105,5 @@ android:background="@drawable/bg_border">
         android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
+
+
