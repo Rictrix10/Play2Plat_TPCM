@@ -52,7 +52,7 @@ const GameModel = {
                 console.error('Erro ao buscar gêneros por ID de jogo:', error);
                 throw error;
             }
-        }
+        },
 
 getGameById: async (id) => {
     try {
