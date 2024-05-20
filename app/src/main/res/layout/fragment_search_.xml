@@ -13,7 +13,6 @@
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/tab_bar"
         android:layout_below="@+id/search_container"
         android:paddingBottom="50dp" />
 
@@ -81,6 +80,7 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
+        
 
         <!-- Mobile Games -->
         <TextView
@@ -95,13 +95,4 @@
             android:layout_marginBottom="8dp"/>
 
     </LinearLayout>
-
-    <!-- Barra de abas -->
-    <include
-        android:id="@+id/tab_bar"
-        layout="@layout/tab_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
-
 </RelativeLayout>
