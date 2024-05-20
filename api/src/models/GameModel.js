@@ -36,6 +36,23 @@ const GameModel = {
             throw error;
         }
     },
+    getPlatformsByGameId: async (gameId) => {
+            try {
+                const platformGames = await prisma.platformGame.findMany({
+                    where: {
+                        gameId: gameId
+                    },
+                    include: {
+                        platform: true
+                    }
+                });
+                const platforms = platformGames.map(platformGame => platformGame.platform.name);
+                return platforms;
+            } catch (error) {
+                console.error('Erro ao buscar gêneros por ID de jogo:', error);
+                throw error;
+            }
+        }
 
 getGameById: async (id) => {
     try {
@@ -51,6 +68,8 @@ getGameById: async (id) => {
         }
         const genres = await GameModel.getGenresByGameId(id); // Chamando o novo método
         game.genres = genres; // Adicionando os gêneros ao objeto do jogo
+        const platforms = await GameModel.getPlatformsByGameId(id);
+        game.platforms = platforms
         return game;
     } catch (error) {
         console.error('Erro ao buscar jogo por ID:', error);

@@ -28,7 +28,7 @@ class Intro_Page : AppCompatActivity() {
         // Define um ouvinte de clique para o botão "Get Started"
         btnGetStarted.setOnClickListener {
             // Cria uma intenção para iniciar a atividade MainActivity
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, LoginPage::class.java)
 
             // Inicia a atividade MainActivity
             startActivity(intent)

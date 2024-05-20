@@ -28,8 +28,8 @@ const GameController = {
                return res.status(404).json({ error: 'Jogo não encontrado' });
            }
 
-           // Acessando diretamente os gêneros
            const genres = game.genres;
+           const platforms = game.platforms
 
            res.json({
                id: game.id,
@@ -42,6 +42,7 @@ const GameController = {
                sequence: game.sequence.name,
                company: game.company.name,
                genres: genres,
+               platforms: platforms
            });
        } catch (error) {
            console.error('Erro ao buscar jogo por ID:', error);
