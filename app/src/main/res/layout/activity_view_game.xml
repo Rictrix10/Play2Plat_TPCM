@@ -31,7 +31,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-
     <TextView
         android:id="@+id/name"
         android:layout_width="140dp"

@@ -1,10 +1,8 @@
 package com.example.play2plat_tpcm.api
 
-data class User(
-    val id: Int,
+data class UserRegister(
     val username: String,
     val email: String,
     val password: String,
-    val avatar: String,
     val userTypeId: Int
 )

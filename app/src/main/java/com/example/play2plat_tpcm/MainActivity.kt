@@ -1,5 +1,7 @@
 package com.example.play2plat_tpcm
 
+import Profile_Fragment
+import android.content.Context
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
@@ -17,8 +19,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Definindo que o usuário é administrador
-        isAdmin = IsAdmin(true)
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userTypeId = sharedPreferences.getInt("user_type_id", 2)
+
+        // Verificar o tipo de utilizador para definir o status de administrador
+        isAdmin = IsAdmin(userTypeId == 1)
 
         // Iniciando o fragmento padrão
         supportFragmentManager.beginTransaction()
@@ -116,12 +121,6 @@ class MainActivity : AppCompatActivity() {
             textView.paint.shader = null
         }
     }
-
-
-
-
-
-
 
 
     private fun updateAdminIconVisibility() {

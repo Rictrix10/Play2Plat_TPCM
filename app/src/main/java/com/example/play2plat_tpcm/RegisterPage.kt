@@ -1,15 +1,17 @@
 package com.example.play2plat_tpcm
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.play2plat_tpcm.api.ApiManager
-import com.example.play2plat_tpcm.api.User
+import com.example.play2plat_tpcm.api.UserRegister
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,9 +28,17 @@ class RegisterPage : AppCompatActivity() {
             insets
         }
 
-        val btnSignIn: Button = findViewById(R.id.btn_sign_in)
-        btnSignIn.setOnClickListener {
+        val btnSignUp: Button = findViewById(R.id.btn_sign_in) // Botão de registro
+        btnSignUp.setOnClickListener {
             registerUser()
+        }
+
+        val signInTextView: TextView = findViewById(R.id.sign_in) // TextView de Sign In
+        signInTextView.setOnClickListener {
+            // Redireciona para LoginPage quando clicado
+            val intent = Intent(this, LoginPage::class.java)
+            startActivity(intent)
+            finish() // Fecha a RegisterPage
         }
     }
 
@@ -43,17 +53,21 @@ class RegisterPage : AppCompatActivity() {
             return
         }
 
-        val user = User(username, email, password, userTypeId = 2)
-        ApiManager.apiService.createUser(user).enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
+        val user = UserRegister(username, email, password, userTypeId = 2)
+        ApiManager.apiService.createUser(user).enqueue(object : Callback<UserRegister> {
+            override fun onResponse(call: Call<UserRegister>, response: Response<UserRegister>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@RegisterPage, "User registered successfully", Toast.LENGTH_SHORT).show()
+                    // Registro bem-sucedido, redireciona para LoginPage
+                    val intent = Intent(this@RegisterPage, LoginPage::class.java)
+                    startActivity(intent)
+                    finish() // Fecha a RegisterPage
                 } else {
                     Toast.makeText(this@RegisterPage, "Registration failed", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
+            override fun onFailure(call: Call<UserRegister>, t: Throwable) {
                 Toast.makeText(this@RegisterPage, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

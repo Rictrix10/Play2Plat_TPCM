@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".AddNewGame"
+            android:name=".LoginPage"
             android:exported="false" />
         <activity
             android:name=".ViewGame"
@@ -30,12 +30,6 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".Intro_Page"
-            android:exported="false" />
-        <activity
-            android:name=".RegisterPage"
-            android:exported="false" />
-        <activity
-            android:name=".LoginPage"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -43,6 +37,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".RegisterPage"
+            android:exported="false" />
+        <activity
+            android:name=".Add_New_Game"
+            android:exported="false"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

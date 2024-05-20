@@ -19,7 +19,6 @@ import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Sequence
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -29,11 +28,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
-import com.google.gson.Gson
-import com.google.gson.JsonParser
 
 
-class AddNewGame : AppCompatActivity() {
+class Add_New_Game : AppCompatActivity() {
 
     private var selectedImageUri: Uri? = null
 
@@ -164,7 +161,7 @@ class AddNewGame : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val companies = response.body()
                     if (companies != null) {
-                        val adapter = CompanySpinnerAdapter(this@AddNewGame, android.R.layout.simple_spinner_item, companies)
+                        val adapter = CompanySpinnerAdapter(this@Add_New_Game, android.R.layout.simple_spinner_item, companies)
                         companySpinner.adapter = adapter
                     }
                 } else {
@@ -184,7 +181,7 @@ class AddNewGame : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val sequences = response.body()
                     if (sequences != null) {
-                        val adapter = SequenceSpinnerAdapter(this@AddNewGame, android.R.layout.simple_spinner_item, sequences)
+                        val adapter = SequenceSpinnerAdapter(this@Add_New_Game, android.R.layout.simple_spinner_item, sequences)
                         sequenceSpinner.adapter = adapter
                     }
                 } else {
