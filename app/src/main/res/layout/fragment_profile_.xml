@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,53 +8,15 @@
     tools:context=".Profile_Fragment"
     android:background="@drawable/background_border">
 
-    <!-- Header Section -->
     <TextView
-        android:id="@+id/tv_profile_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Profile"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
-
-    <!-- User Info Section -->
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_picture"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_profile_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:scaleType="centerCrop"
-        android:background="@drawable/circle_background"/>
-
-    <ImageView
-        android:id="@+id/edit_icon"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="44dp"
-        android:src="@drawable/edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/profile_picture" />
-
-    <TextView
-        android:id="@+id/username"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/profile_picture"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+        android:textColor="#FFFFFF"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

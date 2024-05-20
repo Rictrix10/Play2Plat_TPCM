@@ -1,4 +1,4 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/details" />
-    <item android:drawable="@drawable/background_rounded" />
+    <item android:drawable="@drawable/bd_rounded_2" />
 </layer-list>

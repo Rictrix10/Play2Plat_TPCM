@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="25sp"
-    android:background="@drawable/background_border">
+    android:background="@drawable/bg_border">
 
     <LinearLayout
         android:id="@+id/ll_main_layout_add_report"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:hint="Game Title"
-            android:background="@drawable/edittext_bg"
+            android:background="@drawable/text_input"
              />
 
         <EditText
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:padding="30dp"
             android:hint="Description"
-            android:background="@drawable/edittext_bg"
+            android:background="@drawable/text_input"
             />
 
         <CheckBox
@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:background="@drawable/edittext_bg"
+            android:background="@drawable/text_input"
              />
 
         <Spinner
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:background="@drawable/edittext_bg"
+            android:background="@drawable/text_input"
              />
 
         <Spinner
@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:background="@drawable/edittext_bg"
+            android:background="@drawable/text_input"
             />
 
         <Button

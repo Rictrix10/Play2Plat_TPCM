@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm.api
 
 data class Game(
+    val id: Int?,
     val name: String,
     val description: String,
     val isFree: Boolean,
