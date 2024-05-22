@@ -99,6 +99,8 @@ interface ApiService {
     fun addGenresToGame(@Body game_genre: GameGenre): Call<GameGenre>
 
      */
+    @GET("user-game-comments/{id}")
+    fun getCommentByGame(@Path("id") id: Int): Call<List<GameCommentsResponse>>
 
 }
 

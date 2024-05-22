@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.play2plat_tpcm.api.GamePost
+import com.example.play2plat_tpcm.api.GameCommentsResponse
+import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
-class GamePostsAdapter(private val posts: List<GamePost>) :
+class GamePostsAdapter(private val posts: List<GameCommentsResponse>) :
     RecyclerView.Adapter<GamePostsAdapter.GamePostViewHolder>() {
 
     class GamePostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,11 +27,10 @@ class GamePostsAdapter(private val posts: List<GamePost>) :
 
     override fun onBindViewHolder(holder: GamePostViewHolder, position: Int) {
         val post = posts[position]
-        // Aqui você deve definir os dados do post nos views, por exemplo:
-        holder.username.text = post.username
-        holder.textPost.text = post.text
-        holder.profilePicture.setImageResource(post.profilePicture) // Supondo que seja um recurso drawable
-        holder.imagePost.setImageResource(post.imagePost) // Supondo que seja um recurso drawable
+        holder.username.text = post.user.username
+        holder.textPost.text = post.comments
+        Picasso.get().load(post.user.avatar).into(holder.profilePicture)
+        Picasso.get().load(post.image).into(holder.imagePost)
     }
 
     override fun getItemCount(): Int {
