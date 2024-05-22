@@ -35,26 +35,20 @@ const UserGameCommentsModel = {
             }
         });
     },
-        getCommentsByGameId: async (gameId) => {
-            return await prisma.userGameComment.findMany({
-                where: {
-                    gameId: gameId,
-                },
-                include: {
-                    user: {
-                        select: {
-                            username: true,
-                            avatar: true
-                        }
-                    },
-                    game: {
-                        select: {
-                            name: true
-                        }
-                    }
-                }
-            });
+    getCommentsByGameId: async (req, res) => {
+        try {
+            // Convertendo gameId para inteiro
+            const gameId = parseInt(req.params.gameId, 10);
+            if (isNaN(gameId)) {
+                return res.status(400).json({ error: 'gameId inválido' });
+            }
+            const comments = await UserGameCommentsModel.getCommentsByGameId(gameId);
+            res.json(comments);
+        } catch (error) {
+            console.error('Erro ao buscar comentários por gameId:', error);
+            res.status(500).json({ error: 'Erro ao buscar comentários' });
         }
+    }
 
 };
 
