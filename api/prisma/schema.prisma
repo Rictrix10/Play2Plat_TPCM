@@ -157,7 +157,6 @@ model userGameComment {
   latitude      Float
   longitude     Float
 
-  @@unique([userId, gameId])
 }
 
 model userGameFavorite {
