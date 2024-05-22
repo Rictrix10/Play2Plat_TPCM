@@ -10,4 +10,6 @@ router.get('/user-game-comment/:id', UserGameCommentsController.getUserGameComme
 
 router.delete('/user-game-comment/:id', UserGameCommentsController.deleteUserGameComment);
 
+router.get('/user-game-comments/:gameId', UserGameCommentsController.getCommentsByGameId);
+
 module.exports = router;

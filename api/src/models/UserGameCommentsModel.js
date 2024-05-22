@@ -35,7 +35,26 @@ const UserGameCommentsModel = {
             }
         });
     },
-
+        getCommentsByGameId: async (gameId) => {
+            return await prisma.userGameComment.findMany({
+                where: {
+                    gameId: gameId,
+                },
+                include: {
+                    user: {
+                        select: {
+                            username: true,
+                            avatar: true
+                        }
+                    },
+                    game: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            });
+        }
 
 };
 

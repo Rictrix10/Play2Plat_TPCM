@@ -82,7 +82,17 @@ const UserGameCommentsController = {
             // Retornando um erro com status 500 (Erro Interno do Servidor)
             res.status(500).json({ error: 'Erro ao excluir comentário' });
         }
-    }
+    },
+        getCommentsByGameId: async (req, res) => {
+            try {
+                const gameId = req.params.gameId;
+                const comments = await UserGameCommentsModel.getCommentsByGameId(gameId);
+                res.json(comments);
+            } catch (error) {
+                console.error('Erro ao buscar comentários por gameId:', error);
+                res.status(500).json({ error: 'Erro ao buscar comentários' });
+            }
+        }
 };
 
 module.exports = UserGameCommentsController;
