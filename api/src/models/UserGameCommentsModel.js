@@ -2,11 +2,12 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const UserGameCommentsModel = {
-    createUserGameComment: async (comments, image, userId, gameId, latitude, longitude) => {
+    createUserGameComment: async (comments, image, isAnswer, userId, gameId, latitude, longitude) => {
         return await prisma.userGameComment.create({
             data: {
                 comments,
                 image,
+                isAnswer,
                 userId,
                 gameId,
                 latitude,

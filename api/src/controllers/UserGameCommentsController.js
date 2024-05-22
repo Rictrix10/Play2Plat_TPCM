@@ -4,12 +4,13 @@ const UserGameCommentsController = {
     createUserGameComment: async (req, res) => {
         try {
             // Obtendo dados do corpo da requisição
-            const { comments, image, userId, gameId, latitude, longitude } = req.body;
+            const { comments, image, isAnswer, userId, gameId, latitude, longitude } = req.body;
 
             // Criando um novo comentário
             const newComment = await UserGameCommentsModel.createUserGameComment(
                 comments,
                 image,
+                isAnswer,
                 userId,
                 gameId,
                 latitude,
