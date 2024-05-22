@@ -149,6 +149,7 @@ model userGameComment {
   id            Int         @id @default(autoincrement())
   comments      String
   image         String?
+  isAnswer      Int?
   user          user        @relation(fields: [userId], references: [id], onDelete: Cascade)
   game          game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
   userId        Int
