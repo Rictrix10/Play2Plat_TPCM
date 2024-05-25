@@ -1,7 +1,6 @@
 package com.example.play2plat_tpcm.api
 
-data class GameCommentsResponse(
-    val id: Int,
+data class Comment(
     val comments: String,
     val image: String,
     val isAnswer: Int?,
@@ -9,6 +8,4 @@ data class GameCommentsResponse(
     val gameId: Int,
     val latitude: Double,
     val longitude: Double,
-    val user: UserComment,
-    val game: GameComment
 )
