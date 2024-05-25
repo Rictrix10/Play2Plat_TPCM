@@ -43,6 +43,8 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Call<ResponseBody>
 
+    @GET("games")
+    fun getAllGames(): Call<List<Game>>
     @GET("games/{id}")
     fun getGameById(@Path("id") id: Int): Call<GameInfo>
 
