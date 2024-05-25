@@ -10,8 +10,14 @@ import com.example.play2plat_tpcm.api.GameCommentsResponse
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
-class GamePostsAdapter(private val posts: List<GameCommentsResponse>) :
-    RecyclerView.Adapter<GamePostsAdapter.GamePostViewHolder>() {
+class GamePostsAdapter(
+    private val posts: List<GameCommentsResponse>,
+    private val onProfilePictureClickListener: OnProfilePictureClickListener
+) : RecyclerView.Adapter<GamePostsAdapter.GamePostViewHolder>() {
+
+    interface OnProfilePictureClickListener {
+        fun onProfilePictureClick(userId: Int)
+    }
 
     class GamePostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profilePicture: CircleImageView = itemView.findViewById(R.id.profile_picture)
@@ -31,6 +37,10 @@ class GamePostsAdapter(private val posts: List<GameCommentsResponse>) :
         holder.textPost.text = post.comments
         Picasso.get().load(post.user.avatar).into(holder.profilePicture)
         Picasso.get().load(post.image).into(holder.imagePost)
+
+        holder.profilePicture.setOnClickListener {
+            onProfilePictureClickListener.onProfilePictureClick(post.user.id)
+        }
     }
 
     override fun getItemCount(): Int {

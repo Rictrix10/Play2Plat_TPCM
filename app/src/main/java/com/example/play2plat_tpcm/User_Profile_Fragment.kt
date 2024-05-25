@@ -17,25 +17,27 @@ import retrofit2.Callback
 import retrofit2.Response
 import de.hdodenhof.circleimageview.CircleImageView
 
-class Profile_Fragment : Fragment() {
+class User_Profile_Fragment : Fragment() {
 
     private lateinit var usernameTextView: TextView
     private lateinit var profileImageView: ImageView
-    private lateinit var editIconImageView: ImageView
+    private var userId: Int = 0
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            userId = it.getInt(ARG_USER_ID)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         usernameTextView = view.findViewById(R.id.username)
         profileImageView = view.findViewById(R.id.profile_picture)
-        editIconImageView = view.findViewById(R.id.edit_icon)
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
 
-        editIconImageView.setOnClickListener {
-            redirectToEditProfile()
-        }
 
         ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -70,24 +72,23 @@ class Profile_Fragment : Fragment() {
         }
     }
 
-    private fun redirectToEditProfile() {
-        val editProfileFragment = EditProfile()
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, editProfileFragment)
-            .addToBackStack(null)
-            .commit()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_, container, false)
+        return inflater.inflate(R.layout.fragment_user__profile_, container, false)
     }
 
     companion object {
+        private const val ARG_USER_ID = "user_id"
         @JvmStatic
-        fun newInstance() = Profile_Fragment()
+        fun newInstance(userId: Int) =
+            User_Profile_Fragment().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_USER_ID, userId)
+                }
+            }
     }
 }

@@ -102,5 +102,8 @@ interface ApiService {
     @GET("user-game-comments/{id}")
     fun getCommentByGame(@Path("id") id: Int): Call<List<GameCommentsResponse>>
 
+    @POST("user-game-comment")
+    fun addComment(@Body comment: Comment): Call<Comment>
+
 }
 
