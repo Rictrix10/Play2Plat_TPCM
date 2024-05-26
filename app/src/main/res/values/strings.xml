@@ -8,6 +8,12 @@
         <item>16</item>
         <item>18</item>
     </string-array>
+    <string-array name="collections_names">
+        <item>Wish List</item>
+        <item>Playing</item>
+        <item>Paused</item>
+        <item>Concluded</item>
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sign_up_prompt">New Here? <font color="#D10341">Sign Up</font></string>

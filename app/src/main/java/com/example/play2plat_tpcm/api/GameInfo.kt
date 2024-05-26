@@ -10,5 +10,6 @@ data class GameInfo (
     val coverImage: String?, // Use '?' para torná-lo opcional
     val sequence: String,
     val company: String,
-    val genres: List<String> // Lista de gêneros
+    val genres: List<String>, // Lista de gêneros
+    val platforms: List<String>
 )

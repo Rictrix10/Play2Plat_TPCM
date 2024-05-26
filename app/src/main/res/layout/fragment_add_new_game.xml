@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,257 +13,257 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/ll_main_layout_add_report"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="left"
-            android:orientation="vertical"
-            android:padding="25dp">
-
-            <Button
-                android:id="@+id/pick_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="Upload Cover"
-                android:background="@drawable/button_bd"
-                android:textColor="#FFFF"/>
-
-            <ImageView
-                android:id="@+id/image_view"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_below="@id/pick_image"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop" />
-
-            <EditText
-                android:id="@+id/game_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:background="@drawable/text_input"
-                android:hint="Enter Game Title"
-                android:textColorHint="#847BD7"
-                android:textColor="#393657"
-                android:textSize="16sp"
-                android:drawableStart="@drawable/icon_game_title"
-                android:drawablePadding="6dp"
-                android:inputType="text"
-                android:imeOptions="actionDone"
-                />
-
-
-
-
-            <EditText
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:background="@drawable/text_input"
-                android:hint="Enter Description"
-                android:textColorHint="#847BD7"
-                android:textColor="#393657"
-                android:textSize="16sp"
-                android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
-                android:minLines="3"
-                android:maxLines="5"
-                android:scrollbars="vertical"
-                android:drawableStart="@drawable/icon_description"
-                android:drawablePadding="6dp"/>
-
             <LinearLayout
-                android:id="@+id/genres_accordion"
+                android:id="@+id/ll_main_layout_add_report"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_height="match_parent"
+                android:gravity="left"
                 android:orientation="vertical"
-                android:background="@drawable/text_input"
-                android:clickable="true"
-                android:focusable="true">
+                android:padding="25dp">
 
-                <TextView
-                    android:id="@+id/genres_title"
+                <Button
+                    android:id="@+id/pick_image"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/icon_genres"
-                    android:drawableEnd="@drawable/icon_up"
-                    android:drawablePadding="8dp"
-                    android:text="Genres"
+                    android:padding="16dp"
+                    android:text="Upload Cover"
+                    android:background="@drawable/button_bd"
+                    android:textColor="#FFFF"/>
+
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_below="@id/pick_image"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop" />
+
+                <EditText
+                    android:id="@+id/game_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:background="@drawable/text_input"
+                    android:hint="Enter Game Title"
+                    android:textColorHint="#847BD7"
                     android:textColor="#393657"
-                    android:padding="10dp"
-                    android:gravity="center_vertical"/>
+                    android:textSize="16sp"
+                    android:drawableStart="@drawable/icon_game_title"
+                    android:drawablePadding="6dp"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    />
 
-                <ListView
-                    android:id="@+id/genres_list"
+
+
+
+                <EditText
+                    android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:nestedScrollingEnabled="true"/>
+                    android:layout_marginBottom="4dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:background="@drawable/text_input"
+                    android:hint="Enter Description"
+                    android:textColorHint="#847BD7"
+                    android:textColor="#393657"
+                    android:textSize="16sp"
+                    android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
+                    android:minLines="3"
+                    android:maxLines="5"
+                    android:scrollbars="vertical"
+                    android:drawableStart="@drawable/icon_description"
+                    android:drawablePadding="6dp"/>
+
+                <LinearLayout
+                    android:id="@+id/genres_accordion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/text_input"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/genres_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/icon_genres"
+                        android:drawableEnd="@drawable/icon_up"
+                        android:drawablePadding="8dp"
+                        android:text="Genres"
+                        android:textColor="#393657"
+                        android:padding="10dp"
+                        android:gravity="center_vertical"/>
+
+                    <ListView
+                        android:id="@+id/genres_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:nestedScrollingEnabled="true"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/platform_accordion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/text_input"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/platform_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/icon_platforms"
+                        android:drawableEnd="@drawable/icon_up"
+                        android:drawablePadding="8dp"
+                        android:text="Platforms"
+                        android:textColor="#393657"
+                        android:padding="10dp"
+                        android:gravity="center_vertical"/>
+
+                    <ListView
+                        android:id="@+id/platform_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:nestedScrollingEnabled="true"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/company_accordion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="vertical"
+
+                    android:background="@drawable/text_input"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/company_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/icon_companies"
+                        android:drawableEnd="@drawable/icon_up"
+                        android:drawablePadding="8dp"
+                        android:text="Companies"
+                        android:textColor="#393657"
+                        android:padding="10dp"
+                        android:gravity="center_vertical"/>
+
+                    <ListView
+                        android:id="@+id/company_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:nestedScrollingEnabled="true"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/sequence_accordion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/text_input"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/sequence_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/icon_sequence"
+                        android:drawableEnd="@drawable/icon_up"
+                        android:drawablePadding="8dp"
+                        android:text="Sequence"
+                        android:textColor="#393657"
+                        android:padding="10dp"
+                        android:gravity="center_vertical"/>
+
+                    <ListView
+                        android:id="@+id/sequence_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:nestedScrollingEnabled="true"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/pegi_accordion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/text_input"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/pegi_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/icon_age"
+                        android:drawableEnd="@drawable/icon_up"
+                        android:drawablePadding="8dp"
+                        android:text="Pegi Information"
+                        android:textColor="#393657"
+                        android:padding="10dp"
+                        android:gravity="center_vertical"/>
+
+                    <ListView
+                        android:id="@+id/pegi_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:nestedScrollingEnabled="true"/>
+                </LinearLayout>
+
+
+                <CheckBox
+                    android:id="@+id/is_free_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="Free"
+                    android:textColor="@color/white"
+                    android:checked="false"
+                    android:layoutDirection="rtl"
+                    android:buttonTint="@color/white"
+                    />
+
+
+
+                <Button
+                    android:id="@+id/save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:background="@drawable/button_bd"
+                    android:textColor="#FFFF"/>
+
 
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/platform_accordion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:orientation="vertical"
-                android:background="@drawable/text_input"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:id="@+id/platform_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/icon_platforms"
-                    android:drawableEnd="@drawable/icon_up"
-                    android:drawablePadding="8dp"
-                    android:text="Platforms"
-                    android:textColor="#393657"
-                    android:padding="10dp"
-                    android:gravity="center_vertical"/>
-
-                <ListView
-                    android:id="@+id/platform_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:nestedScrollingEnabled="true"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/company_accordion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:orientation="vertical"
-
-                android:background="@drawable/text_input"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/company_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/icon_companies"
-                    android:drawableEnd="@drawable/icon_up"
-                    android:drawablePadding="8dp"
-                    android:text="Companies"
-                    android:textColor="#393657"
-                    android:padding="10dp"
-                    android:gravity="center_vertical"/>
-
-                <ListView
-                    android:id="@+id/company_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:nestedScrollingEnabled="true"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/sequence_accordion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:orientation="vertical"
-                android:background="@drawable/text_input"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:id="@+id/sequence_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/icon_sequence"
-                    android:drawableEnd="@drawable/icon_up"
-                    android:drawablePadding="8dp"
-                    android:text="Sequence"
-                    android:textColor="#393657"
-                    android:padding="10dp"
-                    android:gravity="center_vertical"/>
-
-                <ListView
-                    android:id="@+id/sequence_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:nestedScrollingEnabled="true"/>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/pegi_accordion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:orientation="vertical"
-                android:background="@drawable/text_input"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:id="@+id/pegi_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/icon_age"
-                    android:drawableEnd="@drawable/icon_up"
-                    android:drawablePadding="8dp"
-                    android:text="Pegi Information"
-                    android:textColor="#393657"
-                    android:padding="10dp"
-                    android:gravity="center_vertical"/>
-
-                <ListView
-                    android:id="@+id/pegi_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:nestedScrollingEnabled="true"/>
-            </LinearLayout>
-
-
-            <CheckBox
-                android:id="@+id/is_free_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="Free"
-                android:textColor="@color/white"
-                android:checked="false"
-                android:layoutDirection="rtl"
-                android:buttonTint="@color/white"
-                />
-
-
-
-            <Button
-                android:id="@+id/save"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Save"
-                android:background="@drawable/button_bd"
-                android:textColor="#FFFF"/>
-
-
-        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

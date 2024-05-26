@@ -6,7 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.content.Intent
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.widget.Button
+import android.widget.TextView
+import android.graphics.Color
 
 
 class Intro_Page : AppCompatActivity() {
@@ -33,5 +38,21 @@ class Intro_Page : AppCompatActivity() {
             // Inicia a atividade MainActivity
             startActivity(intent)
         }
+
+        val tvDescription: TextView = findViewById(R.id.tv_description)
+
+        val text = "Explore your electronic gaming adventures like never before with play2plat - the ultimate app to record, share, and connect with fellow passionate gamers."
+        val spannable = SpannableString(text)
+
+        // Find the start and end index of the word "plat"
+        val start = text.indexOf("plat")
+        val end = start + "plat".length
+
+        // Set the color to #FF1F53
+        spannable.setSpan(ForegroundColorSpan(Color.parseColor("#FF1F53")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        tvDescription.text = spannable
+
+
     }
 }

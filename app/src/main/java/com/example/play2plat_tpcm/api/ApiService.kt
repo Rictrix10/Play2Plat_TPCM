@@ -13,6 +13,7 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiService {
+
     @GET("companies")
     fun getCompanies(): Call<List<Company>>
 
@@ -53,14 +54,9 @@ interface ApiService {
 
     @POST("users/login")
     fun loginUser(@Body userLogin: UserLogin): Call<UserLoginResponse>
-//    @POST("users")
-//    fun createUser(@Body user: UserRegister): Call<UserRegister>
-//
-//    @POST("users/login")
-//    fun loginUser(@Body userLogin: UserLogin): Call<UserLoginResponse>
-//
-//    @GET("users/{id}")
-//    fun getUserById(@Path("id") id: Int): Call<User>
+
+    @GET("users/{id}")
+    fun getUserById(@Path("id") id: Int): Call<User>
 
     @GET("genres")
     fun getGenres(): Call<List<Genre>>
@@ -77,10 +73,6 @@ interface ApiService {
 
     @POST("platform-game")
     fun addPlatformsToGame(@Body game_platform: GamePlatform): Call<GamePlatform>
-
-
-    @GET("users/{id}")
-    fun getUserById(@Path("id") id: Int): Call<User>
 
     @PATCH("users/{id}")
     fun updateUser(@Path("id") userId: Int, @Body user: User): Call<User>
