@@ -5,6 +5,5 @@ router.post('/platform-game', PlatformGameController.createPlatformGame);
 router.get('/platform-game', PlatformGameController.getAllPlatformGames);
 router.get('/platform-game/:id', PlatformGameController.getPlatformGameById);
 router.delete('/platform-game/:id', PlatformGameController.deletePlatformGame);
-router.get('/games/platform/:platformName', GameController.getGamesByPlatformName);
-
+router.get('/platform-games/platform/:platformId', PlatformGameController.getGamesByPlatformId);
 module.exports = router;

@@ -61,23 +61,21 @@ const PlatformGameController = {
         }
     },
 
-getGamesByPlatformName: async (req, res) => {
-        try {
-            const { platformName } = req.params;
-            console.log(`Buscando plataforma com nome: ${platformName}`);
-            const platform = await GameModel.getPlatformByName(platformName);
 
-            if (!platform) {
-                console.log(`Plataforma não encontrada: ${platformName}`);
-                return res.status(404).json({ error: 'Plataforma não encontrada' });
+getGamesByPlatformId: async (req, res) => {
+        try {
+            const platformId = parseInt(req.params.platformId, 10);
+            if (isNaN(platformId)) {
+                return res.status(400).json({ error: 'platformId inválido' });
             }
 
-            console.log(`Plataforma encontrada: ${platform.name} (ID: ${platform.id})`);
-            const games = await GameModel.getGamesByPlatformId(platform.id);
+            const platformGames = await PlatformGameModel.getGamesByPlatformId(platformId);
+            const games = platformGames.map(pg => pg.game);
+
             res.json(games);
         } catch (error) {
-            console.error('Erro ao buscar jogos por nome da plataforma:', error);
-            res.status(500).json({ error: 'Erro ao buscar jogos por nome da plataforma' });
+            console.error('Erro ao buscar jogos por ID da plataforma:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos por ID da plataforma' });
         }
     }
 };
