@@ -3,16 +3,17 @@ package com.example.play2plat_tpcm
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.Game
+import com.squareup.picasso.Picasso
 
 class FreeGamesAdapter(
     private val freeGames: List<Game>
 ) : RecyclerView.Adapter<FreeGamesAdapter.FreeGameViewHolder>() {
 
     class FreeGameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val gameName: TextView = itemView.findViewById(R.id.free_game_name)  // Correção aqui
+        val gameCoverImage: ImageView = itemView.findViewById(R.id.game_cover_image)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FreeGameViewHolder {
@@ -22,10 +23,13 @@ class FreeGamesAdapter(
 
     override fun onBindViewHolder(holder: FreeGameViewHolder, position: Int) {
         val game = freeGames[position]
-        holder.gameName.text = game.name
+        Picasso.get().load(game.coverImage).into(holder.gameCoverImage)
     }
 
     override fun getItemCount(): Int {
         return freeGames.size
     }
 }
+
+
+
