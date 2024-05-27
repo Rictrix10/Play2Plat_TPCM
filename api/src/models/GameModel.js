@@ -88,13 +88,27 @@ getGameById: async (id) => {
             where: { id },
             });
         },
-getGamesByPlatformName: async (platformName) => {
+getPlatformByName: async (platformName) => {
+        try {
+            const platform = await prisma.platform.findUnique({
+                where: {
+                    name: platformName
+                }
+            });
+            return platform;
+        } catch (error) {
+            console.error('Erro ao buscar plataforma por nome:', error);
+            throw error;
+        }
+    },
+
+    getGamesByPlatformId: async (platformId) => {
         try {
             const games = await prisma.game.findMany({
                 where: {
                     platforms: {
                         some: {
-                            name: platformName
+                            id: platformId
                         }
                     }
                 },
@@ -106,7 +120,7 @@ getGamesByPlatformName: async (platformName) => {
             });
             return games;
         } catch (error) {
-            console.error('Erro ao buscar jogos por nome da plataforma:', error);
+            console.error('Erro ao buscar jogos por ID da plataforma:', error);
             throw error;
         }
     }
