@@ -163,8 +163,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             .commit()
     }
 
-    private fun redirectToUserProfile() {
-        val userProfileFragment = User_Profile_Fragment()
+    private fun redirectToUserProfile(userId: Int) {
+        val userProfileFragment = User_Profile_Fragment.newInstance(userId)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, userProfileFragment)
             .addToBackStack(null)
@@ -175,19 +175,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val currentUserId = sharedPreferences.getInt("user_id", 0)
 
-        /*
-        val fragment = if (userId == currentUserId) {
-            Profile_Fragment.newInstance()
-        } else {
-            User_Profile_Fragment.newInstance(userId)
-        }
-         */
         if (userId == currentUserId) {
             redirectToMyProfile()
         } else {
-            redirectToUserProfile()
+            redirectToUserProfile(userId)
         }
-
 
     }
 

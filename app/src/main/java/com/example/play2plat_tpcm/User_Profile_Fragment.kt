@@ -35,9 +35,6 @@ class User_Profile_Fragment : Fragment() {
 
         usernameTextView = view.findViewById(R.id.username)
         profileImageView = view.findViewById(R.id.profile_picture)
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
-
 
         ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -48,17 +45,17 @@ class User_Profile_Fragment : Fragment() {
                         usernameTextView.text = user.username
                         loadImage(user.avatar)
                     } else {
-                        Log.e("Profile_Fragment", "Resposta da API não retornou dados do usuário.")
+                        Log.e("User_Profile_Fragment", "Resposta da API não retornou dados do usuário.")
                     }
                 } else {
                     // Manipular erro de resposta da API
-                    Log.e("Profile_Fragment", "Erro na resposta da API: ${response.code()}")
+                    Log.e("User_Profile_Fragment", "Erro na resposta da API: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
                 // Lidar com falha na solicitação
-                Log.e("Profile_Fragment", "Erro na solicitação: ${t.message}")
+                Log.e("User_Profile_Fragment", "Erro na solicitação: ${t.message}")
             }
         })
     }
@@ -71,7 +68,6 @@ class User_Profile_Fragment : Fragment() {
             profileImageView.setImageResource(R.drawable.noimageuser)
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
