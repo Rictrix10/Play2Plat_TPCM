@@ -1,7 +1,6 @@
 package com.example.play2plat_tpcm
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,7 @@ class Search_Fragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search_, container, false)
 
         recyclerView = view.findViewById(R.id.recycler_view_free_games)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         freeGamesAdapter = FreeGamesAdapter(freeGamesList)
         recyclerView.adapter = freeGamesAdapter
 
@@ -47,15 +46,14 @@ class Search_Fragment : Fragment() {
                         freeGamesList.addAll(games.filter { it.isFree })
                         freeGamesAdapter.notifyDataSetChanged()
                     }
-                } else {
-                    Log.e("SearchFragment", "Response not successful: ${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<List<Game>>, t: Throwable) {
-                Log.e("SearchFragment", "API call failed", t)
+
             }
         })
     }
 }
+
 
