@@ -88,6 +88,28 @@ getGameById: async (id) => {
             where: { id },
             });
         },
+getGamesByPlatformName: async (platformName) => {
+        try {
+            const games = await prisma.game.findMany({
+                where: {
+                    platforms: {
+                        some: {
+                            name: platformName
+                        }
+                    }
+                },
+                include: {
+                    sequence: true,
+                    company: true,
+                    platforms: true
+                }
+            });
+            return games;
+        } catch (error) {
+            console.error('Erro ao buscar jogos por nome da plataforma:', error);
+            throw error;
+        }
+    }
 };
 
 module.exports = GameModel;
