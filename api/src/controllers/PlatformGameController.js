@@ -61,31 +61,23 @@ const PlatformGameController = {
         }
     },
 
-    getPlatformGamesByPlatformId: async (req, res) => {
+getGamesByPlatformName: async (req, res) => {
         try {
-            const platformId = req.params.platformId;
+            const { platformName } = req.params;
+            console.log(`Buscando plataforma com nome: ${platformName}`);
+            const platform = await GameModel.getPlatformByName(platformName);
 
-            // Retorna todas as relações de uma plataforma específica com jogos
-            const platformGames = await PlatformGameModel.getPlatformGamesByPlatformId(platformId);
+            if (!platform) {
+                console.log(`Plataforma não encontrada: ${platformName}`);
+                return res.status(404).json({ error: 'Plataforma não encontrada' });
+            }
 
-            res.json(platformGames);
+            console.log(`Plataforma encontrada: ${platform.name} (ID: ${platform.id})`);
+            const games = await GameModel.getGamesByPlatformId(platform.id);
+            res.json(games);
         } catch (error) {
-            console.error('Erro ao buscar relações plataforma-jogo por platformId:', error);
-            res.status(500).json({ error: 'Erro ao buscar relações plataforma-jogo' });
-        }
-    },
-
-    getPlatformGamesByGameId: async (req, res) => {
-        try {
-            const gameId = req.params.gameId;
-
-            // Retorna todas as relações de um jogo específico com plataformas
-            const platformGames = await PlatformGameModel.getPlatformGamesByGameId(gameId);
-
-            res.json(platformGames);
-        } catch (error) {
-            console.error('Erro ao buscar relações plataforma-jogo por gameId:', error);
-            res.status(500).json({ error: 'Erro ao buscar relações plataforma-jogo' });
+            console.error('Erro ao buscar jogos por nome da plataforma:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos por nome da plataforma' });
         }
     }
 };

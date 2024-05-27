@@ -88,22 +88,7 @@ const GameController = {
             res.status(500).json({ error: 'Erro ao excluir jogo' });
         }
     },
-  getGamesByPlatformName: async (req, res) => {
-          try {
-              const { platformName } = req.params;
-              const platform = await GameModel.getPlatformByName(platformName);
 
-              if (!platform) {
-                  return res.status(404).json({ error: 'Plataforma não encontrada' });
-              }
-
-              const games = await GameModel.getGamesByPlatformId(platform.id);
-              res.json(games);
-          } catch (error) {
-              console.error('Erro ao buscar jogos por nome da plataforma:', error);
-              res.status(500).json({ error: 'Erro ao buscar jogos por nome da plataforma' });
-          }
-      }
   };
 
 module.exports = GameController;

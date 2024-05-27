@@ -35,23 +35,40 @@ const PlatformGameModel = {
         });
     },
 
-    getPlatformGamesByPlatformId: async (platformId) => {
-        // Retorna todas as relações de uma plataforma específica com jogos
-        return await prisma.platformGame.findMany({
-            where: {
-                platformId: platformId,
-            }
-        });
+getPlatformByName: async (platformName) => {
+        try {
+            const platform = await prisma.platform.findUnique({
+                where: { name: platformName }
+            });
+            return platform;
+        } catch (error) {
+            console.error('Erro ao buscar plataforma por nome:', error);
+            throw error;
+        }
     },
 
-    getPlatformGamesByGameId: async (gameId) => {
-        // Retorna todas as relações de um jogo específico com plataformas
-        return await prisma.platformGame.findMany({
-            where: {
-                gameId: gameId,
-            }
-        });
+    getGamesByPlatformId: async (platformId) => {
+        try {
+            const games = await prisma.game.findMany({
+                where: {
+                    platformGames: {
+                        some: { platformId }
+                    }
+                },
+                include: {
+                    sequence: true,
+                    company: true,
+                    platforms: true
+                }
+            });
+            return games;
+        } catch (error) {
+            console.error('Erro ao buscar jogos por ID da plataforma:', error);
+            throw error;
+        }
     }
 };
+
+module.exports = GameModel;
 
 module.exports = PlatformGameModel;
