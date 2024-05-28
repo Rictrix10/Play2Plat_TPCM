@@ -106,6 +106,23 @@ const UserGameController = {
             res.status(500).json({ error: 'Erro ao excluir relação usuário-jogo' });
         }
     },
+updateUserGameByUserIdAndGameId: async (req, res) => {
+        try {
+            const userId = parseInt(req.params.userId);
+            const gameId = parseInt(req.params.gameId);
+            const data = req.body; // Dados a serem atualizados
+
+            const result = await UserGameModel.updateUserGameByUserIdAndGameId(userId, gameId, data);
+            if (result.count > 0) {
+                res.json({ message: 'Relação usuário-jogo atualizada com sucesso' });
+            } else {
+                res.status(404).json({ error: 'Relação usuário-jogo não encontrada' });
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar relação usuário-jogo:', error);
+            res.status(500).json({ error: 'Erro ao atualizar relação usuário-jogo' });
+        }
+    },
 };
 
 module.exports = UserGameController;

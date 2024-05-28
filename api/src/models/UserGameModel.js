@@ -69,6 +69,15 @@ deleteUserGameByUserIdAndGameId: async (userId, gameId) => {
             }
         });
     },
+updateUserGameByUserIdAndGameId: async (userId, gameId, data) => {
+        return await prisma.userGame.updateMany({
+            where: {
+                userId: userId,
+                gameId: gameId
+            },
+            data: data
+        });
+    },
 };
 
 module.exports = UserGameModel;
