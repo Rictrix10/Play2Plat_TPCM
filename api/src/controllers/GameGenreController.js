@@ -76,15 +76,22 @@ const GameGenreController = {
 
     getGamesByGenreId: async (req, res) => {
         try {
-            const genreId = req.params.genreId;
-            const games = await GameGenreModel.getGamesByGenreId(genreId);
+            const genreId = parseInt(req.params.genreId, 10);
+            if (isNaN(genreId)) {
+                return res.status(400).json({ error: 'genreId inválido' });
+            }
+
+            const genreGames = await GameGenreModel.getGamesByGenreId(genreId);
+            const games = genreGames.map(gg => gg.game);
+
             res.json(games);
         } catch (error) {
-            console.error('Erro ao buscar jogos por genreId:', error);
-            res.status(500).json({ error: 'Erro ao buscar jogos por genreId' });
+            console.error('Erro ao buscar jogos por ID do gênero:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos por ID do gênero' });
         }
     }
 };
 
 module.exports = GameGenreController;
+
 

@@ -48,20 +48,23 @@ const GameGenreModel = {
     },
 
     getGamesByGenreId: async (genreId) => {
-        return await prisma.game.findMany({
+        return await prisma.gameGenre.findMany({
             where: {
-                genres: {
-                    some: {
-                        genreId: genreId
-                    }
-                }
+                genreId: genreId
             },
             include: {
-                genres: true
+                game: {
+                    include: {
+                        sequence: true,
+                        company: true,
+                        platforms: true
+                    }
+                }
             }
         });
     }
 };
 
 module.exports = GameGenreModel;
+
 
