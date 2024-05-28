@@ -52,16 +52,13 @@ const UserController = {
             res.status(500).json({ error: 'Erro ao buscar utilizadores' });
         }
     },
-    getUserById: async (req, res) => {
+     getUserById: async (req, res) => {
             try {
                 const userId = parseInt(req.params.id);
                 const user = await UserModel.getUserById(userId);
                 if (!user) {
                     return res.status(404).json({ error: 'Usuário não encontrado' });
                 }
-
-                const platforms = await UserModel.getPlatformsByUserId(userId);
-
                 res.json({
                     id: user.id,
                     name: user.name,
@@ -69,7 +66,7 @@ const UserController = {
                     username: user.username,
                     avatar: user.avatar,
                     userType: user.userType.name,
-                    platforms: platforms
+                    platforms: user.platforms
                 });
             } catch (error) {
                 console.error('Erro ao buscar usuário por ID:', error);
