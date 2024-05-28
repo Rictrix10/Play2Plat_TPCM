@@ -60,13 +60,13 @@ const UserController = {
                     return res.status(404).json({ error: 'Usuário não encontrado' });
                 }
 
+                const platforms = await UserModel.getPlatformsByUserId(userId);
+
                 res.json({
                     id: user.id,
+                    name: user.name,
                     email: user.email,
-                    username: user.username,
-                    avatar: user.avatar,
-                    userType: user.userType.name,
-                    platforms: user.platforms,
+                    platforms: platforms
                 });
             } catch (error) {
                 console.error('Erro ao buscar usuário por ID:', error);

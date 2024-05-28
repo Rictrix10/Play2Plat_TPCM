@@ -17,17 +17,26 @@ const UserModel = {
         return await prisma.user.findMany();
     },
     getUserById: async (id) => {
+            return await prisma.user.findUnique({
+                where: { id },
+
+            });
+        },
+
+        getPlatformsByUserId: async (userId) => {
             try {
-                const user = await prisma.user.findUnique({
-                    where: { id },
-                    include: {
-                        userType: true,
-                        platforms: true,
+                const userPlatforms = await prisma.userPlatform.findMany({
+                    where: {
+                        userId: userId
                     },
+                    include: {
+                        platform: true
+                    }
                 });
-                return user;
+                const platforms = userPlatforms.map(userPlatform => userPlatform.platform.name);
+                return platforms;
             } catch (error) {
-                console.error('Erro ao buscar usuário por ID:', error);
+                console.error('Erro ao buscar plataformas por ID de usuário:', error);
                 throw error;
             }
         },
