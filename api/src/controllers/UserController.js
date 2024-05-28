@@ -66,6 +66,9 @@ const UserController = {
                     id: user.id,
                     name: user.name,
                     email: user.email,
+                    username: user.username,
+                    avatar: user.avatar,
+                    userType: user.userType.name,
                     platforms: platforms
                 });
             } catch (error) {
