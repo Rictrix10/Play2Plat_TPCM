@@ -48,7 +48,6 @@ const UserGameModel = {
         });
     },
 getUserGamesByUserId: async (userId) => {
-
         return await prisma.userGame.findMany({
             where: {
                 userId: userId,
