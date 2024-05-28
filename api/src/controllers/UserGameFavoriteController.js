@@ -27,7 +27,7 @@ const UserGameFavoriteController = {
 
     getFavoriteById: async (req, res) => {
         try {
-            const favoriteId = parseInt(req.params.id);
+            const favoriteId = parseInt(req.params.favoriteId);
 
             // Busca uma relação específica de usuário com jogo favorito por ID
             const favorite = await UserGameFavoriteModel.getFavoriteById(favoriteId);
@@ -45,7 +45,7 @@ const UserGameFavoriteController = {
 
     deleteUserGameFavorite: async (req, res) => {
         try {
-            const favoriteId = parseInt(req.params.id);
+            const favoriteId = parseInt(req.params.favoriteId);
 
             // Exclui uma relação específica de usuário com jogo favorito por ID
             const deletedFavorite = await UserGameFavoriteModel.deleteFavoriteById(favoriteId);
@@ -63,7 +63,7 @@ const UserGameFavoriteController = {
 
     getFavoritesByUserId: async (req, res) => {
         try {
-            const userId = parseInt(req.params.id);
+            const userId = parseInt(req.params.userId);
 
             // Retorna todas as relações de um usuário específico com jogos favoritos
             const favorites = await UserGameFavoriteModel.getFavoritesByUserId(userId);
@@ -77,7 +77,7 @@ const UserGameFavoriteController = {
 
     getFavoritesByGameId: async (req, res) => {
         try {
-            const gameId = parseInt(req.params.id);
+            const gameId = parseInt(req.params.gameId);
 
             // Retorna todas as relações de um jogo específico com usuários favoritos
             const favorites = await UserGameFavoriteModel.getFavoritesByGameId(gameId);
