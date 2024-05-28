@@ -89,19 +89,20 @@ const UserGameFavoriteController = {
         }
     },
     deleteUserGameFavoriteByUserIdAndGameId: async (req, res) => {
-            try {
-                const { userId, gameId } = req.body;
-                const result = await UserGameFavoriteModel.deleteFavoriteByUserIdAndGameId(userId, gameId);
-                if (result.count > 0) {
-                    res.status(204).end();
-                } else {
-                    res.status(404).json({ error: 'Relação de usuário com jogo favorito não encontrada' });
-                }
-            } catch (error) {
-                console.error('Erro ao excluir favorito:', error);
-                res.status(500).json({ error: 'Erro ao excluir favorito' });
+        try {
+            const userId = parseInt(req.params.userId);
+            const gameId = parseInt(req.params.gameId);
+
+            const result = await UserGameFavoriteModel.deleteFavoriteByUserIdAndGameId(userId, gameId);
+            if (result.count > 0) {
+                res.status(204).end();
+            } else {
+                res.status(404).json({ error: 'Relação de usuário com jogo favorito não encontrada' });
             }
+        } catch (error) {
+            console.error('Erro ao excluir favorito:', error);
+            res.status(500).json({ error: 'Erro ao excluir favorito' });
         }
-};
+    }
 
 module.exports = UserGameFavoriteController;
