@@ -27,7 +27,7 @@ const UserGameController = {
 
     getUserGameById: async (req, res) => {
         try {
-            const userGameId = req.params.id;
+            const userGameId = parseInt(req.params.id);
 
             // Busca uma relação específica de usuário com jogo por ID
             const userGame = await UserGameModel.getUserGameById(userGameId);

@@ -63,7 +63,7 @@ const UserGameFavoriteController = {
 
     getFavoritesByUserId: async (req, res) => {
         try {
-            const userId = req.params.userId;
+            const userId = parseInt(req.params.id);
 
             // Retorna todas as relações de um usuário específico com jogos favoritos
             const favorites = await UserGameFavoriteModel.getFavoritesByUserId(userId);
@@ -77,7 +77,7 @@ const UserGameFavoriteController = {
 
     getFavoritesByGameId: async (req, res) => {
         try {
-            const gameId = req.params.gameId;
+            const gameId = parseInt(req.params.id);
 
             // Retorna todas as relações de um jogo específico com usuários favoritos
             const favorites = await UserGameFavoriteModel.getFavoritesByGameId(gameId);
