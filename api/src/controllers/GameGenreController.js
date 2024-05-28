@@ -24,7 +24,7 @@ const GameGenreController = {
 
     getGameGenreById: async (req, res) => {
         try {
-            const gameGenreId = req.params.id;
+            const gameGenreId = parseInt(req.params.gameGenreId);
             const gameGenre = await GameGenreModel.getGameGenreById(gameGenreId);
             if (gameGenre) {
                 res.json(gameGenre);
@@ -39,7 +39,7 @@ const GameGenreController = {
 
     deleteGameGenre: async (req, res) => {
         try {
-            const gameGenreId = req.params.id;
+            const gameGenreId = parseInt(req.params.gameGenreId);
             const deletedGameGenre = await GameGenreModel.deleteGameGenreById(gameGenreId);
             if (deletedGameGenre) {
                 res.status(204).end();
@@ -54,7 +54,7 @@ const GameGenreController = {
 
     getGameGenresByGameId: async (req, res) => {
         try {
-            const gameId = req.params.gameId;
+            const gameId = parseInt(req.params.gameId);
             const gameGenres = await GameGenreModel.getGameGenresByGameId(gameId);
             res.json(gameGenres);
         } catch (error) {
@@ -65,7 +65,7 @@ const GameGenreController = {
 
     getGameGenresByGenreId: async (req, res) => {
         try {
-            const genreId = req.params.genreId;
+            const genreId = parseInt(req.params.genreId);
             const gameGenres = await GameGenreModel.getGameGenresByGenreId(genreId);
             res.json(gameGenres);
         } catch (error) {
