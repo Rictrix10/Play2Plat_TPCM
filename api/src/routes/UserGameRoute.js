@@ -8,4 +8,5 @@ router.get('/user-game/:id', UserGameController.getUserGameById);
 router.put('/user-game/:id', UserGameController.updateUserGameState);
 router.delete('/user-game/:id', UserGameController.deleteUserGame);
 router.get('/user-game/user/:userId', UserGameController.getUserGamesByUserId);
+router.delete('/user-game/user/:userId/game/:gameId', UserGameController.deleteUserGameByUserIdAndGameId);
 module.exports = router;

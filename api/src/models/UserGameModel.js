@@ -60,7 +60,15 @@ getUserGamesByUserId: async (userId) => {
                 gameId: gameId,
             }
         });
-    }
+    },
+deleteUserGameByUserIdAndGameId: async (userId, gameId) => {
+        return await prisma.userGame.deleteMany({
+            where: {
+                userId: userId,
+                gameId: gameId
+            }
+        });
+    },
 };
 
 module.exports = UserGameModel;

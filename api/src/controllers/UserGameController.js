@@ -90,6 +90,22 @@ const UserGameController = {
             res.status(500).json({ error: 'Erro ao buscar jogos do usuário por ID' });
         }
     },
+ deleteUserGameByUserIdAndGameId: async (req, res) => {
+        try {
+            const userId = parseInt(req.params.userId);
+            const gameId = parseInt(req.params.gameId);
+
+            const result = await UserGameModel.deleteUserGameByUserIdAndGameId(userId, gameId);
+            if (result.count > 0) {
+                res.status(204).end();
+            } else {
+                res.status(404).json({ error: 'Relação usuário-jogo não encontrada' });
+            }
+        } catch (error) {
+            console.error('Erro ao excluir relação usuário-jogo:', error);
+            res.status(500).json({ error: 'Erro ao excluir relação usuário-jogo' });
+        }
+    },
 };
 
 module.exports = UserGameController;
