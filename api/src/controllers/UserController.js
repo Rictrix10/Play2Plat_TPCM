@@ -53,20 +53,26 @@ const UserController = {
         }
     },
     getUserById: async (req, res) => {
-        try {
-            const userId = parseInt(req.params.id);
-            const user = await UserModel.getUserById(userId);
+            try {
+                const userId = parseInt(req.params.id);
+                const user = await UserModel.getUserById(userId);
+                if (!user) {
+                    return res.status(404).json({ error: 'Usuário não encontrado' });
+                }
 
-            if (!user) {
-                return res.status(404).json({ error: 'Usuário não encontrado' });
+                res.json({
+                    id: user.id,
+                    email: user.email,
+                    username: user.username,
+                    avatar: user.avatar,
+                    userType: user.userType.name,
+                    platforms: user.platforms,
+                });
+            } catch (error) {
+                console.error('Erro ao buscar usuário por ID:', error);
+                res.status(500).json({ error: 'Erro ao buscar usuário por ID' });
             }
-
-            res.json(user);
-        } catch (error) {
-            console.error('Erro ao buscar utilizador:', error);
-            res.status(500).json({ error: 'Erro ao buscar utilizador' });
-        }
-    },
+        },
     updateUser: async (req, res) => {
         try {
             const userId = parseInt(req.params.id); // Converter o ID para Int

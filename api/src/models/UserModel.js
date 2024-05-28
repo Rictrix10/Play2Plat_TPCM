@@ -17,10 +17,20 @@ const UserModel = {
         return await prisma.user.findMany();
     },
     getUserById: async (id) => {
-        return await prisma.user.findUnique({
-            where: { id },
-        });
-    },
+            try {
+                const user = await prisma.user.findUnique({
+                    where: { id },
+                    include: {
+                        userType: true,
+                        platforms: true,
+                    },
+                });
+                return user;
+            } catch (error) {
+                console.error('Erro ao buscar usuário por ID:', error);
+                throw error;
+            }
+        },
     updateUser: async (id, data) => {
         return await prisma.user.update({
             where: { id },
