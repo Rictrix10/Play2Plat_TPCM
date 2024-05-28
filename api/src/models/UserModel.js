@@ -42,6 +42,21 @@ const UserModel = {
             where: { username }
         });
     }
+getUserDetailsById: async (id) => {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id },
+                include: {
+                    userType: true,
+                    platforms: true,
+                },
+            });
+            return user;
+        } catch (error) {
+            console.error('Erro ao buscar usuário por ID:', error);
+            throw error;
+        }
+    },
 };
 
 module.exports = UserModel;
