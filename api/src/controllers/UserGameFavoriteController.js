@@ -105,4 +105,6 @@ const UserGameFavoriteController = {
         }
     }
 
+};
+
 module.exports = UserGameFavoriteController;
