@@ -50,7 +50,15 @@ const UserGameFavoriteModel = {
                 gameId: gameId,
             }
         });
-    }
+    },
+    deleteFavoriteByUserIdAndGameId: async (userId, gameId) => {
+            return await prisma.userGameFavorite.deleteMany({
+                where: {
+                    userId: userId,
+                    gameId: gameId
+                }
+            });
+        }
 };
 
 module.exports = UserGameFavoriteModel;

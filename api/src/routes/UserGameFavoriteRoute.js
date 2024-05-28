@@ -7,5 +7,5 @@ router.get('/user-game-favorite/:id', UserGameFavoriteController.getFavoriteById
 router.delete('/user-game-favorite/:id', UserGameFavoriteController.deleteUserGameFavorite);
 router.get('/user-game-favorite/user/:userId', UserGameFavoriteController.getFavoritesByUserId);
 router.get('/user-game-favorite/game/:gameId', UserGameFavoriteController.getFavoritesByGameId);
-
+router.delete('/user-game-favorite/game/:gameId/user/:userId', UserGameFavoriteController.deleteUserGameFavoriteByUserIdAndGameId);
 module.exports = router;
