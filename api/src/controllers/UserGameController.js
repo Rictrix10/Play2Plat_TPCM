@@ -29,7 +29,7 @@ const UserGameController = {
         try {
             const userGameId = parseInt(req.params.id);
 
-           
+
             const userGame = await UserGameModel.getUserGameById(userGameId);
 
             if (userGame) {
@@ -82,7 +82,7 @@ const UserGameController = {
 
     getUserGamesByUserId: async (req, res) => {
         try {
-            const userId = parseInt(req.params.userId); // Obtém o userId da URL
+            const userId = parseInt(req.params.userId);
             const userGames = await UserGameModel.getUserGamesByUserId(userId); // Chama o método do modelo para buscar os jogos associados ao usuário
             res.json(userGames);
         } catch (error) {
