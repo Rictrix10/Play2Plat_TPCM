@@ -7,5 +7,5 @@ router.get('/user-game', UserGameController.getAllUserGames);
 router.get('/user-game/:id', UserGameController.getUserGameById);
 router.put('/user-game/:id', UserGameController.updateUserGameState);
 router.delete('/user-game/:id', UserGameController.deleteUserGame);
-
+router.get('/user/:userId/games', UserGameController.getUserGamesByUserId);
 module.exports = router;

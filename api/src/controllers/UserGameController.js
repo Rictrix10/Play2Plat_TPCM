@@ -78,7 +78,17 @@ const UserGameController = {
             console.error('Erro ao excluir relação usuário-jogo:', error);
             res.status(500).json({ error: 'Erro ao excluir relação usuário-jogo' });
         }
-    }
+    },
+getUserGamesByUserId: async (req, res) => {
+        try {
+            const userId = parseInt(req.params.userId); // Obtém o userId da URL
+            const userGames = await UserGameModel.getUserGamesByUserId(userId); // Chama o método do modelo para buscar os jogos associados ao usuário
+            res.json(userGames);
+        } catch (error) {
+            console.error('Erro ao buscar jogos do usuário por ID:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos do usuário por ID' });
+        }
+    },
 };
 
 module.exports = UserGameController;
