@@ -172,9 +172,13 @@ class View_Game_Fragment : Fragment() {
 
                             // Obtenha as plataformas do argumento
                             val platforms = game.platforms
-                            val platformsFragment = Platforms_List_Fragment.newInstance(platforms)
-                            childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
-                        }
+                            if(platforms != null) {
+                                val platformsFragment =
+                                    Platforms_List_Fragment.newInstance(platforms)
+                                childFragmentManager.beginTransaction()
+                                    .replace(R.id.platforms_fragment, platformsFragment).commit()
+                            }
+                            }
                     }
                 }
 
