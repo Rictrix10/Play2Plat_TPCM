@@ -113,10 +113,12 @@ class View_Game_Fragment : Fragment() {
             handleAccordionSelection()
         }
 
+
         collectionList.setOnItemClickListener { parent, view, position, id ->
-            val selectedOption = collectionInfoValues[position]
+            val selectedOption = if (position >= 0 && position < collectionInfoValues.size) collectionInfoValues[position] else null
             updateUserGameStateWithSelectedOption(selectedOption)
         }
+
 
         // Get the game ID from arguments or default to 53
         val gameId = arguments?.getInt("gameId") ?: 1
@@ -328,21 +330,87 @@ class View_Game_Fragment : Fragment() {
         })
     }
 
+    /*
     private fun updateUserGameStateWithSelectedOption(option: String) {
         selectedOption = option
         collectionTitle.text = option
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
-        val userGame = UserGame(userId, gameId, option)
 
-        ApiManager.apiService.updateUserGame(userId, gameId, userGame).enqueue(object : Callback<UserGame> {
+        ApiManager.apiService.getUserGame(userId).enqueue(object : Callback<List<UserGame>> {
+            override fun onResponse(call: Call<List<UserGame>>, response: Response<List<UserGame>>) {
+                if (response.isSuccessful) {
+                    val userGames = response.body()
+                    val existingUserGame = userGames?.find { it.gameId == gameId }
+
+                    if (existingUserGame == null) {
+                        // Não existe um UserGame, então adicionamos um novo
+                        addUserGame(userId, gameId, option)
+                    } else if (collectionTitle.text.isEmpty() || collectionTitle.text == "Collections" || selectedOption == null) {
+                        // A opção selecionada foi removida, então deletamos o UserGame
+                        deleteUserGame(userId, gameId)
+                    } else {
+                        // Atualizamos o UserGame existente
+                        updateUserGameState(userId, gameId, option)
+                    }
+                } else {
+                    // Handle error response
+                }
+            }
+
+            override fun onFailure(call: Call<List<UserGame>>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+    */
+
+    private fun updateUserGameStateWithSelectedOption(option: String?) {
+        selectedOption = option
+        collectionTitle.text = option ?: "Collections"
+
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+
+        ApiManager.apiService.getUserGame(userId).enqueue(object : Callback<List<UserGame>> {
+            override fun onResponse(call: Call<List<UserGame>>, response: Response<List<UserGame>>) {
+                if (response.isSuccessful) {
+                    val userGames = response.body()
+                    val existingUserGame = userGames?.find { it.gameId == gameId }
+                    if (existingUserGame == null) {
+                        // Não existe um UserGame, então adicionamos um novo
+                        if (option != null) {
+                            addUserGame(userId, gameId, option)
+                        }
+                    } else if (option == null) {
+                        Log.d("View_Game_Fragment", "DELETING....")
+                        deleteUserGame(userId, gameId)
+                    } else {
+                        Log.d("View_Game_Fragment", "UPDATING....")
+                        updateUserGameState(userId, gameId, option)
+                    }
+                } else {
+                    // Handle error response
+                }
+            }
+
+            override fun onFailure(call: Call<List<UserGame>>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+
+
+    private fun addUserGame(userId: Int, gameId: Int, option: String) {
+        val userGame = UserGame(userId, gameId, option)
+        ApiManager.apiService.addUserGame(userGame).enqueue(object : Callback<UserGame> {
             override fun onResponse(call: Call<UserGame>, response: Response<UserGame>) {
                 if (response.isSuccessful) {
-                    val updatedState = response.body()
-                    // Handle the updated state if needed
+                    // UserGame adicionado com sucesso
+                    Log.d("View_Game_Fragment", "User game added successfully")
                 } else {
-                    // Handle the error response
+                    // Handle error response
                 }
             }
 
@@ -351,6 +419,26 @@ class View_Game_Fragment : Fragment() {
             }
         })
     }
+
+    private fun deleteUserGame(userId: Int, gameId: Int) {
+        ApiManager.apiService.deleteUserGame(userId, gameId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    // UserGame deletado com sucesso
+                    Log.d("View_Game_Fragment", "User game deleted successfully")
+                    collectionTitle.text = "Collections" // Atualize o título para "Collections"
+                    selectedOption = null
+                } else {
+                    // Handle error response
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+
 
 
     private fun selectOptionInAccordion(state: String) {
