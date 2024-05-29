@@ -102,6 +102,39 @@ getPlatformByName: async (platformName) => {
         }
     },
 
+        getFilteredGames: async (filters) => {
+            const { name, genre, platform, company, sequence, isFree } = filters;
+
+            const games = await prisma.game.findMany({
+                where: {
+                    AND: [
+                        name ? { name: { contains: name, mode: 'insensitive' } } : undefined,
+                        isFree !== undefined ? { isFree: isFree } : undefined,
+                        company ? { company: { name: { contains: company, mode: 'insensitive' } } } : undefined,
+                        sequence ? { sequence: { name: { contains: sequence, mode: 'insensitive' } } } : undefined,
+                        genre ? {
+                            genres: {
+                                some: { name: { contains: genre, mode: 'insensitive' } }
+                            }
+                        } : undefined,
+                        platform ? {
+                            platforms: {
+                                some: { name: { contains: platform, mode: 'insensitive' } }
+                            }
+                        } : undefined
+                    ]
+                },
+                include: {
+                    company: true,
+                    sequence: true,
+                    genres: true,
+                    platforms: true
+                }
+            });
+
+            return games;
+        },
+
 };
 
 module.exports = GameModel;

@@ -89,6 +89,27 @@ const GameController = {
         }
     },
 
+        getFilteredGames: async (req, res) => {
+            try {
+                const { name, genre, platform, company, sequence, isFree } = req.query;
+
+                const filters = {
+                    name: name || undefined,
+                    genre: genre || undefined,
+                    platform: platform || undefined,
+                    company: company || undefined,
+                    sequence: sequence || undefined,
+                    isFree: isFree !== undefined ? (isFree === 'true') : undefined
+                };
+
+                const games = await GameModel.getFilteredGames(filters);
+                res.json(games);
+            } catch (error) {
+                console.error('Erro ao buscar jogos filtrados:', error);
+                res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
+            }
+        },
+
   };
 
 module.exports = GameController;
