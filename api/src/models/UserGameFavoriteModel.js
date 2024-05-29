@@ -39,7 +39,16 @@ const UserGameFavoriteModel = {
         return await prisma.userGameFavorite.findMany({
             where: {
                 userId: userId,
-            }
+            },
+            include: {
+                game: {
+                    select: {
+                        id: true,
+                        name: true,
+                        coverImage: true
+                        }
+                    }
+                }
         });
     },
 
