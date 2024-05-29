@@ -28,6 +28,7 @@ import android.util.Log
 
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import com.example.play2plat_tpcm.api.Avaliation
 import com.example.play2plat_tpcm.api.UserGame
 
 class View_Game_Fragment : Fragment() {
@@ -214,17 +215,8 @@ class View_Game_Fragment : Fragment() {
         }
 
         handleAccordionSelection()
+        loadUserAvaliation(userId, gameId)
     }
-
-
-    /*
-    private fun loadCollections(context: Context) {
-        collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
-        collectionAdapter = CollectionsAdapter(context, collectionInfoValues, collectionTitle)
-        collectionList.adapter = collectionAdapter
-    }
-
-     */
 
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
@@ -330,41 +322,6 @@ class View_Game_Fragment : Fragment() {
         })
     }
 
-    /*
-    private fun updateUserGameStateWithSelectedOption(option: String) {
-        selectedOption = option
-        collectionTitle.text = option
-
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
-
-        ApiManager.apiService.getUserGame(userId).enqueue(object : Callback<List<UserGame>> {
-            override fun onResponse(call: Call<List<UserGame>>, response: Response<List<UserGame>>) {
-                if (response.isSuccessful) {
-                    val userGames = response.body()
-                    val existingUserGame = userGames?.find { it.gameId == gameId }
-
-                    if (existingUserGame == null) {
-                        // Não existe um UserGame, então adicionamos um novo
-                        addUserGame(userId, gameId, option)
-                    } else if (collectionTitle.text.isEmpty() || collectionTitle.text == "Collections" || selectedOption == null) {
-                        // A opção selecionada foi removida, então deletamos o UserGame
-                        deleteUserGame(userId, gameId)
-                    } else {
-                        // Atualizamos o UserGame existente
-                        updateUserGameState(userId, gameId, option)
-                    }
-                } else {
-                    // Handle error response
-                }
-            }
-
-            override fun onFailure(call: Call<List<UserGame>>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
-    */
 
     private fun updateUserGameStateWithSelectedOption(option: String?) {
         selectedOption = option
@@ -506,6 +463,7 @@ class View_Game_Fragment : Fragment() {
         return (this * scale + 0.5f).toInt()
     }
 
+    /*
     private fun handleStarClick(rating: Int) {
         if (rating == currentRating) {
             // Reset stars if the same rating is clicked again
@@ -517,6 +475,41 @@ class View_Game_Fragment : Fragment() {
             currentRating = rating
         }
     }
+     */
+
+    private fun handleStarClick(rating: Int) {
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+
+        if (rating == currentRating) {
+            // Reset stars if the same rating is clicked again
+            updateStarViews(0)
+            currentRating = 0
+            deleteAvaliation(userId, gameId)
+        } else {
+            // Update stars to the new rating
+            updateStarViews(rating)
+            currentRating = rating
+            ApiManager.apiService.getAvaliation(userId).enqueue(object : Callback<List<Avaliation>> {
+                override fun onResponse(call: Call<List<Avaliation>>, response: Response<List<Avaliation>>) {
+                    if (response.isSuccessful) {
+                        val avaliations = response.body()
+                        val userAvaliation = avaliations?.find { it.gameId == gameId }
+                        if (userAvaliation == null) {
+                            addAvaliation(userId, gameId, rating)
+                        } else {
+                            updateAvaliation(userId, gameId, rating)
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<List<Avaliation>>, t: Throwable) {
+                    // Handle failure
+                }
+            })
+        }
+    }
+
 
     private fun updateStarViews(rating: Int) {
         for ((index, starView) in starViews.withIndex()) {
@@ -527,6 +520,77 @@ class View_Game_Fragment : Fragment() {
             }
         }
     }
+
+    private fun loadUserAvaliation(userId: Int, gameId: Int) {
+        ApiManager.apiService.getAvaliation(userId).enqueue(object : Callback<List<Avaliation>> {
+            override fun onResponse(call: Call<List<Avaliation>>, response: Response<List<Avaliation>>) {
+                if (response.isSuccessful) {
+                    val avaliations = response.body()
+                    val userAvaliation = avaliations?.find { it.gameId == gameId }
+                    if (userAvaliation != null) {
+                        updateStarViews(userAvaliation.stars.toInt())
+                        currentRating = userAvaliation.stars.toInt()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<Avaliation>>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+
+    private fun addAvaliation(userId: Int, gameId: Int, stars: Int) {
+        val avaliation = Avaliation(userId, gameId, stars.toFloat())
+        ApiManager.apiService.addAvaliation(avaliation).enqueue(object : Callback<Avaliation> {
+            override fun onResponse(call: Call<Avaliation>, response: Response<Avaliation>) {
+                if (response.isSuccessful) {
+                    Log.d("View_Game_Fragment", "Avaliation added successfully")
+                } else {
+                    // Handle error response
+                }
+            }
+
+            override fun onFailure(call: Call<Avaliation>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+
+    private fun updateAvaliation(userId: Int, gameId: Int, stars: Int) {
+        val avaliation = Avaliation(userId, gameId, stars.toFloat())
+        ApiManager.apiService.updateAvaliation(userId, gameId, avaliation).enqueue(object : Callback<Avaliation> {
+            override fun onResponse(call: Call<Avaliation>, response: Response<Avaliation>) {
+                if (response.isSuccessful) {
+                    Log.d("View_Game_Fragment", "Avaliation updated successfully")
+                } else {
+                    // Handle error response
+                }
+            }
+
+            override fun onFailure(call: Call<Avaliation>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+
+    private fun deleteAvaliation(userId: Int, gameId: Int) {
+        ApiManager.apiService.deleteAvaliation(userId, gameId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Log.d("View_Game_Fragment", "Avaliation deleted successfully")
+                } else {
+                    // Handle error response
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+
+
 
     companion object {
         private const val ARG_GAME_ID = "gameId"

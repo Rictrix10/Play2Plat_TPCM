@@ -125,5 +125,20 @@ interface ApiService {
 
     @PATCH("user-game/user/{userId}/game/{gameId}")
     fun updateUserGame(@Path("userId") userId: Int, @Path("gameId") gameId: Int, @Body userGame: UserGame): Call<UserGame>
+
+    // Avaliation
+    @GET("avaliation/user/{userId}")
+    fun getAvaliation(@Path("userId") userId: Int): Call<List<Avaliation>>
+
+    @POST("avaliation")
+    fun addAvaliation(@Body avaliation: Avaliation): Call<Avaliation>
+
+    @DELETE("avaliation/user/{userId}/game/{gameId}")
+    fun deleteAvaliation(@Path("userId") userId: Int, @Path("gameId") gameId: Int): Call<Void>
+
+    @PATCH("avaliation/user/{userId}/game/{gameId}")
+    fun updateAvaliation(@Path("userId") userId: Int, @Path("gameId") gameId: Int, @Body avaliation: Avaliation): Call<Avaliation>
+
+
 }
 
