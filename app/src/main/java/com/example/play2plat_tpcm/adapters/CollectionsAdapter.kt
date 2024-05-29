@@ -9,8 +9,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.play2plat_tpcm.R
 
-class CollectionsAdapter(context: Context, private val values: Array<String>, private val collectionTitle: TextView) :
-    ArrayAdapter<String>(context, 0, values) {
+
+
+class CollectionsAdapter(
+    context: Context,
+    private val values: Array<String>,
+    private val collectionTitle: TextView,
+    private val onOptionSelected: (String) -> Unit // Callback para notificar a seleção
+) : ArrayAdapter<String>(context, 0, values) {
 
     private var selectedPosition: Int = -1
 
@@ -44,6 +50,8 @@ class CollectionsAdapter(context: Context, private val values: Array<String>, pr
                 selectedPosition = position
                 // Atualiza o título da coleção na tela principal
                 collectionTitle.text = "${values[position]}"
+                // Chama o callback para notificar a seleção
+                onOptionSelected(values[position])
             }
             // Notifica o adaptador sobre a alteração para atualizar a interface do usuário
             notifyDataSetChanged()
@@ -56,5 +64,6 @@ class CollectionsAdapter(context: Context, private val values: Array<String>, pr
         return selectedPosition
     }
 }
+
 
 

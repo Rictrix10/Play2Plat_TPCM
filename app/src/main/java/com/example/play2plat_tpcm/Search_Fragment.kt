@@ -1,5 +1,6 @@
 package com.example.play2plat_tpcm
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Search_Fragment : Fragment() {
+class Search_Fragment : Fragment(), FreeGamesAdapter.OnGamePictureClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var freeGamesAdapter: FreeGamesAdapter
@@ -28,7 +29,7 @@ class Search_Fragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recycler_view_free_games)
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        freeGamesAdapter = FreeGamesAdapter(freeGamesList)
+        freeGamesAdapter = FreeGamesAdapter(freeGamesList, this)
         recyclerView.adapter = freeGamesAdapter
 
         loadFreeGames()
@@ -53,6 +54,21 @@ class Search_Fragment : Fragment() {
 
             }
         })
+    }
+
+    private fun redirectToViewGame(gameId: Int) {
+        val platforms = arrayListOf<String>()
+
+        val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, viewGameFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override fun onGamePictureClick(gameId: Int) {
+
+        redirectToViewGame(gameId)
     }
 }
 

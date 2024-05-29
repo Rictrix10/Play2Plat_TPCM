@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -93,11 +94,36 @@ interface ApiService {
     fun addGenresToGame(@Body game_genre: GameGenre): Call<GameGenre>
 
      */
+
+    // User Game Comments
     @GET("user-game-comments/{id}")
     fun getCommentByGame(@Path("id") id: Int): Call<List<GameCommentsResponse>>
 
     @POST("user-game-comment")
     fun addComment(@Body comment: Comment): Call<Comment>
 
+    // User Game Favorite
+    @GET("user-game-favorite/user/{userId}")
+    fun getUserGameFavorites(@Path("userId") userId: Int): Call<List<UserGameFavorite>>
+
+    @POST("user-game-favorite")
+    fun addUserGameFavorite(@Body userGameFavorite: UserGameFavorite): Call<UserGameFavorite>
+
+    @DELETE("user-game-favorite/game/{gameId}/user/{userId}")
+    fun deleteUserGameFavorite(@Path("gameId") gameId: Int, @Path("userId") userId: Int): Call<Void>
+
+    // User Game
+
+    @GET("user-game/user/{userId}")
+    fun getUserGame(@Path("userId") userId: Int): Call<List<UserGame>>
+
+    @POST("user-game")
+    fun addUserGame(@Body userGame: UserGame): Call<UserGame>
+
+    @DELETE("user-game/user/{userId}/game/{gameId}")
+    fun deleteUserGame(@Path("userId") userId: Int, @Path("gameId") gameId: Int): Call<Void>
+
+    @PATCH("user-game/user/{userId}/game/{gameId}")
+    fun updateUserGame(@Path("userId") userId: Int, @Path("gameId") gameId: Int, @Body userGame: UserGame): Call<UserGame>
 }
 
