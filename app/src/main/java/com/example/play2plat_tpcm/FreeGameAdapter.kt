@@ -9,8 +9,13 @@ import com.example.play2plat_tpcm.api.Game
 import com.squareup.picasso.Picasso
 
 class FreeGamesAdapter(
-    private val freeGames: List<Game>
+    private val freeGames: List<Game>,
+    private val onGamePictureClickListener: OnGamePictureClickListener
 ) : RecyclerView.Adapter<FreeGamesAdapter.FreeGameViewHolder>() {
+
+    interface OnGamePictureClickListener {
+        fun onGamePictureClick(gameId: Int)
+    }
 
     class FreeGameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val gameCoverImage: ImageView = itemView.findViewById(R.id.game_cover_image)
@@ -24,6 +29,12 @@ class FreeGamesAdapter(
     override fun onBindViewHolder(holder: FreeGameViewHolder, position: Int) {
         val game = freeGames[position]
         Picasso.get().load(game.coverImage).into(holder.gameCoverImage)
+
+        holder.gameCoverImage.setOnClickListener {
+            game.id?.let { gameId ->
+                onGamePictureClickListener.onGamePictureClick(gameId)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
