@@ -1,7 +1,7 @@
 package com.example.play2plat_tpcm
 
-import Profile_Fragment
-import User_Profile_Fragment
+import com.example.play2plat_tpcm.Profile_Fragment
+import com.example.play2plat_tpcm.User_Profile_Fragment
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
