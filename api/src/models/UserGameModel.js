@@ -79,24 +79,26 @@ updateUserGameByUserIdAndGameId: async (userId, gameId, data) => {
         });
     },
 
-    getUserGamesByUserIdAndState: async (userId, state) => {
-        return await prisma.userGame.findMany({
-            where: {
-                userId: userId,
-                state: state
-            },
-            include: {
-                game: {
-                    select: {
-                        id: true,
-                        name: true,
-                        isFree: true,
-                        coverImage: true
-                    }
+getUserGamesByUserIdAndState: async (userId, state) => {
+    return await prisma.userGame.findMany({
+        where: {
+            userId: userId,
+            state: state
+        },
+        select: {
+            state: true,
+            game: {
+                select: {
+                    id: true,
+                    name: true,
+                    isFree: true,
+                    coverImage: true
                 }
             }
-        });
-    },
+        }
+    });
+},
+
 
 };
 
