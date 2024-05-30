@@ -96,8 +96,9 @@ const GameController = {
         getGamesByParams: async (req, res) => {
             try {
                 const { name, isFree } = req.query;
+                console.log('Parâmetros de consulta recebidos:', { name, isFree });
                 const parsedIsFree = isFree === undefined ? undefined : isFree.toLowerCase() === 'true';
-
+                console.log('Parâmetro isFree convertido:', parsedIsFree);
                 const games = await GameModel.getGamesByParams(name, parsedIsFree);
                 res.json(games);
             } catch (error) {

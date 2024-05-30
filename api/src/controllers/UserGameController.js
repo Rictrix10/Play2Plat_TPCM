@@ -123,6 +123,23 @@ updateUserGameByUserIdAndGameId: async (req, res) => {
             res.status(500).json({ error: 'Erro ao atualizar relação usuário-jogo' });
         }
     },
+
+    getUserGamesByUserIdAndState: async (req, res) => {
+        try {
+            const userId = parseInt(req.params.userId);
+            const state = req.params.state;
+
+            const userGames = await UserGameModel.getUserGamesByUserIdAndState(userId, state);
+
+            const games = userGames.map(ug => ug.game);
+
+            res.json(games);
+        } catch (error) {
+            console.error('Erro ao buscar jogos do usuário por ID e estado:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos do usuário por ID e estado' });
+        }
+    },
+
 };
 
 module.exports = UserGameController;

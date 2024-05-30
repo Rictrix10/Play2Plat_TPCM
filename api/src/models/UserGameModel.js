@@ -78,6 +78,26 @@ updateUserGameByUserIdAndGameId: async (userId, gameId, data) => {
             data: data
         });
     },
+
+    getUserGamesByUserIdAndState: async (userId, state) => {
+        return await prisma.userGame.findMany({
+            where: {
+                userId: userId,
+                state: state
+            },
+            include: {
+                game: {
+                    select: {
+                        id: true,
+                        name: true,
+                        isFree: true,
+                        coverImage: true
+                    }
+                }
+            }
+        });
+    },
+
 };
 
 module.exports = UserGameModel;
