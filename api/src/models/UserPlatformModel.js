@@ -54,7 +54,7 @@ const UserPlatformModel = {
     },
 
     deleteUserPlatformByUserIdAndPlatformId: async (userId, platformId) => {
-            return await prisma.platformGame.deleteMany({
+            return await prisma.userPlatform.deleteMany({
                 where: {
                     userId: userId,
                     platformId: platformId
