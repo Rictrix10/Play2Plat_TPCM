@@ -92,26 +92,20 @@ const GameController = {
         }
     },
 
-        getFilteredGames: async (req, res) => {
+
+        getGamesByParams: async (req, res) => {
             try {
-                const { name, genre, platform, company, sequence, isFree } = req.query;
+                const { name, isFree } = req.query;
+                const parsedIsFree = isFree === undefined ? undefined : isFree.toLowerCase() === 'true';
 
-                const filters = {
-                    name: name || undefined,
-                    genre: genre || undefined,
-                    platform: platform || undefined,
-                    company: company || undefined,
-                    sequence: sequence || undefined,
-                    isFree: isFree !== undefined ? (isFree === 'true') : undefined
-                };
-
-                const games = await GameModel.getFilteredGames(filters);
+                const games = await GameModel.getGamesByParams(name, parsedIsFree);
                 res.json(games);
             } catch (error) {
-                console.error('Erro ao buscar jogos filtrados:', error);
-                res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
+                console.error('Erro ao buscar jogos por parâmetros:', error);
+                res.status(500).json({ error: 'Erro ao buscar jogos por parâmetros' });
             }
         },
+
 
   };
 
