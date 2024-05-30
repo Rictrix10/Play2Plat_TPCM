@@ -124,21 +124,25 @@ updateUserGameByUserIdAndGameId: async (req, res) => {
         }
     },
 
-    getUserGamesByUserIdAndState: async (req, res) => {
-        try {
-            const userId = parseInt(req.params.userId);
-            const state = req.params.state;
+getUserGamesByUserIdAndState: async (req, res) => {
+    try {
+        const userId = parseInt(req.params.userId);
+        const state = req.params.state;
 
-            const userGames = await UserGameModel.getUserGamesByUserIdAndState(userId, state);
+        const userGames = await UserGameModel.getUserGamesByUserIdAndState(userId, state);
 
-            const games = userGames.map(ug => ug.game);
+        const gamesWithState = userGames.map(ug => ({
+            state: ug.state,
+            ...ug.game
+        }));
 
-            res.json(games);
-        } catch (error) {
-            console.error('Erro ao buscar jogos do usuário por ID e estado:', error);
-            res.status(500).json({ error: 'Erro ao buscar jogos do usuário por ID e estado' });
-        }
-    },
+        res.json(gamesWithState);
+    } catch (error) {
+        console.error('Erro ao buscar jogos do usuário por ID e estado:', error);
+        res.status(500).json({ error: 'Erro ao buscar jogos do usuário por ID e estado' });
+    }
+},
+
 
 };
 
