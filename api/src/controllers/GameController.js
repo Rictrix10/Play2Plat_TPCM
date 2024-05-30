@@ -22,7 +22,10 @@ const GameController = {
         },
    getGameById: async (req, res) => {
        try {
-           const gameId = parseInt(req.params.id);
+           const gameId = parseInt(req.params.id, 10); // Converter o ID para número inteiro
+           if (isNaN(gameId)) {
+               return res.status(400).json({ error: 'ID inválido' });
+           }
            const game = await GameModel.getGameById(gameId);
            if (!game) {
                return res.status(404).json({ error: 'Jogo não encontrado' });
