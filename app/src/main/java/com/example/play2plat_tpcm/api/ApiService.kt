@@ -139,6 +139,8 @@ interface ApiService {
     @PATCH("avaliation/user/{userId}/game/{gameId}")
     fun updateAvaliation(@Path("userId") userId: Int, @Path("gameId") gameId: Int, @Body avaliation: Avaliation): Call<Avaliation>
 
-
+ //Favourites
+ @GET("user-game-favorite/user/{userId}")
+ fun getFavoritesByUserId(@Path("userId") userId: Int): Call<List<ListFavoriteGames>>
 }
 
