@@ -1,4 +1,5 @@
-import android.content.Context
+package com.example.play2plat_tpcm
+
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,15 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.play2plat_tpcm.EditProfile
 import com.squareup.picasso.Picasso
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
-import com.example.play2plat_tpcm.R
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import de.hdodenhof.circleimageview.CircleImageView
 
 class User_Profile_Fragment : Fragment() {
 

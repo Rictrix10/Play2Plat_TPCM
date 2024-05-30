@@ -22,7 +22,7 @@
 
             <ImageView
                 android:layout_gravity="center"
-                android:src="@drawable/icon_games"
+                android:src="@drawable/icon_games_selected"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:id="@+id/games_icon"/>
