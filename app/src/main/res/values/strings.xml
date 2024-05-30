@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Play2Plat_TPCM</string>
+    <string name="app_name">Play2Plat</string>
     <string name="title_activity_main_page">Main_Page</string>
     <string-array name="pegi_info_values">
         <item>3</item>

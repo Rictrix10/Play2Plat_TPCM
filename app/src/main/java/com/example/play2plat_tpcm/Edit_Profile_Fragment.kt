@@ -1,8 +1,10 @@
 package com.example.play2plat_tpcm
 
-import Profile_Fragment
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -16,9 +18,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.lifecycleScope
+import androidx.palette.graphics.Palette
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -26,7 +31,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
@@ -34,7 +38,7 @@ import java.io.FileOutputStream
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class EditProfile : Fragment() {
+class Edit_Profile_Fragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var profileImageView: ImageView
@@ -46,7 +50,7 @@ class EditProfile : Fragment() {
     private lateinit var saveButton: Button
     private lateinit var selectImageView: ImageView
     private lateinit var backImageView: ImageView
-
+    private lateinit var containerLayout: View // Adicione esta linha
 
     private var selectedImageUri: Uri? = null
 
@@ -55,6 +59,9 @@ class EditProfile : Fragment() {
             selectedImageUri = uri
             Log.d("EditProfile", "Selected image URI: $selectedImageUri")
             profileImageView.setImageURI(selectedImageUri)
+            // Atualize o gradiente após selecionar uma nova imagem
+            val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+            applyGradientFromBitmap(bitmap)
         } else {
             Log.d("EditProfile", "No image URI received")
         }
@@ -87,6 +94,7 @@ class EditProfile : Fragment() {
         saveButton = view.findViewById(R.id.save)
         selectImageView = view.findViewById(R.id.select_picture)
         backImageView = view.findViewById(R.id.back_icon)
+        containerLayout = view.findViewById(R.id.container_layout) // Adicione esta linha
 
         selectImageView.setOnClickListener {
             Log.d("EditProfile", "Select image button clicked")
@@ -129,7 +137,7 @@ class EditProfile : Fragment() {
     }
 
     private suspend fun loadUserProfile(userId: Int) {
-        ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
+        ApiManager.apiService.getUserById(userId).enqueue(object : retrofit2.Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
                     val user = response.body()
@@ -157,22 +165,76 @@ class EditProfile : Fragment() {
         })
     }
 
-
     private fun loadImage(avatarUrl: String?) {
         if (!avatarUrl.isNullOrEmpty()) {
-            Picasso.get().load(avatarUrl).into(profileImageView)
+            Picasso.get().load(avatarUrl).into(profileImageView, object : Callback {
+                override fun onSuccess() {
+                    val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+                    applyGradientFromBitmap(bitmap)
+                }
+
+                override fun onError(e: Exception?) {
+                    Log.e("EditProfile", "Error loading image: ${e?.message}")
+                }
+            })
         } else {
             profileImageView.setImageResource(R.drawable.noimageuser)
+            val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+            applyGradientFromBitmap(bitmap)
         }
     }
 
+    private fun applyGradientFromBitmap(bitmap: Bitmap) {
+        Palette.from(bitmap).generate { palette ->
+            palette?.let {
+                var dominantColor = it.dominantSwatch?.rgb ?: Color.GRAY
+                var vibrantColor = it.vibrantSwatch?.rgb ?: Color.DKGRAY
+
+                // Verificar se as cores extraídas são muito claras
+                val isDominantColorTooLight = ColorUtils.calculateLuminance(dominantColor) > 0.8
+                val isVibrantColorTooLight = ColorUtils.calculateLuminance(vibrantColor) > 0.8
+
+                if (isDominantColorTooLight) {
+                    dominantColor = Color.GRAY
+                }
+                if (isVibrantColorTooLight) {
+                    vibrantColor = Color.DKGRAY
+                }
+
+                // Se as cores vibrantes e dominantes forem iguais, ajustar a cor vibrante
+                if (vibrantColor == dominantColor) {
+                    vibrantColor = it.lightVibrantSwatch?.rgb
+                        ?: it.darkVibrantSwatch?.rgb
+                                ?: it.mutedSwatch?.rgb
+                                ?: it.lightMutedSwatch?.rgb
+                                ?: it.darkMutedSwatch?.rgb
+                                ?: Color.DKGRAY
+                }
+
+                val colors = intArrayOf(dominantColor, vibrantColor)
+                val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
+                containerLayout.background = gradientDrawable
+            } ?: run {
+                val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(Color.GRAY, Color.DKGRAY))
+                containerLayout.background = gradientDrawable
+            }
+        }
+    }
+
+
     private fun redirectToProfile() {
-        val profileFragment = Profile_Fragment()
+        val sharedPreferences = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+
+        // Criar uma nova instância do Profile_Fragment com o ID do usuário
+        val profileFragment = Profile_Fragment.newInstance(userId)
+
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, profileFragment)
             .addToBackStack(null)
             .commit()
     }
+
 
     private fun uploadImageAndSaveProfile() {
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -186,7 +248,7 @@ class EditProfile : Fragment() {
             val imagePart = MultipartBody.Part.createFormData("file", "profile_image.jpg", requestFile)
 
             val call = ApiManager.apiService.uploadImage(imagePart)
-            call.enqueue(object : Callback<ResponseBody> {
+            call.enqueue(object : retrofit2.Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
                         val imageUrl = response.body()?.string()
@@ -196,7 +258,6 @@ class EditProfile : Fragment() {
 
                             matchResult?.let { result ->
                                 val avatarUrl = result.groupValues[1]
-
                                 updateUserProfile(avatarUrl)
                             }
                         }
@@ -213,7 +274,6 @@ class EditProfile : Fragment() {
             updateUserProfile(currentAvatarUrl)
         }
     }
-
 
     private fun updateUserProfile(avatarUrl: String?) {
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -235,11 +295,12 @@ class EditProfile : Fragment() {
             username = updatedUsername,
             email = updatedEmail,
             password = if (newPassword.isNotEmpty()) newPassword else "",
-            avatar = avatarUrl ?: "",  // Assign avatar URL if available
-            userTypeId = userTypeId  // Assuming a default userTypeId, update as needed
+            avatar = avatarUrl ?: "",
+            userTypeId = userTypeId,
+            platforms = null
         )
 
-        ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : Callback<User> {
+        ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : retrofit2.Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
                     Log.d("EditProfile", "User profile updated successfully")
@@ -270,7 +331,7 @@ class EditProfile : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            EditProfile().apply {
+            Edit_Profile_Fragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

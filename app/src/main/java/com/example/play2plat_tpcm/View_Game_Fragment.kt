@@ -48,6 +48,7 @@ class View_Game_Fragment : Fragment() {
     private lateinit var collectionAdapter: CollectionsAdapter
     private lateinit var starViews: List<ImageView>
     private var currentRating = 0
+    private var currentUserType: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,12 +57,8 @@ class View_Game_Fragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_view_game, container, false)
 
-        // Obtenha as plataformas do argumento
-        val platforms = arguments?.getStringArrayList("platforms") ?: ArrayList()
-
-// Adicione o fragmento Platforms_List_Fragment
-        val platformsFragment = Platforms_List_Fragment.newInstance(platforms)
-        childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        currentUserType = sharedPreferences.getInt("user_type_id", 0)
 
 
         // Initialize views
@@ -110,7 +107,7 @@ class View_Game_Fragment : Fragment() {
         }
 
         // Get the game ID from arguments or default to 53
-        val gameId = arguments?.getInt("gameId") ?: 1
+        val gameId = arguments?.getInt("gameId") ?: 6
         if (gameId != 0) {
             ApiManager.apiService.getGameById(gameId).enqueue(object : Callback<GameInfo> {
                 override fun onResponse(call: Call<GameInfo>, response: Response<GameInfo>) {
@@ -160,9 +157,11 @@ class View_Game_Fragment : Fragment() {
 
                             // Obtenha as plataformas do argumento
                             val platforms = game.platforms
-                            val platformsFragment = Platforms_List_Fragment.newInstance(platforms)
-                            childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
-
+                            val canEditPlatforms = currentUserType == 1
+                            if(platforms != null){
+                                val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms)
+                                childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
+                            }
 
                         }
                     }
