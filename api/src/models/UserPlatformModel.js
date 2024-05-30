@@ -51,7 +51,16 @@ const UserPlatformModel = {
                 platformId: platformId,
             }
         });
-    }
+    },
+
+    deleteUserPlatformByUserIdAndPlatformId: async (userId, platformId) => {
+            return await prisma.platformGame.deleteMany({
+                where: {
+                    userId: userId,
+                    platformId: platformId
+                }
+            });
+        }
 };
 
 module.exports = UserPlatformModel;

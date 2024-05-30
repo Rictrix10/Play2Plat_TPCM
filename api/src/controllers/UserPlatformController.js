@@ -87,7 +87,24 @@ const UserPlatformController = {
             console.error('Erro ao buscar relações usuário-plataforma por platformId:', error);
             res.status(500).json({ error: 'Erro ao buscar relações usuário-plataforma' });
         }
-    }
+    },
+
+     deleteUserPlatformByUserIdAndPlatformId: async (req, res) => {
+            try {
+                const userId = parseInt(req.params.userId);
+                const platformId = parseInt(req.params.platformId);
+
+                const result = await UserPlatformModel.deleteUserPlatformByUserIdAndPlatformId(userId, platformId);
+                if (result.count > 0) {
+                    res.status(204).end();
+                } else {
+                    res.status(404).json({ error: 'Relação utilizador-plataforma não encontrada' });
+                }
+            } catch (error) {
+                console.error('Erro ao excluir relação utilizador-plataforma:', error);
+                res.status(500).json({ error: 'Erro ao excluir relação utilizador-plataforma' });
+            }
+        }
 };
 
 module.exports = UserPlatformController;

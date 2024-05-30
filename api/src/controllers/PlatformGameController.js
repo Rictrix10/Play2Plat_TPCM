@@ -77,7 +77,24 @@ getGamesByPlatformId: async (req, res) => {
             console.error('Erro ao buscar jogos por ID da plataforma:', error);
             res.status(500).json({ error: 'Erro ao buscar jogos por ID da plataforma' });
         }
-    }
+    },
+
+     deletePlatformGameByPlatformIdAndGameId: async (req, res) => {
+            try {
+                const platformId = parseInt(req.params.platformId);
+                const gameId = parseInt(req.params.gameId);
+
+                const result = await PlatformGameModel.deletePlatformGameByPlatformIdAndGameId(platformId, gameId);
+                if (result.count > 0) {
+                    res.status(204).end();
+                } else {
+                    res.status(404).json({ error: 'Relação platforma-jogo não encontrada' });
+                }
+            } catch (error) {
+                console.error('Erro ao excluir relação platforma-jogo:', error);
+                res.status(500).json({ error: 'Erro ao excluir relação platforma-jogo' });
+            }
+        }
 };
 
 module.exports = PlatformGameController;
