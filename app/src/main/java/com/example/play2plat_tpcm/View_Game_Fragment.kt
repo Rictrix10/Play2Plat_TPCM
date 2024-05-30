@@ -72,10 +72,6 @@ class View_Game_Fragment : Fragment() {
         // Obtenha as plataformas do argumento
         val platforms = arguments?.getStringArrayList("platforms") ?: ArrayList()
 
-        // Adicione o fragmento Platforms_List_Fragment
-        val platformsFragment = Platforms_List_Fragment.newInstance(platforms)
-        childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
-
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
 
