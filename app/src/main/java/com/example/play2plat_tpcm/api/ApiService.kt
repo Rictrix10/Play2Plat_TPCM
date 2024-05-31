@@ -144,5 +144,10 @@ interface ApiService {
     @GET("user-game/user/{userId}/state/{state}")
     fun getStateCollection(@Path("userId") userId: Int, @Path("state") state: String): Call<List<Collections>>
 
+
+    @GET("user-game/user/{userId}/favorites")
+    fun getFavoritesByUserId(@Path("userId") userId: Int): Call<List<ListFavoriteGames>>
+
+
 }
 
