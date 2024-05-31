@@ -21,10 +21,10 @@ class FavoritesAdapter(
     }
 
     class FavoriteGameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageGame: ImageView = itemView.findViewById(R.id.game_image)
+        val imageGame: ImageView = itemView.findViewById(R.id.gameImageView)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteGameViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_favorite_game, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_game_collection, parent, false)
         return FavoriteGameViewHolder(view)
     }
 
