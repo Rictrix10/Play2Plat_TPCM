@@ -7,5 +7,5 @@ router.get('/user-platform/:id', UserPlatformController.getUserPlatformById);
 router.delete('/user-platform/:id', UserPlatformController.deleteUserPlatform);
 router.get('/user-platform/user/:userId', UserPlatformController.getUserPlatformsByUserId);
 router.get('/user-platform/platform/:platformId', UserPlatformController.getUserPlatformsByPlatformId);
-
+router.delete('/user-platform/user/:userId/platform/:platformId', UserPlatformController.deleteUserPlatformByUserIdAndPlatformId);
 module.exports = router;

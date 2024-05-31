@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:id="@+id/main"
     android:background="@drawable/bg_border"
-    tools:context=".ViewGame">
+    tools:context=".View_Game_Fragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/back_icon"
+                    android:src="@drawable/icon_back"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

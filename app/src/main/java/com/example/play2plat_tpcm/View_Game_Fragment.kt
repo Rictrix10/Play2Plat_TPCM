@@ -53,6 +53,7 @@ class View_Game_Fragment : Fragment() {
     private var currentRating = 0
     private var gameId: Int = 0
     private var selectedOption: String? = null
+    private var currentUserType: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,9 +72,9 @@ class View_Game_Fragment : Fragment() {
         // Obtenha as plataformas do argumento
         val platforms = arguments?.getStringArrayList("platforms") ?: ArrayList()
 
-        // Adicione o fragmento Platforms_List_Fragment
-        val platformsFragment = Platforms_List_Fragment.newInstance(platforms)
-        childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        currentUserType = sharedPreferences.getInt("user_type_id", 0)
+
 
         // Initialize views
         nameTextView = view.findViewById(R.id.name)
@@ -85,6 +86,7 @@ class View_Game_Fragment : Fragment() {
         backButton = view.findViewById(R.id.back_button)
         containerLayout = view.findViewById(R.id.container_layout)
         favoriteIcon = view.findViewById(R.id.favorite_icon)
+        // Adicionado
 
         collectionAccordion = view.findViewById(R.id.collection_accordion)
         collectionTitle = view.findViewById(R.id.collection_title)
@@ -122,7 +124,7 @@ class View_Game_Fragment : Fragment() {
 
 
         // Get the game ID from arguments or default to 53
-        val gameId = arguments?.getInt("gameId") ?: 1
+        val gameId = arguments?.getInt("gameId") ?: 6
         if (gameId != 0) {
             ApiManager.apiService.getGameById(gameId).enqueue(object : Callback<GameInfo> {
                 override fun onResponse(call: Call<GameInfo>, response: Response<GameInfo>) {
@@ -172,15 +174,16 @@ class View_Game_Fragment : Fragment() {
 
                             // Obtenha as plataformas do argumento
                             val platforms = game.platforms
-                            if(platforms != null) {
-                                val platformsFragment =
-                                    Platforms_List_Fragment.newInstance(platforms)
-                                childFragmentManager.beginTransaction()
-                                    .replace(R.id.platforms_fragment, platformsFragment).commit()
+                            val canEditPlatforms = currentUserType == 1
+                            if(platforms != null){
+                                val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms)
+                                childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
                             }
-                            }
+
+                        }
                     }
                 }
+
 
                 override fun onFailure(call: Call<GameInfo>, t: Throwable) {
                     // Handle failure
@@ -276,18 +279,22 @@ class View_Game_Fragment : Fragment() {
     }
 
     private fun toggleListVisibility(listView: ListView, titleView: TextView) {
+        // Obter a altura em pixels correspondente a 40dp
         val heightInPx = 40.dpToPx()
 
         if (listView.visibility == View.VISIBLE) {
+            // Se a lista está visível, oculta e ajusta a altura e as margens
             listView.visibility = View.GONE
             collectionAccordion.layoutParams.height = heightInPx
             titleView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_spinner_down, 0)
         } else {
+            // Se a lista está oculta, exibe e ajusta a altura e as margens
             listView.visibility = View.VISIBLE
             setListViewHeightBasedOnItems(listView)
             collectionAccordion.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             titleView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_spinner_up, 0)
         }
+        // Solicite uma nova medida do layout após alterar os parâmetros de layout
         collectionAccordion.requestLayout()
 
         // Verifique se a lista está visível para evitar chamadas desnecessárias
@@ -608,6 +615,7 @@ class View_Game_Fragment : Fragment() {
                 }
             }
     }
+
 }
 
 

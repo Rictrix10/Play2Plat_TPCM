@@ -51,7 +51,16 @@ const UserPlatformModel = {
                 platformId: platformId,
             }
         });
-    }
+    },
+
+    deleteUserPlatformByUserIdAndPlatformId: async (userId, platformId) => {
+            return await prisma.userPlatform.deleteMany({
+                where: {
+                    userId: userId,
+                    platformId: platformId
+                }
+            });
+        }
 };
 
 module.exports = UserPlatformModel;

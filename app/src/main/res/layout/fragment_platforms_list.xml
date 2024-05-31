@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/platform_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:columnCount="3"
+    android:rowCount="2"
+    android:padding="8dp">
 
     <!-- Layout para a plataforma PC -->
     <LinearLayout
@@ -11,7 +13,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:padding="3dp"
+        android:gravity="center"
+        android:paddingVertical="3dp"
+        android:paddingHorizontal="20dp"
         android:background="@drawable/button_bd_3"
         android:visibility="gone">
 
@@ -19,8 +23,8 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:src="@drawable/icon_platforms_pc" />
-
     </LinearLayout>
+
 
     <!-- Layout para a plataforma Xbox -->
     <LinearLayout
@@ -28,15 +32,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:padding="3dp"
+        android:gravity="center"
+        android:paddingVertical="3dp"
+        android:paddingHorizontal="20dp"
         android:background="@drawable/button_bd_3"
         android:visibility="gone">
 
-    <ImageView
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:src="@drawable/icon_platforms_xbox" />
-
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/icon_platforms_xbox" />
     </LinearLayout>
 
     <!-- Layout para a plataforma PlayStation -->
@@ -45,15 +50,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:padding="3dp"
+        android:gravity="center"
+        android:paddingVertical="3dp"
+        android:paddingHorizontal="20dp"
         android:background="@drawable/button_bd_3"
         android:visibility="gone">
 
-    <ImageView
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:src="@drawable/icon_platforms_playstation" />
-
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/icon_platforms_playstation" />
     </LinearLayout>
 
     <!-- Layout para a plataforma Switch -->
@@ -62,15 +68,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:padding="3dp"
+        android:gravity="center"
+        android:paddingVertical="3dp"
+        android:paddingHorizontal="20dp"
         android:background="@drawable/button_bd_3"
         android:visibility="gone">
 
-    <ImageView
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:src="@drawable/icon_platforms_switch" />
-
     </LinearLayout>
 
     <!-- Layout para a plataforma Android -->
@@ -79,15 +86,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:padding="3dp"
+        android:gravity="center"
+        android:paddingVertical="3dp"
+        android:paddingHorizontal="20dp"
         android:background="@drawable/button_bd_3"
         android:visibility="gone">
 
-    <ImageView
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:src="@drawable/icon_platforms_android" />
-
     </LinearLayout>
 
     <!-- Layout para a plataforma iOS -->
@@ -96,17 +104,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:padding="3dp"
+        android:gravity="center"
+        android:paddingVertical="3dp"
+        android:paddingHorizontal="20dp"
         android:background="@drawable/button_bd_3"
         android:visibility="gone">
 
-    <ImageView
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:src="@drawable/icon_platforms_ios" />
-
     </LinearLayout>
 
     <!-- Adicione outros layouts conforme necessário -->
-
-</LinearLayout>
+</GridLayout>

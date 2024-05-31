@@ -54,7 +54,15 @@ const PlatformGameModel = {
             console.error('Erro ao buscar jogos por ID da plataforma:', error);
             throw error;
         }
-    }
+    },
+   deletePlatformGameByPlatformIdAndGameId: async (platformId, gameId) => {
+           return await prisma.platformGame.deleteMany({
+               where: {
+                   platformId: platformId,
+                   gameId: gameId
+               }
+           });
+       },
 };
 
 module.exports = PlatformGameModel;

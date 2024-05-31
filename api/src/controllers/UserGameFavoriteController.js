@@ -64,7 +64,9 @@ const UserGameFavoriteController = {
     getFavoritesByUserId: async (req, res) => {
         try {
             const userId = parseInt(req.params.userId);
-
+            if (isNaN(userId)) {
+                return res.status(400).json({ error: 'userId inválido' });
+            }
             // Retorna todas as relações de um usuário específico com jogos favoritos
             const favorites = await UserGameFavoriteModel.getFavoritesByUserId(userId);
 

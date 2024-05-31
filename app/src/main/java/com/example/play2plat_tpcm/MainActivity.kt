@@ -1,6 +1,6 @@
 package com.example.play2plat_tpcm
 
-import Profile_Fragment
+import com.example.play2plat_tpcm.Profile_Fragment
 import android.content.Context
 import android.graphics.Color
 import android.graphics.LinearGradient
@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
 
         // Verificar o tipo de utilizador para definir o status de administrador
         isAdmin = IsAdmin(userTypeId == 1)
+
+        changeTabsText(R.id.games_text, true)
 
         // Iniciando o fragmento padrão
         supportFragmentManager.beginTransaction()
@@ -66,9 +68,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.profile_lay -> {
+                // Recuperar o ID do usuário do SharedPreferences
+                val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+                val userId = sharedPreferences.getInt("user_id", 0)
+
+                // Criar uma nova instância do Profile_Fragment com o ID do usuário
+                val profileFragment = Profile_Fragment.newInstance(userId)
+
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.layout, Profile_Fragment())
+                    .replace(R.id.layout, profileFragment)
+                    .addToBackStack(null)
                     .commit()
+
                 changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile_selected)
@@ -79,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                 changeTabsText(R.id.profile_text, true)
                 changeTabsText(R.id.search_text, false)
             }
+
 
             R.id.search_lay -> {
                 supportFragmentManager.beginTransaction()

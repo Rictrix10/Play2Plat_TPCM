@@ -20,13 +20,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:textColor="#FFFFFF"/>
 
-    <Button
-        android:id="@+id/button_view_game"
-        android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View Game"
-        app:layout_constraintTop_toBottomOf="@id/textView"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="72dp"
+        android:padding="4dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        tools:listitem="@layout/item_game_collection" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

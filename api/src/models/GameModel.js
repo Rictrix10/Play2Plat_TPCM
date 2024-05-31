@@ -102,6 +102,29 @@ getPlatformByName: async (platformName) => {
         }
     },
 
+        getGamesByParams: async (name, isFree) => {
+            try {
+                const filters = {};
+                if (name) {
+                    filters.name = {
+                        contains: name,
+                        mode: 'insensitive', // Caso queira buscar ignorando maiúsculas e minúsculas
+                    };
+                }
+                if (isFree !== undefined) {
+                    filters.isFree = isFree;
+                }
+
+                const games = await prisma.game.findMany({
+                    where: filters,
+                });
+                return games;
+            } catch (error) {
+                console.error('Erro ao buscar jogos por parâmetros:', error);
+                throw error;
+            }
+        },
+
 };
 
 module.exports = GameModel;
