@@ -34,7 +34,8 @@ const PlatformGameModel = {
             }
         });
     },
- getGamesByPlatformId: async (platformId) => {
+
+    getGamesByPlatformId: async (platformId) => {
         try {
             return await prisma.platformGame.findMany({
                 where: {
@@ -55,34 +56,34 @@ const PlatformGameModel = {
             throw error;
         }
     },
-   deletePlatformGameByPlatformIdAndGameId: async (platformId, gameId) => {
-           return await prisma.platformGame.deleteMany({
-               where: {
-                   platformId: platformId,
-                   gameId: gameId
-               }
-           });
-       },
 
-       getGamesByPlatformName: async (platformName) => {
-           return await prisma.platformGame.findMany({
-               where: {
-                   platform: {
-                       name: platformName
-                   }
-               },
-               select: {
-                   game: {
-                       select: {
-                           id: true,
-                           name: true,
-                           coverImage: true
-                       }
-                   }
-               }
-           });
-       }
-   };
+    deletePlatformGameByPlatformIdAndGameId: async (platformId, gameId) => {
+        return await prisma.platformGame.deleteMany({
+            where: {
+                platformId: platformId,
+                gameId: gameId
+            }
+        });
+    },
+
+    getGamesByPlatformName: async (platformName) => {
+        return await prisma.platformGame.findMany({
+            where: {
+                platform: {
+                    name: platformName
+                }
+            },
+            select: {
+                game: {
+                    select: {
+                        id: true,
+                        name: true,
+                        coverImage: true
+                    }
+                }
+            }
+        });
+    }
 };
 
 module.exports = PlatformGameModel;
