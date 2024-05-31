@@ -22,7 +22,7 @@
             app:srcCompat="@drawable/play2plat_logo"
             android:layout_marginTop="20dp" />
 
-        <!-- Adicionando os campos de usuário e senha -->
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
