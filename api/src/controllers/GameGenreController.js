@@ -89,7 +89,21 @@ const GameGenreController = {
             console.error('Erro ao buscar jogos por ID do gênero:', error);
             res.status(500).json({ error: 'Erro ao buscar jogos por ID do gênero' });
         }
-    }
+    },
+
+                getGamesByGenreName: async (req, res) => {
+                    try {
+                        const genreName = req.params.genreName;
+
+                        const genreGames = await GameGenreModel.getGamesByGenreName(genreName);
+                        const games = genreGames.map(pg => pg.game);
+
+                        res.json(games);
+                    } catch (error) {
+                        console.error('Erro ao buscar jogos por nome do genero:', error);
+                        res.status(500).json({ error: 'Erro ao buscar jogos por nome do genero' });
+                    }
+                }
 };
 
 module.exports = GameGenreController;

@@ -62,7 +62,26 @@ const GameGenreModel = {
                 }
             }
         });
-    }
+    },
+
+        getGamesByGenreName: async (genreName) => {
+            return await prisma.gameGenre.findMany({
+                where: {
+                    genre: {
+                        name: genreName
+                    }
+                },
+                select: {
+                    game: {
+                        select: {
+                            id: true,
+                            name: true,
+                            coverImage: true
+                        }
+                    }
+                }
+            });
+        }
 };
 
 module.exports = GameGenreModel;
