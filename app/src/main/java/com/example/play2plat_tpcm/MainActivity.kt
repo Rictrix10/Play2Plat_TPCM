@@ -1,16 +1,15 @@
 package com.example.play2plat_tpcm
 
-import com.example.play2plat_tpcm.Profile_Fragment
 import android.content.Context
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var isAdmin: IsAdmin // Declaração da variável para controlar o status de administração
@@ -29,7 +28,8 @@ class MainActivity : AppCompatActivity() {
 
         // Iniciando o fragmento padrão
         supportFragmentManager.beginTransaction()
-            .add(R.id.layout, Games_Fragment()).commit()
+            .replace(R.id.layout, Games_Fragment())
+            .commit()
 
         // Verifica se o usuário é administrador e atualiza a visibilidade do ícone de administração
         updateAdminIconVisibility()
@@ -38,9 +38,7 @@ class MainActivity : AppCompatActivity() {
     fun onClick(v: View) {
         when (v.id) {
             R.id.games_lay -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.layout, Games_Fragment())
-                    .commit()
+                replaceFragment(Games_Fragment())
                 changeTabsIcon(R.id.games_icon, R.drawable.icon_games_selected)
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
@@ -53,9 +51,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.favorites_lay -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.layout, Favorites_Fragment())
-                    .commit()
+                replaceFragment(Favorites_Fragment())
                 changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites_selected)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
@@ -75,11 +71,7 @@ class MainActivity : AppCompatActivity() {
                 // Criar uma nova instância do Profile_Fragment com o ID do usuário
                 val profileFragment = Profile_Fragment.newInstance(userId)
 
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.layout, profileFragment)
-                    .addToBackStack(null)
-                    .commit()
-
+                replaceFragment(profileFragment)
                 changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile_selected)
@@ -91,11 +83,8 @@ class MainActivity : AppCompatActivity() {
                 changeTabsText(R.id.search_text, false)
             }
 
-
             R.id.search_lay -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.layout, Search_Fragment())
-                    .commit()
+                replaceFragment(Search_Fragment())
                 changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
@@ -108,9 +97,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.new_game_lay -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.layout, Add_New_Game_Fragment())
-                    .commit()
+                replaceFragment(Add_New_Game_Fragment())
                 changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
@@ -124,6 +111,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun replaceFragment(fragment: Fragment) {
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        fragmentTransaction.replace(R.id.layout, fragment)
+        fragmentTransaction.commit()
+    }
 
     private fun changeTabsIcon(iconId: Int, drawableId: Int) {
         findViewById<ImageView>(iconId)?.setImageResource(drawableId)
@@ -152,7 +146,6 @@ class MainActivity : AppCompatActivity() {
             textView.paint.shader = null
         }
     }
-
 
     private fun updateAdminIconVisibility() {
         val adminLayout = findViewById<View>(R.id.new_game_lay)
