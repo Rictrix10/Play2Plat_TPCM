@@ -148,6 +148,6 @@ interface ApiService {
     @GET("user-game-favorite/user/{userId}")
     fun getFavoritesByUserId(@Path("userId") userId: Int): Call<List<ListFavoriteGames>>
 
-
+  
 }
 
