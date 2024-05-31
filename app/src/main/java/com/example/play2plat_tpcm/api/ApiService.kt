@@ -143,5 +143,6 @@ interface ApiService {
     // Collections
     @GET("user-game/user/{userId}/state/{state}")
     fun getStateCollection(@Path("userId") userId: Int, @Path("state") state: String): Call<List<Collections>>
+
 }
 
