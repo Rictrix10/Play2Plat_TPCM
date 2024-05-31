@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.ListFavoriteGames
@@ -28,9 +28,9 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
         val view = inflater.inflate(R.layout.fragment_favorites, container, false)
 
         recyclerViewFavorites = view.findViewById(R.id.recycler_view_favorites)
-        recyclerViewFavorites.layoutManager = LinearLayoutManager(context)
-       // favoritesAdapter = FavoritesAdapter(favoriteGamesList)
-       // recyclerViewFavorites.adapter = favoritesAdapter
+        recyclerViewFavorites.layoutManager = GridLayoutManager(context, 3)
+        favoritesAdapter = FavoritesAdapter(favoriteGamesList, this)
+        recyclerViewFavorites.adapter = favoritesAdapter
 
         loadFavoriteGames()
 
@@ -48,9 +48,9 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
     }
 
     override fun onGamePictureClick(gameId: Int) {
-
         redirectToViewGame(gameId)
     }
+
     private fun loadFavoriteGames() {
         val userId = getUserIdFromSession()
         ApiManager.apiService.getFavoritesByUserId(userId).enqueue(object : Callback<List<ListFavoriteGames>> {
@@ -62,16 +62,18 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
                     val favoriteGames = response.body()
                     Log.d("FavoriteGames", "Resposta da API: $favoriteGames")
                     if (favoriteGames != null) {
-                        recyclerViewFavorites.adapter = FavoritesAdapter(favoriteGames, this@Favorites_Fragment)
+                        favoriteGamesList.clear()
+                        favoriteGamesList.addAll(favoriteGames)
+                        favoritesAdapter.notifyDataSetChanged()
                     }
                 } else {
-                    Log.e("GamePostsFragment", "Erro na resposta: ${response.errorBody()}")
+                    Log.e("Favorites_Fragment", "Erro na resposta: ${response.errorBody()}")
                     // Tratar erro
                 }
             }
 
             override fun onFailure(call: Call<List<ListFavoriteGames>>, t: Throwable) {
-                Log.e("GamePostsFragment", "Falha na chamada da API: ${t.message}")
+                Log.e("Favorites_Fragment", "Falha na chamada da API: ${t.message}")
                 // Tratar falha
             }
         })
@@ -82,8 +84,4 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
         return sharedPreferences.getInt("user_id", 0)
     }
 }
-
-
-
-
 
