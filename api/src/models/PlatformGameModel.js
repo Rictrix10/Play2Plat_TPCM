@@ -63,6 +63,26 @@ const PlatformGameModel = {
                }
            });
        },
+
+       getGamesByPlatformName: async (platformName) => {
+           return await prisma.platformGame.findMany({
+               where: {
+                   platform: {
+                       name: platformName
+                   }
+               },
+               select: {
+                   game: {
+                       select: {
+                           id: true,
+                           name: true,
+                           coverImage: true
+                       }
+                   }
+               }
+           });
+       }
+   };
 };
 
 module.exports = PlatformGameModel;

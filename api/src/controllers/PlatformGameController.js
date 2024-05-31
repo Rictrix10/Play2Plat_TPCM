@@ -94,7 +94,21 @@ getGamesByPlatformId: async (req, res) => {
                 console.error('Erro ao excluir relação platforma-jogo:', error);
                 res.status(500).json({ error: 'Erro ao excluir relação platforma-jogo' });
             }
-        }
+        },
+
+            getGamesByPlatformName: async (req, res) => {
+                try {
+                    const platformName = req.params.platformName;
+
+                    const platformGames = await PlatformGameModel.getGamesByPlatformName(platformName);
+                    const games = platformGames.map(pg => pg.game);
+
+                    res.json(games);
+                } catch (error) {
+                    console.error('Erro ao buscar jogos por nome da plataforma:', error);
+                    res.status(500).json({ error: 'Erro ao buscar jogos por nome da plataforma' });
+                }
+            }
 };
 
 module.exports = PlatformGameController;
