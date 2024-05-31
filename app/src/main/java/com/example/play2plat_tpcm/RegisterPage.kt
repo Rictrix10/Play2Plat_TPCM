@@ -28,7 +28,7 @@ class RegisterPage : AppCompatActivity() {
             insets
         }
 
-        val btnSignUp: Button = findViewById(R.id.btn_sign_in) // Botão de registro
+        val btnSignUp: Button = findViewById(R.id.btn_sign_up) // Corrigido o ID do botão de registro
         btnSignUp.setOnClickListener {
             registerUser()
         }

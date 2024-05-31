@@ -37,7 +37,7 @@
                 android:drawableLeft="@drawable/user"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Username"
+                android:hint="@string/username"
                 android:inputType="text"
                 android:paddingStart="5dp"
                 android:textColor="#000000" />
@@ -52,7 +52,7 @@
                 android:drawableLeft="@drawable/password"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:paddingStart="5dp"
                 android:textColor="#000000" />
@@ -64,7 +64,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="45dp"
                 android:background="@drawable/details"
-                android:text="Sign In"
+                android:text="@string/sign_in"
                 android:fontFamily="@font/m_plus_rounded_1c_black"
                 android:textSize="30sp"
                 android:textColor="#FFFFFF"

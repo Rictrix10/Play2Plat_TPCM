@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Play2Plat</string>
+    <string name="title_activity_main_page">Página_Principal</string>
+    <string name="tv_description_text">Explore as suas aventuras de jogos eletrónicos como nunca antes com o play2plat - a verdadeira aplicação para gravar, partilhar e se conectar.</string>
+    <string name="btn_get_started_text">Começa já</string>
+    <string-array name="pegi_info_values">
+        <item>3</item>
+        <item>7</item>
+        <item>12</item>
+        <item>16</item>
+        <item>18</item>
+    </string-array>
+    <string-array name="collections_names">
+        <item>Lista de Desejos</item>
+        <item>A jogar</item>
+        <item>Pausado</item>
+        <item>Concluído</item>
+    </string-array>
+    <string name="hello_blank_fragment">Olá fragmento em branco</string>
+    <string name="sign_up_prompt">Novo aqui? <font color="#D10341">Registe-se</font></string>
+    <string name="sign_in_prompt">Tens conta? <font color="#D10341">Faz login</font></string>
+
+    <string name="sign_in">Login</string>
+    <string name="username">Nome do utilizador</string>
+    <string name="password">Palavra-passe</string>
+    <string name="sign_up">Registas</string>
+    <string name="email">Email</string>
+    <string name="confirm_password">Confirmar Palavra-passe</string>
+</resources>

@@ -20,7 +20,7 @@
             android:layout_width="424dp"
             android:layout_height="242dp"
             app:srcCompat="@drawable/play2plat_logo"
-            android:layout_marginTop="20dp" /> <!-- Adiciona margem superior -->
+            android:layout_marginTop="20dp" />
 
         <!-- Adicionando os campos de usuário e senha -->
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:drawableLeft="@drawable/user"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Username"
+                android:hint="@string/username"
                 android:inputType="text"
                 android:paddingStart="5dp"
                 android:textColor="#000000" />
@@ -53,7 +53,7 @@
                 android:drawableLeft="@drawable/email"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:padding="5dp"
                 android:textColor="#000000" />
@@ -68,7 +68,7 @@
                 android:drawableLeft="@drawable/password"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:paddingStart="5dp"
                 android:textColor="#000000" />
@@ -83,24 +83,24 @@
                 android:drawableLeft="@drawable/password"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Confirm Password"
+                android:hint="@string/confirm_password"
                 android:inputType="textPassword"
                 android:paddingStart="5dp"
                 android:textColor="#000000" />
 
             <Button
-                android:id="@+id/btn_sign_in"
+                android:id="@+id/btn_sign_up"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="45dp"
                 android:background="@drawable/details"
-                android:text="Sign Up"
+                android:text="@string/sign_up"
                 android:fontFamily="@font/m_plus_rounded_1c_black"
                 android:textSize="30sp"
                 android:textColor="#FFFFFF"
-                android:textAllCaps="false"
-                />
+                android:textAllCaps="false" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
@@ -118,6 +118,5 @@
                 android:layout_marginTop="16dp"
                 android:textSize="16sp" />
         </LinearLayout>
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
