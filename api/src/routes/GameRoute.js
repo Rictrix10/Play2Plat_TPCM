@@ -10,5 +10,6 @@ router.delete('/games/:id', GameController.deleteGame);
 router.get('/games/company/:companyName', GameController.getGamesByCompany);
 router.get('/games/sequence/:sequenceName', GameController.getGamesBySequence);
 router.get('/games/searchByName/:name', GameController.getGamesByPartialName);
+router.get('/games/free/:isFree', GameController.getGamesByFreeStatus);
 
 module.exports = router;

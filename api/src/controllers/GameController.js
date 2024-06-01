@@ -156,6 +156,27 @@ const GameController = {
             }
         },
 
+        getGamesByFreeStatus: async (req, res) => {
+            try {
+                const { isFree } = req.params;
+                const parsedIsFree = isFree.toLowerCase() === 'true'; // Converte a string para booleano
+
+                const games = await GameModel.getGamesByParams(null, parsedIsFree);
+                const simplifiedGames = games.map(game => ({
+                    id: game.id,
+                    name: game.name,
+                    coverImage: game.coverImage,
+                    isFree: game.isFree
+                }));
+
+                res.json(simplifiedGames);
+            } catch (error) {
+                console.error('Erro ao buscar jogos por status gratuito:', error);
+                res.status(500).json({ error: 'Erro ao buscar jogos por status gratuito' });
+            }
+        },
+
+
   };
 
 module.exports = GameController;
