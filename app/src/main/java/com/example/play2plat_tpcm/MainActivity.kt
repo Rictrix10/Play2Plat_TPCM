@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         // Iniciando o fragmento padrão
         supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, Games_Fragment())
+            .replace(R.id.layout, Games_2_Fragment())
             .commit()
 
         // Verifica se o usuário é administrador e atualiza a visibilidade do ícone de administração
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     fun onClick(v: View) {
         when (v.id) {
             R.id.games_lay -> {
-                replaceFragment(Games_Fragment())
+                replaceFragment(Games_2_Fragment())
                 changeTabsIcon(R.id.games_icon, R.drawable.icon_games_selected)
                 changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
                 changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
