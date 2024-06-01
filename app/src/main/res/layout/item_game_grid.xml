@@ -8,6 +8,6 @@
     <ImageView
         android:id="@+id/game_cover_image"
         android:layout_width="126dp"
-        android:layout_height="160dp"
+        android:layout_height="168dp"
         android:scaleType="centerCrop" />
 </LinearLayout>
