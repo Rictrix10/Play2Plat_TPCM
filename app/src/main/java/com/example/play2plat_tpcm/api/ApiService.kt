@@ -75,6 +75,9 @@ interface ApiService {
     @POST("platform-game")
     fun addPlatformsToGame(@Body game_platform: GamePlatform): Call<GamePlatform>
 
+    @POST("user-platform")
+    fun addPlatformsToUser(@Body user_platform: UserPlatform): Call<UserPlatform>
+
     @PATCH("users/{id}")
     fun updateUser(@Path("id") userId: Int, @Body user: User): Call<User>
 
@@ -148,6 +151,11 @@ interface ApiService {
     @GET("user-game-favorite/user/{userId}")
     fun getFavoritesByUserId(@Path("userId") userId: Int): Call<List<ListFavoriteGames>>
 
-  
+    @DELETE("user-platform/user/{userId}/platform/{platformId}")
+    fun deletePlatformFromUser(@Path("userId") userId: Int, @Path("platformId") platformId: Int): Call<Void>
+
+    @DELETE("platform-game/platform/{platformId}/game/{gameId}")
+    fun deletePlatformFromGame(@Path("gameId") gameId: Int, @Path("platformId") platformId: Int): Call<Void>
+
 }
 
