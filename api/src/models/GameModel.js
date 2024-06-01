@@ -183,9 +183,9 @@ getPlatformByName: async (platformName) => {
                                 } catch (error) {
                                     console.error('Erro ao buscar jogos por sequencia:', error);
                                     throw error;
-                                },
+                                }
 
-            },
+            }
 
 };
 
