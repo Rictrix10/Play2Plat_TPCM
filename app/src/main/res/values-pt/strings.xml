@@ -25,7 +25,7 @@
     <string name="password">Palavra-passe</string>
     <string name="sign_up">Registar</string>
     <string name="email">Email</string>
-    <string name="confirm_password">Confirmar Palavra-passe</string>
+    <string name="confirm_password">Confirmar passe</string>
 
     <string name="upload_cover">Carregar Capa</string>
     <string name="enter_description">Descrição</string>
