@@ -165,8 +165,7 @@ const GameController = {
                 const simplifiedGames = games.map(game => ({
                     id: game.id,
                     name: game.name,
-                    coverImage: game.coverImage,
-                    isFree: game.isFree
+                    coverImage: game.coverImage
                 }));
 
                 res.json(simplifiedGames);
