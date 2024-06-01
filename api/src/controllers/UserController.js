@@ -114,13 +114,13 @@ const UserController = {
             const user = await UserModel.findUserByUsername(username);
 
             if (!user) {
-                return res.status(401).json({ error: 'Credenciais inválidas' });
+                return res.status(441).json({ error: 'Utilizador não existe' });
             }
 
             const isPasswordValid = await bcrypt.compare(password, user.password);
 
             if (!isPasswordValid) {
-                return res.status(401).json({ error: 'Credenciais inválidas' });
+                return res.status(442).json({ error: 'Credenciais inválidas' });
             }
 
             res.json({ message: 'Login bem-sucedido', user });
