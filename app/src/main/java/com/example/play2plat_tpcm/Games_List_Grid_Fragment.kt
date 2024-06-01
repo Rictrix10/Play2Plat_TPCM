@@ -19,7 +19,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Games_List_Grid_Fragment : Fragment() {
+class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var gameCoverAdapter: Games_List_Grid_Adapter
@@ -57,7 +57,7 @@ class Games_List_Grid_Fragment : Fragment() {
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
 
         recyclerView.layoutManager = GridLayoutManager(context, 3)
-        gameCoverAdapter = Games_List_Grid_Adapter(emptyList())
+        gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
         recyclerView.adapter = gameCoverAdapter
 
         loadGames()
@@ -117,6 +117,16 @@ class Games_List_Grid_Fragment : Fragment() {
         })
     }
 
+    // Handle game click event
+    override fun onGameClick(gameId: Int) {
+        val platforms = arrayListOf<String>()
+        val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, viewGameFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
     // Inner class for the fragment
     private fun Collections.toGame(): Game {
         return Game(
@@ -145,6 +155,4 @@ class Games_List_Grid_Fragment : Fragment() {
             companyId = 0
         )
     }
-
-
 }

@@ -117,8 +117,6 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         setListViewHeightBasedOnItems(collectionList)
     }
 
-
-
     private fun toggleListVisibility(listView: ListView, titleView: TextView) {
         val heightInPx = 50.dpToPx()
 
@@ -171,4 +169,3 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         redirectToViewGame(gameId)
     }
 }
-
