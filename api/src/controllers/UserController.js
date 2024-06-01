@@ -9,13 +9,13 @@ const UserController = {
 
             // Verificar se o email é válido
             if (!validator.isEmail(email)) {
-                return res.status(400).json({ error: 'Email inválido' });
+                return res.status(408).json({ error: 'Email inválido' });
             }
 
             // Verificar se a password atende aos critérios
             const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
             if (!passwordRegex.test(password)) {
-                return res.status(400).json({
+                return res.status(407).json({
                     error: 'A password deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial',
                 });
             }
@@ -23,13 +23,13 @@ const UserController = {
             // Verificar se o email já está em uso
             const existingUserByEmail = await UserModel.findUserByEmail(email);
             if (existingUserByEmail) {
-                return res.status(400).json({ error: 'Email já está em uso' });
+                return res.status(406).json({ error: 'Email já está em uso' });
             }
 
             // Verificar se o nome de utilizador já está em uso
             const existingUserByUsername = await UserModel.findUserByUsername(username);
             if (existingUserByUsername) {
-                return res.status(400).json({ error: 'Nome de utilizador já está em uso' });
+                return res.status(405).json({ error: 'Nome de utilizador já está em uso' });
             }
 
             // Hash da password
