@@ -28,13 +28,13 @@ model user {
 
 model userType {
   id            Int         @id @default(autoincrement())
-  name          String
+  name          String      @unique
   users         user[]
 }
 
 model platform {
   id            Int    @id @default(autoincrement())
-  name          String
+  name          String @unique
   users         user[]
   games         game[]
   userPlatform  userPlatform[]
@@ -53,19 +53,19 @@ model userPlatform {
 
 model company {
   id      Int    @id @default(autoincrement())
-  name    String
+  name    String @unique
   games   game[]
 }
 
 model sequence {
   id      Int    @id @default(autoincrement())
-  name    String
+  name    String @unique
   games   game[]
 }
 
 model genre {
   id            Int    @id @default(autoincrement())
-  name          String
+  name          String @unique
   games         game[]
   gameGenres    gameGenre[]
 }
@@ -154,6 +154,7 @@ model userGameComment {
   game          game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
   userId        Int
   gameId        Int
+  date          DateTime?
   latitude      Float
   longitude     Float
 
