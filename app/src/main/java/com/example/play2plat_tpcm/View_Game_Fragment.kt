@@ -176,7 +176,7 @@ class View_Game_Fragment : Fragment() {
                             val platforms = game.platforms
                             val canEditPlatforms = currentUserType == 1
                             if(platforms != null){
-                                val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms)
+                                val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, false, game.id)
                                 childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
                             }
 

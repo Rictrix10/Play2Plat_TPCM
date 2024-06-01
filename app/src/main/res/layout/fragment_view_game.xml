@@ -190,6 +190,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+
             <TextView
                 android:id="@+id/description"
                 android:layout_width="wrap_content"
@@ -234,15 +235,23 @@
                 app:layout_constraintTop_toBottomOf="@id/horizontal_line3"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <fragment
-                android:id="@+id/platforms_fragment"
-                android:name="com.example.play2plat_tpcm.Platforms_List_Fragment"
+            <LinearLayout
+                android:id="@+id/platforms_fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
                 app:layout_constraintTop_toBottomOf="@id/platforms"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <FrameLayout
+                    android:id="@+id/platforms_fragment"
+                    android:name="com.example.play2plat_tpcm.Platforms_List_Fragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
 
             <View
                 android:id="@+id/horizontal_line4"
@@ -250,7 +259,7 @@
                 android:layout_height="2dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/details"
-                app:layout_constraintTop_toBottomOf="@id/platforms_fragment"
+                app:layout_constraintTop_toBottomOf="@id/platforms_fragment_container"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
