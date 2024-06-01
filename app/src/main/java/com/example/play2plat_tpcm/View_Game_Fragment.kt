@@ -28,8 +28,11 @@ import android.util.Log
 
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import androidx.viewpager2.widget.ViewPager2
 import com.example.play2plat_tpcm.api.Avaliation
 import com.example.play2plat_tpcm.api.UserGame
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class View_Game_Fragment : Fragment() {
 
@@ -49,11 +52,11 @@ class View_Game_Fragment : Fragment() {
     private lateinit var collectionList: ListView
     private lateinit var collectionInfoValues: Array<String>
     private lateinit var collectionAdapter: CollectionsAdapter
-    private lateinit var starViews: List<ImageView>
-    private var currentRating = 0
     private var gameId: Int = 0
     private var selectedOption: String? = null
     private var currentUserType: Int = 0
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,45 +69,25 @@ class View_Game_Fragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_view_game, container, false)
-
-        // Obtenha as plataformas do argumento
-        val platforms = arguments?.getStringArrayList("platforms") ?: ArrayList()
-
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        currentUserType = sharedPreferences.getInt("user_type_id", 0)
-
 
         // Initialize views
         nameTextView = view.findViewById(R.id.name)
         companyTextView = view.findViewById(R.id.company)
-        genresTextView = view.findViewById(R.id.genres)
-        descriptionTextView = view.findViewById(R.id.api_description)
+
+
         gameImageView = view.findViewById(R.id.game)
         pegiInfoImageView = view.findViewById(R.id.pegi_info)
         backButton = view.findViewById(R.id.back_button)
         containerLayout = view.findViewById(R.id.container_layout)
         favoriteIcon = view.findViewById(R.id.favorite_icon)
-        // Adicionado
-
         collectionAccordion = view.findViewById(R.id.collection_accordion)
         collectionTitle = view.findViewById(R.id.collection_title)
         collectionList = view.findViewById(R.id.collection_list)
 
-        starViews = listOf(
-            view.findViewById(R.id.star1),
-            view.findViewById(R.id.star2),
-            view.findViewById(R.id.star3),
-            view.findViewById(R.id.star4),
-            view.findViewById(R.id.star5)
-        )
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        currentUserType = sharedPreferences.getInt("user_type_id", 0)
 
-        for ((index, starView) in starViews.withIndex()) {
-            starView.setOnClickListener { handleStarClick(index + 1) }
-        }
-
-        // Set up back button click listener
         backButton.setOnClickListener {
             requireActivity().onBackPressed()
         }
@@ -116,14 +99,11 @@ class View_Game_Fragment : Fragment() {
             handleAccordionSelection()
         }
 
-
         collectionList.setOnItemClickListener { parent, view, position, id ->
             val selectedOption = if (position >= 0 && position < collectionInfoValues.size) collectionInfoValues[position] else null
             updateUserGameStateWithSelectedOption(selectedOption)
         }
 
-
-        // Get the game ID from arguments or default to 53
         val gameId = arguments?.getInt("gameId") ?: 6
         if (gameId != 0) {
             ApiManager.apiService.getGameById(gameId).enqueue(object : Callback<GameInfo> {
@@ -131,63 +111,55 @@ class View_Game_Fragment : Fragment() {
                     if (response.isSuccessful) {
                         val game = response.body()
                         if (game != null) {
-                            // Update views with game data
                             nameTextView.text = game.name
                             companyTextView.text = game.company
-                            genresTextView.text = game.genres.joinToString(" • ")
-                            descriptionTextView.text = game.description
                             Picasso.get().load(game.coverImage).into(gameImageView, object : com.squareup.picasso.Callback {
                                 override fun onSuccess() {
-                                    // Carregamento da imagem bem-sucedido, agora vamos extrair as cores principais
                                     val bitmap = (gameImageView.drawable as BitmapDrawable).bitmap
                                     Palette.from(bitmap).generate { palette ->
-                                        // Obtendo as cores extraídas do Palette
                                         val dominantColor = palette?.dominantSwatch?.rgb ?: 0
                                         val vibrantColor = palette?.vibrantSwatch?.rgb ?: 0
-
-                                        // Definindo o gradiente de duas cores usando as cores extraídas
                                         val colors = intArrayOf(dominantColor, vibrantColor)
                                         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                         containerLayout.background = gradientDrawable
                                     }
                                 }
 
-                                override fun onError(e: Exception?) {
-                                    // Tratamento de erro
-                                }
+                                override fun onError(e: Exception?) {}
                             })
 
-                            // Set the correct PEGI image
                             val pegiImageResId = when (game.pegiInfo) {
                                 3 -> R.drawable.pegi3
                                 7 -> R.drawable.pegi7
                                 12 -> R.drawable.pegi12
                                 16 -> R.drawable.pegi16
                                 18 -> R.drawable.pegi18
-                                else -> 0 // Default to a placeholder image or handle as needed
+                                else -> 0
                             }
                             if (pegiImageResId != 0) {
                                 Picasso.get().load(pegiImageResId).into(pegiInfoImageView)
                             }
 
-                            // Add platform buttons
-
-                            // Obtenha as plataformas do argumento
                             val platforms = game.platforms
-                            val canEditPlatforms = currentUserType == 1
-                            if(platforms != null){
-                                val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, false, game.id)
-                                childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
-                            }
 
+                            viewPager = view.findViewById(R.id.view_pager)
+                            tabLayout = view.findViewById(R.id.tab_layout)
+
+                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, platforms)
+                            viewPager.adapter = pagerAdapter
+
+                            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                                tab.text = when (position) {
+                                    0 -> "About"
+                                    1 -> "Interact"
+                                    else -> null
+                                }
+                            }.attach()
                         }
                     }
                 }
 
-
-                override fun onFailure(call: Call<GameInfo>, t: Throwable) {
-                    // Handle failure
-                }
+                override fun onFailure(call: Call<GameInfo>, t: Throwable) {}
             })
         }
 
@@ -222,7 +194,6 @@ class View_Game_Fragment : Fragment() {
         }
 
         handleAccordionSelection()
-        loadUserAvaliation(userId, gameId)
     }
 
     private fun loadCollections(context: Context) {
@@ -488,68 +459,12 @@ class View_Game_Fragment : Fragment() {
     }
      */
 
-    private fun handleStarClick(rating: Int) {
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
-
-        if (rating == currentRating) {
-            // Reset stars if the same rating is clicked again
-            updateStarViews(0)
-            currentRating = 0
-            deleteAvaliation(userId, gameId)
-        } else {
-            // Update stars to the new rating
-            updateStarViews(rating)
-            currentRating = rating
-            ApiManager.apiService.getAvaliation(userId).enqueue(object : Callback<List<Avaliation>> {
-                override fun onResponse(call: Call<List<Avaliation>>, response: Response<List<Avaliation>>) {
-                    if (response.isSuccessful) {
-                        val avaliations = response.body()
-                        val userAvaliation = avaliations?.find { it.gameId == gameId }
-                        if (userAvaliation == null) {
-                            addAvaliation(userId, gameId, rating)
-                        } else {
-                            updateAvaliation(userId, gameId, rating)
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Avaliation>>, t: Throwable) {
-                    // Handle failure
-                }
-            })
-        }
-    }
 
 
-    private fun updateStarViews(rating: Int) {
-        for ((index, starView) in starViews.withIndex()) {
-            if (index < rating) {
-                starView.setImageResource(R.drawable.icon_star_full)
-            } else {
-                starView.setImageResource(R.drawable.icon_star_outline)
-            }
-        }
-    }
 
-    private fun loadUserAvaliation(userId: Int, gameId: Int) {
-        ApiManager.apiService.getAvaliation(userId).enqueue(object : Callback<List<Avaliation>> {
-            override fun onResponse(call: Call<List<Avaliation>>, response: Response<List<Avaliation>>) {
-                if (response.isSuccessful) {
-                    val avaliations = response.body()
-                    val userAvaliation = avaliations?.find { it.gameId == gameId }
-                    if (userAvaliation != null) {
-                        updateStarViews(userAvaliation.stars.toInt())
-                        currentRating = userAvaliation.stars.toInt()
-                    }
-                }
-            }
 
-            override fun onFailure(call: Call<List<Avaliation>>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
+
+
 
     private fun addAvaliation(userId: Int, gameId: Int, stars: Int) {
         val avaliation = Avaliation(userId, gameId, stars.toFloat())
