@@ -124,6 +124,22 @@ const GameController = {
         }
     },
 
+    getGamesBySequence: async (req, res) => {
+        try {
+            const { sequenceName } = req.params;
+
+            if (!sequenceName) {
+                return res.status(400).json({ error: 'Informe o nome da sequencia' });
+            }
+
+            const games = await GameModel.getGamesBySequence(null, sequenceName);
+
+            res.json(games);
+        } catch (error) {
+            console.error('Erro ao buscar jogos por sequencia:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos por sequencia' });
+        }
+    },
 
   };
 

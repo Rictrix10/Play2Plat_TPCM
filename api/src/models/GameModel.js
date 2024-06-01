@@ -153,7 +153,38 @@ getPlatformByName: async (platformName) => {
                 } catch (error) {
                     console.error('Erro ao buscar jogos por empresa:', error);
                     throw error;
-                }
+                },
+
+                            getGamesBySequence: async (sequenceId, sequenceName) => {
+                                try {
+                                    const whereClause = {};
+                                    if (sequenceId) {
+                                        whereClause.sequenceId = sequenceId;
+                                    } else if (sequenceName) {
+                                        const sequence = await prisma.sequence.findUnique({
+                                            where: { name: sequenceName },
+                                        });
+                                        if (!company) {
+                                            throw new Error('Sequence not found');
+                                        }
+                                        whereClause.sequenceId = sequence.id;
+                                    }
+
+                                    const games = await prisma.game.findMany({
+                                        where: whereClause,
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            coverImage: true,
+                                        },
+                                    });
+
+                                    return games;
+                                } catch (error) {
+                                    console.error('Erro ao buscar jogos por sequencia:', error);
+                                    throw error;
+                                },
+
             },
 
 };
