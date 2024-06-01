@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="304dp"
         android:layout_marginBottom="468dp"
-        android:text="Description:"
+        android:text="@string/description"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
@@ -107,7 +107,7 @@
         android:layout_marginRight="312dp"
         android:layout_marginBottom="364dp"
         android:layout_marginTop="16dp"
-        android:text="Platforms:"
+        android:text="@string/platforms"
         android:textColor="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@+id/api_description"
         app:layout_constraintRight_toRightOf="parent" />
@@ -118,7 +118,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="276dp"
         android:layout_marginBottom="280dp"
-        android:text="Rate this Game:"
+        android:text="@string/rate_this_game"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
@@ -129,7 +129,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="332dp"
         android:layout_marginBottom="196dp"
-        android:text="Posts:"
+        android:text="@string/posts"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

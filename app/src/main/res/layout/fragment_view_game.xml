@@ -163,7 +163,7 @@
                         android:drawableEnd="@drawable/icon_spinner_down"
                         android:drawablePadding="8dp"
                         android:textSize="18sp"
-                        android:text="Collections"
+                        android:text="@string/collections"
                         android:textColor="#FFFFFF"
                         android:padding="5dp"
                         android:paddingStart="10dp"
@@ -194,7 +194,7 @@
                 android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Description:"
+                android:text="@string/description"
                 android:textColor="#FFFFFF"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
@@ -227,7 +227,7 @@
                 android:id="@+id/platforms"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Platforms:"
+                android:text="@string/platforms2"
                 android:textColor="#FFFFFF"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
@@ -258,7 +258,7 @@
                 android:id="@+id/rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rate this Game:"
+                android:text="@string/rate_this_game"
                 android:textColor="#FFFFFF"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
@@ -331,7 +331,7 @@
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
-                        android:text="bad"
+                        android:text="@string/bad"
                         android:gravity="center"
                         android:textColor="#FFFFFF" />
 
@@ -339,7 +339,7 @@
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
-                        android:text="ok"
+                        android:text="@string/ok"
                         android:gravity="center"
                         android:textColor="#FFFFFF" />
 
@@ -347,7 +347,7 @@
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
-                        android:text="good"
+                        android:text="@string/good"
                         android:gravity="center"
                         android:textColor="#FFFFFF" />
 
@@ -355,7 +355,7 @@
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
-                        android:text="great"
+                        android:text="@string/great"
                         android:gravity="center"
                         android:textColor="#FFFFFF" />
 
@@ -363,7 +363,7 @@
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
-                        android:text="wow"
+                        android:text="@string/wow"
                         android:gravity="center"
                         android:textColor="#FFFFFF" />
                 </LinearLayout>
@@ -383,7 +383,7 @@
                 android:id="@+id/posts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Posts:"
+                android:text="@string/posts"
                 android:textColor="#FFFFFF"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"

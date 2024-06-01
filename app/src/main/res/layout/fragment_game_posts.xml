@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="576dp"
         android:background="@drawable/text_input"
-        android:hint="New Post"
+        android:hint="@string/new_post"
         android:inputType="text"
         android:paddingStart="8dp"
         android:paddingTop="16dp"

@@ -23,7 +23,51 @@
     <string name="sign_in">Login</string>
     <string name="username">Nome do utilizador</string>
     <string name="password">Palavra-passe</string>
-    <string name="sign_up">Registas</string>
+    <string name="sign_up">Registar</string>
     <string name="email">Email</string>
     <string name="confirm_password">Confirmar Palavra-passe</string>
+
+    <string name="upload_cover">Carregar Capa</string>
+    <string name="enter_description">Descrição</string>
+    <string name="enter_game_title">Título do jogo</string>
+    <string name="genres">Géneros</string>
+    <string name="platforms">Plataformas</string>
+    <string name="companies">Franquias</string>
+    <string name="sequencess">Sequências</string>
+    <string name="pegi_information">Informações Pegi</string>
+    <string name="free">Grátis</string>
+    <string name="save">Guardar</string>
+
+
+    <string name="favorites">Favoritos</string>
+    <string name="games">Jogos</string>
+    <string name="search">Pesquisar</string>
+    <string name="profile">Perfil</string>
+
+    <string name="action_games">Jogos de Ação:</string>
+    <string name="free_games">Jogos Grátis:</string>
+    <string name="mobile_games">Jogos para Telemóvel:</string>
+
+    <string name="hello">Olá,</string>
+
+    <string name="description">Descrição:</string>
+    <string name="rate_this_game">Avalia este Jogo:</string>
+    <string name="posts">Comentários:</string>
+
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="new_pass">Nova Palavra-Passe</string>
+    <string name="confirm_pass">Confirmar Palavra-Passe</string>
+    <string name="change_pass">Alterar Palavra-Passe</string>
+
+    <string name="new_post">Novo comentário</string>
+
+    <string name="collections">Coleções</string>
+    <string name="platforms2">Platformas:</string>
+
+    <string name="bad">mau</string>
+    <string name="ok">ok</string>
+    <string name="good">bom</string>
+    <string name="great">ótimo</string>
+    <string name="wow">uau</string>
+
 </resources>

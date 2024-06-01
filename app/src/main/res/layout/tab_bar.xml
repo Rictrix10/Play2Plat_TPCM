@@ -35,8 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:text="Games"
-                />
+                android:text="@string/games"/>
         </LinearLayout>
 
         <LinearLayout
@@ -63,8 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:text="Favorites"
-                />
+                android:text="@string/favorites"/>
         </LinearLayout>
 
         <!-- Aqui está a adição da opção para o usuário administrador -->
@@ -114,8 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:text="Search"
-                />
+                android:text="@string/search"/>
         </LinearLayout>
 
         <!-- Novo LinearLayout para o novo item -->
@@ -143,10 +140,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:text="Profile"
-                />
+                android:text="@string/profile"/>
         </LinearLayout>
 
     </LinearLayout>
 
 </merge>
+
