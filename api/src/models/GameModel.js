@@ -153,6 +153,7 @@ getPlatformByName: async (platformName) => {
                 } catch (error) {
                     console.error('Erro ao buscar jogos por empresa:', error);
                     throw error;
+                    }
                 },
 
                             getGamesBySequence: async (sequenceId, sequenceName) => {
