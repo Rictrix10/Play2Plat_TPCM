@@ -3,8 +3,11 @@ package com.example.play2plat_tpcm
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -13,7 +16,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
-import com.example.play2plat_tpcm.api.UserRegister
 import com.example.play2plat_tpcm.api.UserLogin
 import com.example.play2plat_tpcm.api.UserLoginResponse
 import retrofit2.Call
@@ -21,6 +23,10 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LoginPage : AppCompatActivity() {
+
+    private lateinit var etPassword: EditText
+    private lateinit var ivTogglePasswordVisibility: ImageView
+    private var isPasswordVisible: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +37,13 @@ class LoginPage : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        etPassword = findViewById(R.id.et_password)
+        ivTogglePasswordVisibility = findViewById(R.id.iv_toggle_password_visibility)
+
+        ivTogglePasswordVisibility.setOnClickListener {
+            togglePasswordVisibility()
         }
 
         val btnSignIn: Button = findViewById(R.id.btn_sign_in)
@@ -46,9 +59,21 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
+    private fun togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            ivTogglePasswordVisibility.setImageResource(R.drawable.ic_eye_off)
+        } else {
+            etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            ivTogglePasswordVisibility.setImageResource(R.drawable.ic_eye)
+        }
+        isPasswordVisible = !isPasswordVisible
+        etPassword.setSelection(etPassword.text.length)
+    }
+
     private fun loginUser() {
         val username = findViewById<EditText>(R.id.et_username).text.toString()
-        val password = findViewById<EditText>(R.id.et_password).text.toString()
+        val password = etPassword.text.toString()
 
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
@@ -89,7 +114,6 @@ class LoginPage : AppCompatActivity() {
         })
     }
 
-
     private fun saveUserData(user: User) {
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -100,5 +124,5 @@ class LoginPage : AppCompatActivity() {
         editor.putInt("user_type_id", user.userTypeId)
         editor.apply()
     }
-
 }
+

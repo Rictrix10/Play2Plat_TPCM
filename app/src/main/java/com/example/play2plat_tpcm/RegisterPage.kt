@@ -28,12 +28,12 @@ class RegisterPage : AppCompatActivity() {
             insets
         }
 
-        val btnSignUp: Button = findViewById(R.id.btn_sign_in) // Botão de registro
+        val btnSignUp: Button = findViewById(R.id.btn_sign_up)
         btnSignUp.setOnClickListener {
             registerUser()
         }
 
-        val signInTextView: TextView = findViewById(R.id.sign_in) // TextView de Sign In
+        val signInTextView: TextView = findViewById(R.id.sign_in)
         signInTextView.setOnClickListener {
             // Redireciona para LoginPage quando clicado
             val intent = Intent(this, LoginPage::class.java)

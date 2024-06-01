@@ -13,7 +13,7 @@
         android:id="@+id/favorites_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Favorites"
+        android:text="@string/favorites"
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"

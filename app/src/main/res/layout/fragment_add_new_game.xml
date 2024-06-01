@@ -26,7 +26,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
-                    android:text="Upload Cover"
+                    android:text="@string/upload_cover"
                     android:background="@drawable/button_bd"
                     android:textColor="#FFFF"/>
 
@@ -48,7 +48,7 @@
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
                     android:background="@drawable/text_input"
-                    android:hint="Enter Game Title"
+                    android:hint="@string/enter_game_title"
                     android:textColorHint="#847BD7"
                     android:textColor="#393657"
                     android:textSize="16sp"
@@ -71,7 +71,7 @@
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
                     android:background="@drawable/text_input"
-                    android:hint="Enter Description"
+                    android:hint="@string/enter_description"
                     android:textColorHint="#847BD7"
                     android:textColor="#393657"
                     android:textSize="16sp"
@@ -99,7 +99,7 @@
                         android:drawableStart="@drawable/icon_genres"
                         android:drawableEnd="@drawable/icon_up"
                         android:drawablePadding="8dp"
-                        android:text="Genres"
+                        android:text="@string/genres"
                         android:textColor="#393657"
                         android:padding="10dp"
                         android:gravity="center_vertical"/>
@@ -130,7 +130,7 @@
                         android:drawableStart="@drawable/icon_platforms"
                         android:drawableEnd="@drawable/icon_up"
                         android:drawablePadding="8dp"
-                        android:text="Platforms"
+                        android:text="@string/platforms"
                         android:textColor="#393657"
                         android:padding="10dp"
                         android:gravity="center_vertical"/>
@@ -163,7 +163,7 @@
                         android:drawableStart="@drawable/icon_companies"
                         android:drawableEnd="@drawable/icon_up"
                         android:drawablePadding="8dp"
-                        android:text="Companies"
+                        android:text="@string/companies"
                         android:textColor="#393657"
                         android:padding="10dp"
                         android:gravity="center_vertical"/>
@@ -194,7 +194,7 @@
                         android:drawableStart="@drawable/icon_sequence"
                         android:drawableEnd="@drawable/icon_up"
                         android:drawablePadding="8dp"
-                        android:text="Sequence"
+                        android:text="@string/sequencess"
                         android:textColor="#393657"
                         android:padding="10dp"
                         android:gravity="center_vertical"/>
@@ -226,7 +226,7 @@
                         android:drawableStart="@drawable/icon_age"
                         android:drawableEnd="@drawable/icon_up"
                         android:drawablePadding="8dp"
-                        android:text="Pegi Information"
+                        android:text="@string/pegi_information"
                         android:textColor="#393657"
                         android:padding="10dp"
                         android:gravity="center_vertical"/>
@@ -245,7 +245,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:text="Free"
+                    android:text="@string/free"
                     android:textColor="@color/white"
                     android:checked="false"
                     android:layoutDirection="rtl"
@@ -258,7 +258,7 @@
                     android:id="@+id/save"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Save"
+                    android:text="@string/save"
                     android:background="@drawable/button_bd"
                     android:textColor="#FFFF"/>
 

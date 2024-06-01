@@ -37,25 +37,40 @@
                 android:drawableLeft="@drawable/user"
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Username"
+                android:hint="@string/username"
                 android:inputType="text"
                 android:paddingStart="5dp"
                 android:textColor="#000000" />
 
-            <EditText
-                android:id="@+id/et_password"
+            <RelativeLayout
                 android:layout_width="250dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/text_input"
-                android:drawableLeft="@drawable/password"
-                android:drawablePadding="8dp"
-                android:fontFamily="@font/m_plus_rounded_1c_medium"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:paddingStart="5dp"
-                android:textColor="#000000" />
+                android:layout_marginTop="16dp">
+
+                <EditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/text_input"
+                    android:drawableLeft="@drawable/password"
+                    android:drawablePadding="8dp"
+                    android:fontFamily="@font/m_plus_rounded_1c_medium"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:paddingStart="5dp"
+                    android:textColor="#000000"
+                    android:paddingEnd="40dp" />
+
+                <ImageView
+                    android:id="@+id/iv_toggle_password_visibility"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_eye_off" />
+            </RelativeLayout>
 
             <Button
                 android:id="@+id/btn_sign_in"
@@ -64,7 +79,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="45dp"
                 android:background="@drawable/details"
-                android:text="Sign In"
+                android:text="@string/sign_in"
                 android:fontFamily="@font/m_plus_rounded_1c_black"
                 android:textSize="30sp"
                 android:textColor="#FFFFFF"
@@ -113,3 +128,4 @@
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+

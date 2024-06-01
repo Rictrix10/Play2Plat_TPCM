@@ -29,19 +29,20 @@ class Intro_Page : AppCompatActivity() {
 
         // Localiza o botão "Get Started" pelo ID
         val btnGetStarted = findViewById<Button>(R.id.btn_get_started)
+        // Define o texto do botão a partir do strings.xml
+        btnGetStarted.text = getString(R.string.btn_get_started_text)
 
         // Define um ouvinte de clique para o botão "Get Started"
         btnGetStarted.setOnClickListener {
             // Cria uma intenção para iniciar a atividade MainActivity
             val intent = Intent(this, LoginPage::class.java)
-
             // Inicia a atividade MainActivity
             startActivity(intent)
         }
 
         val tvDescription: TextView = findViewById(R.id.tv_description)
-
-        val text = "Explore your electronic gaming adventures like never before with play2plat - the ultimate app to record, share, and connect with fellow passionate gamers."
+        // Busca o texto do description a partir do strings.xml
+        val text = getString(R.string.tv_description_text)
         val spannable = SpannableString(text)
 
         // Find the start and end index of the word "plat"
@@ -52,7 +53,5 @@ class Intro_Page : AppCompatActivity() {
         spannable.setSpan(ForegroundColorSpan(Color.parseColor("#FF1F53")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         tvDescription.text = spannable
-
-
     }
 }
