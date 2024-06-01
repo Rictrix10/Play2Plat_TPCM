@@ -76,7 +76,7 @@ class LoginPage : AppCompatActivity() {
         val password = etPassword.text.toString()
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.please_fill_all_fields, Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -86,33 +86,31 @@ class LoginPage : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val userLoginResponse = response.body()
                     if (userLoginResponse != null) {
-                        // Aqui está o corpo da resposta do login
                         val user = userLoginResponse.user
-
-                        // Salvar os dados do utilizador no SharedPreferences
                         saveUserData(user)
-
-                        Toast.makeText(this@LoginPage, "Login successfully", Toast.LENGTH_SHORT).show()
-                        // Login successful, navigate to MainActivity
+                        Toast.makeText(this@LoginPage, R.string.login_successful, Toast.LENGTH_SHORT).show()
                         val intent = Intent(this@LoginPage, MainActivity::class.java)
                         startActivity(intent)
-                        finish() // Finish the current activity to prevent returning to it when pressing back
+                        finish()
                     } else {
-                        // Se a resposta do servidor não contiver dados do usuário, exibir mensagem de erro
-                        Toast.makeText(this@LoginPage, "Invalid response from server", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginPage, R.string.error_response_from_server, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Login failed, show an error message
-                    Toast.makeText(this@LoginPage, "Login failed", Toast.LENGTH_SHORT).show()
+                    val errorMessage = when (response.code()) {
+                        441 -> getString(R.string.user_not_found)
+                        442 -> getString(R.string.invalid_credentials)
+                        else -> getString(R.string.login_failed)
+                    }
+                    Toast.makeText(this@LoginPage, errorMessage, Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<UserLoginResponse>, t: Throwable) {
-                // An error occurred, show an error message
-                Toast.makeText(this@LoginPage, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginPage, R.string.login_failed, Toast.LENGTH_SHORT).show()
             }
         })
     }
+
 
     private fun saveUserData(user: User) {
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)

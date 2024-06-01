@@ -95,7 +95,7 @@ class RegisterPage : AppCompatActivity() {
         val confirmPassword = etConfirmPassword.text.toString()
 
         if (password != confirmPassword) {
-            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.password_mismatch, Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -103,13 +103,19 @@ class RegisterPage : AppCompatActivity() {
         ApiManager.apiService.createUser(user).enqueue(object : Callback<UserRegister> {
             override fun onResponse(call: Call<UserRegister>, response: Response<UserRegister>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(this@RegisterPage, "User registered successfully", Toast.LENGTH_SHORT).show()
-                    // Registro bem-sucedido, redireciona para LoginPage
+                    Toast.makeText(this@RegisterPage, R.string.user_registered_successfully, Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@RegisterPage, LoginPage::class.java)
                     startActivity(intent)
-                    finish() // Fecha a RegisterPage
+                    finish()
                 } else {
-                    Toast.makeText(this@RegisterPage, "Registration failed", Toast.LENGTH_SHORT).show()
+                    val errorMessage = when (response.code()) {
+                        440 -> getString(R.string.username_in_use)
+                        441 -> getString(R.string.email_in_use)
+                        442 -> getString(R.string.password_invalid)
+                        443 -> getString(R.string.email_invalid)
+                        else -> getString(R.string.registration_failed)
+                    }
+                    Toast.makeText(this@RegisterPage, errorMessage, Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -117,6 +123,6 @@ class RegisterPage : AppCompatActivity() {
                 Toast.makeText(this@RegisterPage, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-}
+    }}
+
 

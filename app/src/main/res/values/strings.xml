@@ -71,4 +71,25 @@
     <string name="great">great</string>
     <string name="wow">wow</string>
 
+
+        <string name="email_invalid">Invalid email address</string>
+    <string name="password_invalid">Pass must be 8+ chars, with uppercase, number, and special character</string>
+    <string name="email_in_use">Email is already in use</string>
+        <string name="username_in_use">Username is already in use</string>
+        <string name="registration_failed">Registration failed</string>
+        <string name="password_mismatch">Passwords do not match</string>
+        <string name="user_registered_successfully">User registered successfully</string>
+
+
+        <string name="user_not_found">User does not exist</string>
+        <string name="invalid_credentials">Invalid credentials</string>
+        <string name="login_failed">Login failed</string>
+        <string name="login_successful">Login successful</string>
+        <string name="please_fill_all_fields">Please fill in all fields</string>
+        <string name="error_response_from_server">Invalid response from server</string>
+
+
+
+
+
 </resources>

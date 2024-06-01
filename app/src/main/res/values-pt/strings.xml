@@ -70,4 +70,22 @@
     <string name="great">ótimo</string>
     <string name="wow">uau</string>
 
+    <string name="email_invalid">Endereço de email inválido</string>
+    <string name="password_invalid">A passe deve ter 8+ caracteres, com maiúsculas, números e caracteres especiais</string>
+    <string name="email_in_use">Email já está em uso</string>
+    <string name="username_in_use">Nome de utilizador já está em uso</string>
+    <string name="registration_failed">Falha no registo</string>
+    <string name="password_mismatch">As passes não coincidem</string>
+    <string name="user_registered_successfully">Utilizador registado com sucesso</string>
+
+    <string name="user_not_found">Utilizador não existe</string>
+    <string name="invalid_credentials">Credenciais inválidas</string>
+    <string name="login_failed">Falha no login</string>
+    <string name="login_successful">Login bem-sucedido</string>
+    <string name="please_fill_all_fields">Por favor, preencha todos os campos</string>
+    <string name="error_response_from_server">Resposta inválida do servidor</string>
+
+
+
+
 </resources>
