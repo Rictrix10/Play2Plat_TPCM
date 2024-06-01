@@ -165,7 +165,7 @@ getPlatformByName: async (platformName) => {
                                         const sequence = await prisma.sequence.findUnique({
                                             where: { name: sequenceName },
                                         });
-                                        if (!company) {
+                                        if (!sequence) {
                                             throw new Error('Sequence not found');
                                         }
                                         whereClause.sequenceId = sequence.id;
