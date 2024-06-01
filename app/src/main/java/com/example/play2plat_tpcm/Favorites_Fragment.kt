@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,22 +18,40 @@ import retrofit2.Response
 
 class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListener {
 
-    private lateinit var recyclerViewFavorites: RecyclerView
     private lateinit var favoritesAdapter: FavoritesAdapter
     private var favoriteGamesList: MutableList<ListFavoriteGames> = mutableListOf()
+    private lateinit var fragmentContainer: FrameLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_favorites, container, false)
+        val view = inflater.inflate(R.layout.fragment_favorites_2, container, false)
 
-        recyclerViewFavorites = view.findViewById(R.id.recycler_view_favorites)
-        recyclerViewFavorites.layoutManager = GridLayoutManager(context, 3)
         favoritesAdapter = FavoritesAdapter(favoriteGamesList, this)
-        recyclerViewFavorites.adapter = favoritesAdapter
+        fragmentContainer = view.findViewById(R.id.fragment_container)
 
-        loadFavoriteGames()
+        //loadFavoriteGames()
+
+        val textViewHeight = 50.dpToPx()
+
+        // Obtém a altura da tela
+        val displayMetrics = resources.displayMetrics
+        val screenHeight = displayMetrics.heightPixels
+
+        // Calcula a altura disponível para o FrameLayout
+        val availableHeight = screenHeight - textViewHeight
+
+        // Define a altura do FrameLayout
+        val layoutParams = fragmentContainer.layoutParams
+        layoutParams.height = availableHeight
+        fragmentContainer.layoutParams = layoutParams
+
+        val fragment = Games_List_Grid_Fragment.newInstance("Favorite")
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+
 
         return view
     }
@@ -51,6 +70,8 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
         redirectToViewGame(gameId)
     }
 
+
+    /*
     private fun loadFavoriteGames() {
         val userId = getUserIdFromSession()
         ApiManager.apiService.getFavoritesByUserId(userId).enqueue(object : Callback<List<ListFavoriteGames>> {
@@ -77,6 +98,13 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
                 // Tratar falha
             }
         })
+    }
+
+     */
+
+    private fun Int.dpToPx(): Int {
+        val scale = resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
     }
 
     private fun getUserIdFromSession(): Int {

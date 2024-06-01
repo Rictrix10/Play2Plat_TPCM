@@ -157,5 +157,10 @@ interface ApiService {
     @DELETE("platform-game/platform/{platformId}/game/{gameId}")
     fun deletePlatformFromGame(@Path("gameId") gameId: Int, @Path("platformId") platformId: Int): Call<Void>
 
+    @GET("games/searchByName/{name}")
+    fun getSearchedGamesByName(@Path("name") name: String): Call<List<Collections>>
+
+    @GET("game-genre/name/{genreName}")
+    fun getGamesByGenre(@Path("genreName") genreName: String): Call<List<Collections>>
 }
 

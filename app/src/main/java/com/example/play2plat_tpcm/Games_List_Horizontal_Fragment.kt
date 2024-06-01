@@ -6,10 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.adapters.Games_List_Grid_Adapter
+import com.example.play2plat_tpcm.adapters.Games_List_Horizontal_Adapter
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Collections
 import com.example.play2plat_tpcm.api.Game
@@ -19,20 +22,24 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClickListener {
+class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter.OnGameClickListener {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var gameCoverAdapter: Games_List_Grid_Adapter
+    private lateinit var gameCoverAdapter: Games_List_Horizontal_Adapter
+    private lateinit var titleText: TextView
     private var filterType: String? = null
+    private var paramater: String? = null
     private var userId: Int = 0
 
     companion object {
         private const val ARG_FILTER_TYPE = "filter_type"
+        private const val ARG_PARAMATER = "paramater"
 
-        fun newInstance(filterType: String): Games_List_Grid_Fragment {
-            val fragment = Games_List_Grid_Fragment()
+        fun newInstance(filterType: String, paramater: String): Games_List_Horizontal_Fragment {
+            val fragment = Games_List_Horizontal_Fragment()
             val args = Bundle()
             args.putString(ARG_FILTER_TYPE, filterType)
+            args.putString(ARG_PARAMATER, paramater)
             fragment.arguments = args
             return fragment
         }
@@ -42,6 +49,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         super.onCreate(savedInstanceState)
         arguments?.let {
             filterType = it.getString(ARG_FILTER_TYPE)
+            paramater= it.getString(ARG_PARAMATER)
         }
 
         // Retrieve userId from SharedPreferences
@@ -53,22 +61,28 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_games_list_grid, container, false)
+        val view = inflater.inflate(R.layout.fragment_games_list_horizontal, container, false)
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
 
-        recyclerView.layoutManager = GridLayoutManager(context, 3)
-        gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this)
         recyclerView.adapter = gameCoverAdapter
+        titleText = view.findViewById(R.id.text_view)
+
+        titleText.text = "$paramater Games"
+
 
         loadGames()
 
         return view
     }
 
+
     private fun loadGames() {
         when (filterType) {
             "Playing", "Wish List", "Paused", "Concluded" -> getStateCollection(filterType!!)
             "Favorite" -> getFavoriteGames()
+            "Genres" -> getGamesByGenre(paramater!!)
             else -> getStateCollection("Playing")
         }
     }
@@ -117,16 +131,14 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         })
     }
 
-    /*
-    private fun getSearchedGamesbyName() {
-        val name = "League"
-        ApiManager.apiService.getSearchedGamesByName(name).enqueue(object : Callback<List<Collections>> {
+    private fun getGamesByGenre(genreName: String) {
+        ApiManager.apiService.getGamesByGenre(genreName).enqueue(object : Callback<List<Collections>> {
             override fun onResponse(
                 call: Call<List<Collections>>,
                 response: Response<List<Collections>>
             ) {
                 if (response.isSuccessful) {
-                    val games = response.body()?.map { it.game.toGame() } ?: emptyList()
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
                     gameCoverAdapter.updateGames(games)
                 } else {
@@ -136,6 +148,26 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
 
             override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
                 Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+        /*
+    private fun loadFreeGames() {
+        ApiManager.apiService.getAllGames().enqueue(object : Callback<List<Game>> {
+            override fun onResponse(call: Call<List<Game>>, response: Response<List<Game>>) {
+                if (response.isSuccessful) {
+                    val games = response.body()
+                    if (games != null) {
+                        GamesList.clear()
+                        GamesList.addAll(games)
+                        GamesAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<Game>>, t: Throwable) {
+
             }
         })
     }

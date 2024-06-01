@@ -76,6 +76,17 @@ class Profile_Fragment : Fragment() {
         }
 
 
+        val fragment = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite")
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+
+        val fragment2 = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing")
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container2, fragment2)
+            .commit()
+
+
         ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
@@ -184,6 +195,7 @@ class Profile_Fragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_profile_, container, false)
     }
+
 
 
     companion object {
