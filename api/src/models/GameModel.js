@@ -186,7 +186,29 @@ getPlatformByName: async (platformName) => {
                                     throw error;
                                 }
 
-            }
+            },
+
+                getGamesByPartialName: async (partialName) => {
+                    try {
+                        const games = await prisma.game.findMany({
+                            where: {
+                                name: {
+                                    contains: partialName,
+                                    mode: 'insensitive', // Faz a busca ser case-insensitive
+                                },
+                            },
+                            select: {
+                                id: true,
+                                name: true,
+                                coverImage: true,
+                            },
+                        });
+                        return games;
+                    } catch (error) {
+                        console.error('Erro ao buscar jogos por nome parcial:', error);
+                        throw error;
+                    }
+                },
 
 };
 

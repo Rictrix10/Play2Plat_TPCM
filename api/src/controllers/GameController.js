@@ -141,6 +141,21 @@ const GameController = {
         }
     },
 
+        getGamesByPartialName: async (req, res) => {
+            try {
+                const { name } = req.params;
+                if (!name) {
+                    return res.status(400).json({ error: 'O parâmetro name é obrigatório' });
+                }
+
+                const games = await GameModel.getGamesByPartialName(name);
+                res.json(games);
+            } catch (error) {
+                console.error('Erro ao buscar jogos por nome parcial:', error);
+                res.status(500).json({ error: 'Erro ao buscar jogos por nome parcial' });
+            }
+        },
+
   };
 
 module.exports = GameController;
