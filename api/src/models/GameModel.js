@@ -125,6 +125,37 @@ getPlatformByName: async (platformName) => {
             }
         },
 
+            getGamesByCompany: async (companyId, companyName) => {
+                try {
+                    const whereClause = {};
+                    if (companyId) {
+                        whereClause.companyId = companyId;
+                    } else if (companyName) {
+                        const company = await prisma.company.findUnique({
+                            where: { name: companyName },
+                        });
+                        if (!company) {
+                            throw new Error('Company not found');
+                        }
+                        whereClause.companyId = company.id;
+                    }
+
+                    const games = await prisma.game.findMany({
+                        where: whereClause,
+                        select: {
+                            id: true,
+                            name: true,
+                            coverImage: true,
+                        },
+                    });
+
+                    return games;
+                } catch (error) {
+                    console.error('Erro ao buscar jogos por empresa:', error);
+                    throw error;
+                }
+            },
+
 };
 
 module.exports = GameModel;

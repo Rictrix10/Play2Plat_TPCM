@@ -107,6 +107,23 @@ const GameController = {
             }
         },
 
+    getGamesByCompany: async (req, res) => {
+        try {
+            const { companyName } = req.params;
+
+            if (!companyName) {
+                return res.status(400).json({ error: 'Informe o nome da empresa' });
+            }
+
+            const games = await GameModel.getGamesByCompany(null, companyName);
+
+            res.json(games);
+        } catch (error) {
+            console.error('Erro ao buscar jogos por empresa:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos por empresa' });
+        }
+    },
+
 
   };
 
