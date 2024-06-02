@@ -210,18 +210,21 @@ getPlatformByName: async (platformName) => {
                     }
                 },
 
-getGamesOrderedByIdDesc: async () => {
+getGamesByDescendingId: async () => {
         try {
-            return await prisma.game.findMany({
+            const games = await prisma.game.findMany({
                 orderBy: {
-                    id: 'desc'
-                }
+                    id: 'desc',
+                },
             });
+            return games;
         } catch (error) {
-            console.error('Erro ao buscar jogos ordenados por ID:', error);
+            console.error('Erro ao buscar jogos por ID decrescente:', error);
             throw error;
         }
     },
+
+    // ... outros métodos ...
 };
 
 module.exports = GameModel;

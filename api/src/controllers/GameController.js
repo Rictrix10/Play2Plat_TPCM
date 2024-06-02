@@ -176,15 +176,17 @@ const GameController = {
         },
 
 
-  getGamesOrderedByIdDesc: async (req, res) => {
+  getGamesByDescendingId: async (req, res) => {
           try {
-              const games = await GameModel.getGamesOrderedByIdDesc();
+              const games = await GameModel.getGamesByDescendingId();
               res.json(games);
           } catch (error) {
-              console.error('Erro ao buscar jogos ordenados por ID:', error);
-              res.status(500).json({ error: 'Erro ao buscar jogos ordenados por ID' });
+              console.error('Erro ao buscar jogos por ID decrescente:', error);
+              res.status(500).json({ error: 'Erro ao buscar jogos por ID decrescente' });
           }
       },
+
+
   };
 
 module.exports = GameController;
