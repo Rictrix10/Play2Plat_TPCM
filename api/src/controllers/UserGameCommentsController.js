@@ -45,20 +45,7 @@ const UserGameCommentsController = {
         }
     },
 
-    deleteUserGameComment: async (req, res) => {
-        try {
-            const commentId = req.params.id;
-            const deleted = await UserGameCommentsModel.deleteCommentById(commentId);
-            if (deleted) {
-                res.status(204).end();
-            } else {
-                res.status(404).json({ error: 'Comentário não encontrado' });
-            }
-        } catch (error) {
-            console.error('Erro ao excluir comentário:', error);
-            res.status(500).json({ error: 'Erro ao excluir comentário' });
-        }
-    },
+
 
     getCommentsByGameId: async (req, res) => {
         try {
@@ -137,23 +124,22 @@ const UserGameCommentsController = {
              }
          },
 
-        deleteUserGameCommentByUserIdAndGameId: async (req, res) => {
-            try {
-                const userId = parseInt(req.params.userId, 10);
-                const gameId = parseInt(req.params.gameId, 10);
+         deleteUserGameCommentById: async (req, res) => {
+                try {
+                    const commentId = parseInt(req.params.id, 10);
+                    const deleteResult = await UserGameCommentsModel.deleteUserGameCommentById(commentId);
 
-                const result = await UserGameCommentsModel.deleteUserGameCommentByUserIdAndGameId(userId, gameId);
-                if (result.count > 0) {
-                    res.status(204).end();
-                } else {
-                    res.status(404).json({ error: 'Comentário não encontrado' });
+                    if (deleteResult) {
+                        res.status(204).send();  // No Content
+                    } else {
+                        res.status(404).json({ error: 'Comentário não encontrado' });
+                    }
+                } catch (error) {
+                    console.error('Erro ao deletar comentário:', error);
+                    res.status(500).json({ error: 'Erro interno ao deletar comentário' });
                 }
-            } catch (error) {
-                console.error('Erro ao excluir comentário do usuário:', error);
-                res.status(500).json({ error: 'Erro ao excluir comentário do usuário' });
             }
-        }
-    };
+        };
 
 module.exports = UserGameCommentsController;
 

@@ -28,13 +28,7 @@ const UserGameCommentsModel = {
         });
     },
 
-    deleteCommentById: async (id) => {
-        return await prisma.userGameComment.delete({
-            where: {
-                id: id,
-            }
-        });
-    },
+
 
     getCommentsByGameId: async (gameId) => {
         console.log('gameId:', gameId); // Adicione este log para verificar gameId
@@ -182,15 +176,12 @@ const UserGameCommentsModel = {
              });
          },
 
-        deleteUserGameCommentByUserIdAndGameId: async (userId, gameId) => {
-            return await prisma.userGameComment.deleteMany({
-                where: {
-                    userId: userId,
-                    gameId: gameId
-                }
-            });
-        }
-    };
+        deleteUserGameCommentById: async (id) => {
+                return await prisma.userGameComment.delete({
+                    where: { id: id }
+                });
+            }
+        };
 
 module.exports = UserGameCommentsModel;
 
