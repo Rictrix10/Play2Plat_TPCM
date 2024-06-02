@@ -11,5 +11,7 @@ router.get('/games/company/:companyName', GameController.getGamesByCompany);
 router.get('/games/sequence/:sequenceName', GameController.getGamesBySequence);
 router.get('/games/searchByName/:name', GameController.getGamesByPartialName);
 router.get('/games/free/:isFree', GameController.getGamesByFreeStatus);
+router.get('/games/orderByIdDesc', GameController.getGamesOrderedByIdDesc);
 
 module.exports = router;
+

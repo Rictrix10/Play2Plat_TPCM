@@ -176,6 +176,15 @@ const GameController = {
         },
 
 
+  getGamesOrderedByIdDesc: async (req, res) => {
+          try {
+              const games = await GameModel.getGamesOrderedByIdDesc();
+              res.json(games);
+          } catch (error) {
+              console.error('Erro ao buscar jogos ordenados por ID:', error);
+              res.status(500).json({ error: 'Erro ao buscar jogos ordenados por ID' });
+          }
+      },
   };
 
 module.exports = GameController;
