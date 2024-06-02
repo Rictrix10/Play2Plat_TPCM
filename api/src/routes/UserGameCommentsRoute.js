@@ -2,14 +2,21 @@ const express = require('express');
 const router = express.Router();
 const UserGameCommentsController = require('../controllers/UserGameCommentsController');
 
-router.post('/userGameComments', UserGameCommentsController.createUserGameComment);
-router.get('/userGameComments', UserGameCommentsController.getUserGameComments);
-router.get('/userGameComments/:id', UserGameCommentsController.getUserGameCommentById);
-router.delete('/userGameComments/:id', UserGameCommentsController.deleteUserGameComment);
-router.get('/userGameComments/game/:gameId', UserGameCommentsController.getCommentsByGameId);
-router.get('/userGameComments/postsPreview', UserGameCommentsController.getPostsPreview);
-router.get('/userGameComments/user/:userId', UserGameCommentsController.getPostsByUserId);
-router.get('/userGameComments/responses/:postId', UserGameCommentsController.getResponsesByPostId);
+router.post('/user-game-comment', UserGameCommentsController.createUserGameComment);
+
+router.get('/user-game-comment', UserGameCommentsController.getUserGameComments);
+
+router.get('/user-game-comment/:id', UserGameCommentsController.getUserGameCommentById);
+
+router.delete('/user-game-comment/:id', UserGameCommentsController.deleteUserGameComment);
+
+router.get('/user-game-comments/:gameId', UserGameCommentsController.getCommentsByGameId);
+
+router.get('/user-game-comment-preview', UserGameCommentsController.getPostsPreview);
+
+router.get('/user-game-comments-by-user/:userId', UserGameCommentsController.getPostsByUserId);
+
+router.get('/user-game-comments-responses/:postId', UserGameCommentsController.getResponsesByPostId);
 router.patch('/Comments/:userId/:gameId', UserGameCommentsController.updateUserGameComment);
 router.delete('/Comments/:userId/:gameId', UserGameCommentsController.deletingUserGameComment);
 
