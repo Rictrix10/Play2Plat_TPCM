@@ -2,20 +2,28 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const GameModel = {
-    createGame: async (name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId ) => {
-        return await prisma.game.create({
-            data: {
+    createGame: async (name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId) => {
+            const data = {
                 name,
                 description,
                 isFree,
                 releaseDate,
                 pegiInfo,
                 coverImage,
-                sequenceId,
-                companyId
+            };
+
+            if (sequenceId) {
+                data.sequenceId = sequenceId;
             }
-        });
-    },
+
+            if (companyId) {
+                data.companyId = companyId;
+            }
+
+            return await prisma.game.create({
+                data,
+            });
+        }, 
     getGames: async () => {
             return await prisma.game.findMany();
     },
