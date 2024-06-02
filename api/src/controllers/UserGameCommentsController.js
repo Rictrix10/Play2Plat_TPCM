@@ -112,23 +112,30 @@ const UserGameCommentsController = {
         }
     },
 
-     updateUserGameCommentByUserIdAndGameId: async (req, res) => {
-            try {
-                const userId = parseInt(req.params.userId, 10);
-                const gameId = parseInt(req.params.gameId, 10);
-                const data = req.body;
+     updateUserGameCommentById: async (req, res) => {
+             try {
+                 const commentId = parseInt(req.params.id, 10);
+                 const { comments, image, isAnswer, latitude, longitude } = req.body;
 
-                const result = await UserGameCommentsModel.updateUserGameCommentByUserIdAndGameId(userId, gameId, data);
-                if (result.count > 0) {
-                    res.status(200).json({ message: 'Comentário atualizado com sucesso' });
-                } else {
-                    res.status(404).json({ error: 'Comentário não encontrado' });
-                }
-            } catch (error) {
-                console.error('Erro ao atualizar comentário do usuário:', error);
-                res.status(500).json({ error: 'Erro ao atualizar comentário do usuário' });
-            }
-        },
+                 const updatedComment = await UserGameCommentsModel.updateUserGameCommentById(
+                     commentId,
+                     comments,
+                     image,
+                     isAnswer,
+                     latitude,
+                     longitude
+                 );
+
+                 if (updatedComment) {
+                     res.json(updatedComment);
+                 } else {
+                     res.status(404).json({ error: 'Comentário não encontrado' });
+                 }
+             } catch (error) {
+                 console.error('Erro ao atualizar comentário:', error);
+                 res.status(500).json({ error: 'Erro ao atualizar comentário' });
+             }
+         },
 
         deleteUserGameCommentByUserIdAndGameId: async (req, res) => {
             try {

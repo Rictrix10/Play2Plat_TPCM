@@ -169,15 +169,18 @@ const UserGameCommentsModel = {
         });
     },
 
-     updateUserGameCommentByUserIdAndGameId: async (userId, gameId, data) => {
-            return await prisma.userGameComment.updateMany({
-                where: {
-                    userId: userId,
-                    gameId: gameId
-                },
-                data: data
-            });
-        },
+     updateUserGameCommentById: async (id, comments, image, isAnswer, latitude, longitude) => {
+             return await prisma.userGameComment.update({
+                 where: { id: id },
+                 data: {
+                     comments: comments,
+                     image: image,
+                     isAnswer: isAnswer,
+                     latitude: latitude,
+                     longitude: longitude
+                 }
+             });
+         },
 
         deleteUserGameCommentByUserIdAndGameId: async (userId, gameId) => {
             return await prisma.userGameComment.deleteMany({
