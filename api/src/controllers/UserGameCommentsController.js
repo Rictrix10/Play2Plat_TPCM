@@ -96,6 +96,20 @@ const UserGameCommentsController = {
             console.error('Erro ao buscar posts por userId:', error);
             res.status(500).json({ error: 'Erro ao buscar posts' });
         }
+    },
+
+    getResponsesByPostId: async (req, res) => {
+        try {
+            const postId = parseInt(req.params.postId, 10);
+            if (isNaN(postId)) {
+                return res.status(400).json({ error: 'postId inválido' });
+            }
+            const comments = await UserGameCommentsModel.getResponsesByPostId(postId);
+            res.json(comments);
+        } catch (error) {
+            console.error('Erro ao buscar respostas por postId:', error);
+            res.status(500).json({ error: 'Erro ao buscar respostas' });
+        }
     }
 };
 
