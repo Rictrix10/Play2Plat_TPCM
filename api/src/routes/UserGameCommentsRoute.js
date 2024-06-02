@@ -20,7 +20,7 @@ router.get('/user-game-comments-responses/:postId', UserGameCommentsController.g
 
 router.patch('/userGameComments/:userId/:gameId', UserGameCommentController.updateUserGameComment);
 
-router.delete('/userGameComments/:userId/:gameId', UserGameCommentController.deleteUserGameComment);
+router.delete('/userGameComments/:userId/:gameId', UserGameCommentController.deletingUserGameComment);
 
 module.exports = router;
 

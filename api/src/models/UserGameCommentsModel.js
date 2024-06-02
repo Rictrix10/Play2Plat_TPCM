@@ -186,22 +186,22 @@ updateUserGameComment: async (userId, gameId, newCommentData) => {
         }
     },
 
-    deleteUserGameComment: async (userId, gameId) => {
-        try {
-            await prisma.userGameComment.delete({
-                where: {
-                    userId_gameId: {
-                        userId,
-                        gameId
+    deletingUserGameComment: async (userId, gameId) => {
+            try {
+                await prisma.userGameComment.delete({
+                    where: {
+                        userId_gameId: {
+                            userId,
+                            gameId
+                        }
                     }
-                }
-            });
-            return { message: 'Comentário excluído com sucesso' };
-        } catch (error) {
-            console.error('Erro ao excluir comentário do usuário:', error);
-            throw error;
+                });
+                return { message: 'Comentário excluído com sucesso' };
+            } catch (error) {
+                console.error('Erro ao excluir comentário do usuário:', error);
+                throw error;
+            }
         }
-    }
-};
+    };
 
 module.exports = UserGameCommentsModel;

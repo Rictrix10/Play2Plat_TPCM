@@ -124,17 +124,17 @@ updateUserGameComment: async (req, res) => {
         }
     },
 
-    deleteUserGameComment: async (req, res) => {
-        try {
-            const { userId, gameId } = req.params;
+    deletingUserGameComment: async (req, res) => {
+            try {
+                const { userId, gameId } = req.params;
 
-            await UserGameCommentModel.deleteUserGameComment(parseInt(userId, 10), parseInt(gameId, 10));
-            res.sendStatus(204);
-        } catch (error) {
-            console.error('Erro ao excluir comentário do usuário:', error);
-            res.status(500).json({ error: 'Erro ao excluir comentário do usuário' });
+                await UserGameCommentModel.deletingUserGameComment(parseInt(userId, 10), parseInt(gameId, 10));
+                res.sendStatus(204);
+            } catch (error) {
+                console.error('Erro ao excluir comentário do usuário:', error);
+                res.status(500).json({ error: 'Erro ao excluir comentário do usuário' });
+            }
         }
-    }
-};
+    };
 
 module.exports = UserGameCommentsController;
