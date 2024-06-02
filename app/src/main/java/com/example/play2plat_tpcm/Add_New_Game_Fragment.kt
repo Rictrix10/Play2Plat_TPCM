@@ -90,7 +90,6 @@ class Add_New_Game_Fragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_add_new_game, container, false)
 
         imageView = view.findViewById(R.id.image_view)
@@ -166,7 +165,6 @@ class Add_New_Game_Fragment : Fragment() {
             val selectedPlatformTexts = platformTitle.text.toString().split(", ")
             val selectedPegiInfo = pegiAdapter.getSelectedPosition().takeIf { it != -1 }?.let {
                 val pegiInfo = pegiInfoValues[it]
-                // Remove o prefixo "Pegi:" do título do Pegi
                 val pegiValue = pegiInfo.substringAfter(":").trim()
                 pegiValue.toIntOrNull() ?: 0
             } ?: 0
@@ -202,6 +200,37 @@ class Add_New_Game_Fragment : Fragment() {
                 }
             }
 
+            // Validações
+            if (gameTitle.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor, insira um nome para o jogo.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (description.length <= 6) {
+                Toast.makeText(requireContext(), "A descrição deve ter mais de 6 caracteres.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedCompanyId == null) {
+                Toast.makeText(requireContext(), "Por favor, selecione uma empresa.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedGenreIds.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor, selecione pelo menos um gênero.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedPlatformIds.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor, selecione pelo menos uma plataforma.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedImageUri == null) {
+                Toast.makeText(requireContext(), "Por favor, selecione uma imagem.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val context = requireContext()
 
             val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
@@ -210,201 +239,112 @@ class Add_New_Game_Fragment : Fragment() {
             val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
             val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-
             val call = ApiManager.apiService.uploadImage(imagePart)
             call.enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
                         val imageUrl = response.body()?.string()
                         imageUrl?.let {
-                            val pattern =
-                                Regex("\"url\":\"(\\S+)\"") // Create a regex pattern to extract the URL
+                            val pattern = Regex("\"url\":\"(\\S+)\"")
                             val matchResult = pattern.find(it)
 
                             matchResult?.let { result ->
-                                val coverImageUrl =
-                                    result.groupValues[1] // Assign the value to the outer variable
-                                //}
-                                //}
-                                //}
-                                /*
-                    else {
-                        // Erro no upload
+                                val coverImageUrl = result.groupValues[1]
+
+                                val newGame = Game(
+                                    id = null,
+                                    name = gameTitle,
+                                    description = description,
+                                    isFree = isFree,
+                                    releaseDate = "2024-04-24T00:00:00Z",
+                                    pegiInfo = selectedPegiInfo,
+                                    coverImage = coverImageUrl,
+                                    sequenceId = selectedSequenceId,
+                                    companyId = selectedCompanyId,
+                                )
+
+                                ApiManager.apiService.createGame(newGame)
+                                    .enqueue(object : Callback<Game> {
+                                        override fun onResponse(call: Call<Game>, response: Response<Game>) {
+                                            if (response.isSuccessful) {
+                                                val createdGame = response.body()
+                                                createdGame?.let { game ->
+                                                    Log.d("AddNewGame", "Jogo criado com sucesso: $game")
+
+                                                    // Associação de gêneros
+                                                    for (genreId in selectedGenreIds) {
+                                                        val gameToGenreAssociation = GameGenre(gameId = game.id, genreId = genreId)
+                                                        ApiManager.apiService.addGenresToGame(gameToGenreAssociation)
+                                                            .enqueue(object : Callback<GameGenre> {
+                                                                override fun onResponse(call: Call<GameGenre>, response: Response<GameGenre>) {
+                                                                    if (response.isSuccessful) {
+                                                                        Log.d("AddNewGame", "Gênero associado com sucesso: $gameToGenreAssociation")
+                                                                    } else {
+                                                                        Log.e("AddNewGame", "Erro ao associar gênero: ${response.message()}")
+                                                                    }
+                                                                }
+
+                                                                override fun onFailure(call: Call<GameGenre>, t: Throwable) {
+                                                                    Log.e("AddNewGame", "Falha na requisição de associação de gênero: ${t.message}")
+                                                                }
+                                                            })
+                                                    }
+
+                                                    // Associação de plataformas
+                                                    for (platformId in selectedPlatformIds) {
+                                                        val gameToPlatformAssociation = GamePlatform(gameId = game.id, platformId = platformId)
+                                                        ApiManager.apiService.addPlatformsToGame(gameToPlatformAssociation)
+                                                            .enqueue(object : Callback<GamePlatform> {
+                                                                override fun onResponse(call: Call<GamePlatform>, response: Response<GamePlatform>) {
+                                                                    if (response.isSuccessful) {
+                                                                        Log.d("AddNewGame", "Plataforma associada com sucesso: $gameToPlatformAssociation")
+                                                                    } else {
+                                                                        Log.e("AddNewGame", "Erro ao associar plataforma: ${response.message()}")
+                                                                    }
+                                                                }
+
+                                                                override fun onFailure(call: Call<GamePlatform>, t: Throwable) {
+                                                                    Log.e("AddNewGame", "Falha na requisição de associação de plataforma: ${t.message}")
+                                                                }
+                                                            })
+                                                    }
+
+                                                    // Redirecionar para View_Game_Fragment
+                                                    val platforms = arrayListOf<String>()
+                                                    val viewGameFragment = View_Game_Fragment.newInstance(game.id!!, platforms)
+                                                    requireActivity().supportFragmentManager.beginTransaction()
+                                                        .replace(R.id.layout, viewGameFragment)
+                                                        .addToBackStack(null)
+                                                        .commit()
+
+                                                } ?: run {
+                                                    Log.e("AddNewGame", "Erro: Resposta nula ao criar jogo.")
+                                                }
+                                            } else {
+                                                Log.e("AddNewGame", "Erro ao criar jogo: ${response.message()}")
+                                            }
+                                        }
+
+                                        override fun onFailure(call: Call<Game>, t: Throwable) {
+                                            Log.e("AddNewGame", "Falha na requisição: ${t.message}")
+                                        }
+                                    })
+                            }
+                        }
+                    } else {
                         Log.e("AddNewGame", "Erro no upload: ${response.message()}")
                     }
-
                 }
 
-                     */
-
-                                /*
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     Log.e("AddNewGame", "Failed to upload image: ${t.message}")
                 }
             })
-                 */
-
-
-                                if (selectedCompanyId != null && selectedSequenceId != null && selectedGenreIds.isNotEmpty() && selectedPlatformIds.isNotEmpty()) {
-                                    val newGame = Game(
-                                        id = null,
-                                        name = gameTitle,
-                                        description = description,
-                                        isFree = isFree,
-                                        releaseDate = "2024-04-24T00:00:00Z",
-                                        pegiInfo = selectedPegiInfo,
-                                        coverImage = coverImageUrl,
-                                        //coverImage = selectedImageUri.toString(),
-                                        sequenceId = selectedSequenceId,
-                                        companyId = selectedCompanyId,
-                                    )
-
-                                    ApiManager.apiService.createGame(newGame)
-                                        .enqueue(object : Callback<Game> {
-                                            override fun onResponse(
-                                                call: Call<Game>,
-                                                response: Response<Game>
-                                            ) {
-                                                if (response.isSuccessful) {
-                                                    val createdGame = response.body()
-                                                    if (createdGame != null) {
-                                                        Log.d(
-                                                            "AddNewGame",
-                                                            "Jogo criado com sucesso: $createdGame"
-                                                        )
-                                                        for (genreId in selectedGenreIds) {
-                                                            val gameToGenreAssociation = GameGenre(
-                                                                gameId = createdGame.id,
-                                                                genreId = genreId
-                                                            )
-
-                                                            ApiManager.apiService.addGenresToGame(
-                                                                gameToGenreAssociation
-                                                            )
-                                                                .enqueue(object :
-                                                                    Callback<GameGenre> {
-                                                                    override fun onResponse(
-                                                                        call: Call<GameGenre>,
-                                                                        response: Response<GameGenre>
-                                                                    ) {
-                                                                        if (response.isSuccessful) {
-                                                                            Log.d(
-                                                                                "AddNewGame",
-                                                                                "Gênero associado com sucesso: $gameToGenreAssociation"
-                                                                            )
-                                                                        } else {
-                                                                            Log.e(
-                                                                                "AddNewGame",
-                                                                                "Erro ao associar gênero: ${response.message()}"
-                                                                            )
-                                                                        }
-                                                                    }
-
-                                                                    override fun onFailure(
-                                                                        call: Call<GameGenre>,
-                                                                        t: Throwable
-                                                                    ) {
-                                                                        Log.e(
-                                                                            "AddNewGame",
-                                                                            "Falha na requisição de associação de gênero: ${t.message}"
-                                                                        )
-                                                                    }
-                                                                })
-                                                        }
-
-                                                        for (platformId in selectedPlatformIds) {
-                                                            val gameToPlatformAssociation =
-                                                                GamePlatform(
-                                                                    gameId = createdGame.id,
-                                                                    platformId = platformId
-                                                                )
-
-                                                            ApiManager.apiService.addPlatformsToGame(
-                                                                gameToPlatformAssociation
-                                                            ).enqueue(object :
-                                                                Callback<GamePlatform> {
-                                                                override fun onResponse(
-                                                                    call: Call<GamePlatform>,
-                                                                    response: Response<GamePlatform>
-                                                                ) {
-                                                                    if (response.isSuccessful) {
-                                                                        Log.d(
-                                                                            "AddNewGame",
-                                                                            "Plataforma associada com sucesso: $gameToPlatformAssociation"
-                                                                        )
-                                                                    } else {
-                                                                        Log.e(
-                                                                            "AddNewGame",
-                                                                            "Erro ao associar plataforma: ${response.message()}"
-                                                                        )
-                                                                    }
-                                                                }
-
-                                                                override fun onFailure(
-                                                                    call: Call<GamePlatform>,
-                                                                    t: Throwable
-                                                                ) {
-                                                                    Log.e(
-                                                                        "AddNewGame",
-                                                                        "Falha na requisição de associação de plataforma: ${t.message}"
-                                                                    )
-                                                                }
-                                                            })
-                                                        }
-
-                                                    } else {
-                                                        Log.e(
-                                                            "AddNewGame",
-                                                            "Erro: Resposta nula ao criar jogo."
-                                                        )
-                                                    }
-                                                } else {
-                                                    Log.e(
-                                                        "AddNewGame",
-                                                        "Erro ao criar jogo: ${response.message()}"
-                                                    )
-                                                }
-                                            }
-
-                                            override fun onFailure(call: Call<Game>, t: Throwable) {
-                                                Log.e(
-                                                    "AddNewGame",
-                                                    "Falha na requisição: ${t.message}"
-                                                )
-                                            }
-                                        })
-
-                                } else {
-                                    Log.e(
-                                        "AddNewGame",
-                                        "Empresa, sequência, gêneros ou plataformas selecionados não encontrados."
-                                    )
-                                }
-
-                                //}
-                                //}
-                            }
-                        }
-                    }
-
-                    else {
-                        // Erro no upload
-                        Log.e("AddNewGame", "Erro no upload: ${response.message()}")
-                    }
-
-                }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                // Erro na requisição
-            }
-        })
-
-
         }
-
 
         return view
     }
+
 
     private fun loadCompanies(context: Context) {
         ApiManager.apiService.getCompanies().enqueue(object : Callback<List<Company>> {

@@ -8,6 +8,6 @@ data class Game(
     val releaseDate: String,
     val pegiInfo: Int,
     val coverImage: String,
-    val sequenceId: Int,
+    val sequenceId: Int?,
     val companyId: Int
 )

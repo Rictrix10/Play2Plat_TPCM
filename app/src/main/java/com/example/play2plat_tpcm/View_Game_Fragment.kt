@@ -42,6 +42,7 @@ class View_Game_Fragment : Fragment() {
     private lateinit var descriptionTextView: TextView
     private lateinit var gameImageView: ImageView
     private lateinit var pegiInfoImageView: ImageView
+    private lateinit var isFreeImageView: ImageView
     private lateinit var backButton: ImageButton
     private lateinit var containerLayout: ConstraintLayout
     private lateinit var favoriteIcon: ImageView
@@ -78,6 +79,7 @@ class View_Game_Fragment : Fragment() {
 
         gameImageView = view.findViewById(R.id.game)
         pegiInfoImageView = view.findViewById(R.id.pegi_info)
+        isFreeImageView = view.findViewById(R.id.isFree)
         backButton = view.findViewById(R.id.back_button)
         containerLayout = view.findViewById(R.id.container_layout)
         favoriteIcon = view.findViewById(R.id.favorite_icon)
@@ -113,6 +115,11 @@ class View_Game_Fragment : Fragment() {
                         if (game != null) {
                             nameTextView.text = game.name
                             companyTextView.text = game.company
+                            if(!game.isFree){
+                                isFreeImageView.visibility = View.GONE
+                            }else{
+                                isFreeImageView.visibility = View.VISIBLE
+                            }
                             Picasso.get().load(game.coverImage).into(gameImageView, object : com.squareup.picasso.Callback {
                                 override fun onSuccess() {
                                     val bitmap = (gameImageView.drawable as BitmapDrawable).bitmap

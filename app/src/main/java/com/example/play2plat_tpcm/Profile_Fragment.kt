@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -33,6 +34,7 @@ class Profile_Fragment : Fragment() {
     private lateinit var editIconImageView: ImageView
     private lateinit var containerLayout: ConstraintLayout
     private lateinit var backIconImageView: ImageView
+    private lateinit var logoutButton: Button
     private var userId: Int = 0
     private var currentUserId: Int = 0
 
@@ -54,6 +56,7 @@ class Profile_Fragment : Fragment() {
         editIconImageView = view.findViewById(R.id.edit_icon)
         containerLayout = view.findViewById(R.id.container_layout)
         backIconImageView = view.findViewById(R.id.back_icon)
+        logoutButton = view.findViewById(R.id.logout_button)
 
         // Configurar a visibilidade do ícone de edição
         if (userId == currentUserId) {
@@ -75,6 +78,10 @@ class Profile_Fragment : Fragment() {
             requireActivity().onBackPressed()
         }
 
+        // Configurar ação do botão de logout
+        logoutButton.setOnClickListener {
+            logout()
+        }
 
         val fragment = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite")
         requireActivity().supportFragmentManager.beginTransaction()
@@ -85,7 +92,6 @@ class Profile_Fragment : Fragment() {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container2, fragment2)
             .commit()
-
 
         ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -122,6 +128,19 @@ class Profile_Fragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+    }
+
+    private fun logout() {
+        // Eliminar dados guardados no SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()
+
+        // Redirecionar para a LoginActivity
+        val intent = Intent(activity, LoginPage::class.java)
+        startActivity(intent)
+        activity?.finish()
     }
 
     private fun loadImage(avatarUrl: String?) {
@@ -180,7 +199,6 @@ class Profile_Fragment : Fragment() {
         }
     }
 
-
     private fun redirectToEditProfile() {
         val editProfileFragment = Edit_Profile_Fragment()
         requireActivity().supportFragmentManager.beginTransaction()
@@ -195,8 +213,6 @@ class Profile_Fragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_profile_, container, false)
     }
-
-
 
     companion object {
         @JvmStatic
