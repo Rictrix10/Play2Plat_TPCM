@@ -112,31 +112,41 @@ const UserGameCommentsController = {
         }
     },
 
-    updateUserGameComment: async (req, res) => {
-        try {
-            const { userId, gameId } = req.params;
-            const newCommentData = req.body;
+     updateUserGameCommentByUserIdAndGameId: async (req, res) => {
+            try {
+                const userId = parseInt(req.params.userId, 10);
+                const gameId = parseInt(req.params.gameId, 10);
+                const data = req.body;
 
-            const updatedComment = await UserGameCommentsModel.updateUserGameComment(parseInt(userId, 10), parseInt(gameId, 10), newCommentData);
-            res.json(updatedComment);
-        } catch (error) {
-            console.error('Erro ao atualizar comentário do usuário:', error);
-            res.status(500).json({ error: 'Erro ao atualizar comentário do usuário' });
+                const result = await UserGameCommentsModel.updateUserGameCommentByUserIdAndGameId(userId, gameId, data);
+                if (result.count > 0) {
+                    res.status(200).json({ message: 'Comentário atualizado com sucesso' });
+                } else {
+                    res.status(404).json({ error: 'Comentário não encontrado' });
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar comentário do usuário:', error);
+                res.status(500).json({ error: 'Erro ao atualizar comentário do usuário' });
+            }
+        },
+
+        deleteUserGameCommentByUserIdAndGameId: async (req, res) => {
+            try {
+                const userId = parseInt(req.params.userId, 10);
+                const gameId = parseInt(req.params.gameId, 10);
+
+                const result = await UserGameCommentsModel.deleteUserGameCommentByUserIdAndGameId(userId, gameId);
+                if (result.count > 0) {
+                    res.status(204).end();
+                } else {
+                    res.status(404).json({ error: 'Comentário não encontrado' });
+                }
+            } catch (error) {
+                console.error('Erro ao excluir comentário do usuário:', error);
+                res.status(500).json({ error: 'Erro ao excluir comentário do usuário' });
+            }
         }
-    },
-
-    deletingUserGameComment: async (req, res) => {
-        try {
-            const { userId, gameId } = req.params;
-
-            await UserGameCommentsModel.deletingUserGameComment(parseInt(userId, 10), parseInt(gameId, 10));
-            res.sendStatus(204);
-        } catch (error) {
-            console.error('Erro ao excluir comentário do usuário:', error);
-            res.status(500).json({ error: 'Erro ao excluir comentário do usuário' });
-        }
-    }
-};
+    };
 
 module.exports = UserGameCommentsController;
 

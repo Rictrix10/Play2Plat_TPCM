@@ -17,8 +17,9 @@ router.get('/user-game-comment-preview', UserGameCommentsController.getPostsPrev
 router.get('/user-game-comments-by-user/:userId', UserGameCommentsController.getPostsByUserId);
 
 router.get('/user-game-comments-responses/:postId', UserGameCommentsController.getResponsesByPostId);
-router.patch('/Comments/:userId/:gameId', UserGameCommentsController.updateUserGameComment);
-router.delete('/Comments/:userId/:gameId', UserGameCommentsController.deletingUserGameComment);
+
+router.patch('/user/:userId/game/:gameId', UserGameCommentsController.updateUserGameCommentByUserIdAndGameId);
+router.delete('/user/:userId/game/:gameId', UserGameCommentsController.deleteUserGameCommentByUserIdAndGameId);
 
 module.exports = router;
 

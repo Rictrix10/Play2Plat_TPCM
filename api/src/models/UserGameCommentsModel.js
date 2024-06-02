@@ -169,41 +169,25 @@ const UserGameCommentsModel = {
         });
     },
 
-    updateUserGameComment: async (userId, gameId, newCommentData) => {
-        try {
-            const updatedComment = await prisma.userGameComment.update({
+     updateUserGameCommentByUserIdAndGameId: async (userId, gameId, data) => {
+            return await prisma.userGameComment.updateMany({
                 where: {
-                    userId_gameId: {
-                        userId,
-                        gameId
-                    }
+                    userId: userId,
+                    gameId: gameId
                 },
-                data: newCommentData
+                data: data
             });
-            return updatedComment;
-        } catch (error) {
-            console.error('Erro ao atualizar comentário do usuário:', error);
-            throw error;
-        }
-    },
+        },
 
-    deletingUserGameComment: async (userId, gameId) => {
-        try {
-            await prisma.userGameComment.delete({
+        deleteUserGameCommentByUserIdAndGameId: async (userId, gameId) => {
+            return await prisma.userGameComment.deleteMany({
                 where: {
-                    userId_gameId: {
-                        userId,
-                        gameId
-                    }
+                    userId: userId,
+                    gameId: gameId
                 }
             });
-            return { message: 'Comentário excluído com sucesso' };
-        } catch (error) {
-            console.error('Erro ao excluir comentário do usuário:', error);
-            throw error;
         }
-    }
-};
+    };
 
 module.exports = UserGameCommentsModel;
 
