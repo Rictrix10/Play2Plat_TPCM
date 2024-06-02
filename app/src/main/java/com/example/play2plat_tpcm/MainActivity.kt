@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var isAdmin: IsAdmin // Declaração da variável para controlar o status de administração
+    private lateinit var isAdmin: IsAdmin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,17 +22,14 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userTypeId = sharedPreferences.getInt("user_type_id", 2)
 
-        // Verificar o tipo de utilizador para definir o status de administrador
         isAdmin = IsAdmin(userTypeId == 1)
 
         changeTabsText(R.id.games_text, true)
 
-        // Iniciando o fragmento padrão
         supportFragmentManager.beginTransaction()
             .replace(R.id.layout, Games_2_Fragment())
             .commit()
 
-        // Verifica se o usuário é administrador e atualiza a visibilidade do ícone de administração
         updateAdminIconVisibility()
     }
 
@@ -39,74 +37,26 @@ class MainActivity : AppCompatActivity() {
         when (v.id) {
             R.id.games_lay -> {
                 replaceFragment(Games_2_Fragment())
-                changeTabsIcon(R.id.games_icon, R.drawable.icon_games_selected)
-                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
-                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
-                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
-                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
-                changeTabsText(R.id.games_text, true)
-                changeTabsText(R.id.favorites_text, false)
-                changeTabsText(R.id.profile_text, false)
-                changeTabsText(R.id.search_text, false)
+                updateTabSelection(R.id.games_lay, R.id.games_icon, R.drawable.icon_games_selected, R.id.games_text)
             }
-
             R.id.favorites_lay -> {
                 replaceFragment(Favorites_Fragment())
-                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
-                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites_selected)
-                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
-                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
-                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
-                changeTabsText(R.id.games_text, false)
-                changeTabsText(R.id.favorites_text, true)
-                changeTabsText(R.id.profile_text, false)
-                changeTabsText(R.id.search_text, false)
+                updateTabSelection(R.id.favorites_lay, R.id.favorites_icon, R.drawable.icon_favorites_selected, R.id.favorites_text)
             }
-
             R.id.profile_lay -> {
-                // Recuperar o ID do usuário do SharedPreferences
                 val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
                 val userId = sharedPreferences.getInt("user_id", 0)
-
-                // Criar uma nova instância do Profile_Fragment com o ID do usuário
                 val profileFragment = Profile_Fragment.newInstance(userId)
-
                 replaceFragment(profileFragment)
-                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
-                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
-                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile_selected)
-                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
-                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
-                changeTabsText(R.id.games_text, false)
-                changeTabsText(R.id.favorites_text, false)
-                changeTabsText(R.id.profile_text, true)
-                changeTabsText(R.id.search_text, false)
+                updateTabSelection(R.id.profile_lay, R.id.profile_icon, R.drawable.icon_profile_selected, R.id.profile_text)
             }
-
             R.id.search_lay -> {
                 replaceFragment(Search_Fragment())
-                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
-                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
-                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
-                changeTabsIcon(R.id.search_icon, R.drawable.icon_search_selected)
-                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add)
-                changeTabsText(R.id.games_text, false)
-                changeTabsText(R.id.favorites_text, false)
-                changeTabsText(R.id.profile_text, false)
-                changeTabsText(R.id.search_text, true)
+                updateTabSelection(R.id.search_lay, R.id.search_icon, R.drawable.icon_search_selected, R.id.search_text)
             }
-
             R.id.new_game_lay -> {
                 replaceFragment(Add_New_Game_Fragment())
-                changeTabsIcon(R.id.games_icon, R.drawable.icon_games)
-                changeTabsIcon(R.id.favorites_icon, R.drawable.icon_favorites)
-                changeTabsIcon(R.id.profile_icon, R.drawable.icon_profile)
-                changeTabsIcon(R.id.search_icon, R.drawable.icon_search)
-                changeTabsIcon(R.id.add_new_game_icon, R.drawable.icon_add_selected)
-                changeTabsText(R.id.games_text, false)
-                changeTabsText(R.id.favorites_text, false)
-                changeTabsText(R.id.profile_text, false)
-                changeTabsText(R.id.search_text, false)
+                updateTabSelection(R.id.new_game_lay, R.id.add_new_game_icon, R.drawable.icon_add_selected, null)
             }
         }
     }
@@ -114,9 +64,41 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        fragmentTransaction.replace(R.id.layout, fragment)
-        fragmentTransaction.commit()
+
+        val containerView = findViewById<View>(R.id.layout)
+        if (containerView != null) {
+            fragmentTransaction.replace(R.id.layout, fragment)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+        } else {
+            Log.e("MainActivity", "Container R.id.layout nÃ£o encontrado.")
+        }
+    }
+
+    private fun updateTabSelection(layoutId: Int, iconId: Int, selectedDrawableId: Int, selectedTextId: Int?) {
+        val tabs = listOf(
+            Triple(R.id.games_lay, R.id.games_icon, R.id.games_text),
+            Triple(R.id.favorites_lay, R.id.favorites_icon, R.id.favorites_text),
+            Triple(R.id.profile_lay, R.id.profile_icon, R.id.profile_text),
+            Triple(R.id.search_lay, R.id.search_icon, R.id.search_text),
+            Triple(R.id.new_game_lay, R.id.add_new_game_icon, null) // Null para o texto do new_game_lay
+        )
+
+        tabs.forEach { (layId, icon, text) ->
+            if (layId == layoutId) {
+                changeTabsIcon(icon, selectedDrawableId)
+                text?.let { changeTabsText(it, true) }
+            } else {
+                when (icon) {
+                    R.id.games_icon -> changeTabsIcon(icon, R.drawable.icon_games)
+                    R.id.favorites_icon -> changeTabsIcon(icon, R.drawable.icon_favorites)
+                    R.id.profile_icon -> changeTabsIcon(icon, R.drawable.icon_profile)
+                    R.id.search_icon -> changeTabsIcon(icon, R.drawable.icon_search)
+                    R.id.add_new_game_icon -> changeTabsIcon(icon, R.drawable.icon_add)
+                }
+                text?.let { changeTabsText(it, false) }
+            }
+        }
     }
 
     private fun changeTabsIcon(iconId: Int, drawableId: Int) {
@@ -149,10 +131,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateAdminIconVisibility() {
         val adminLayout = findViewById<View>(R.id.new_game_lay)
-        if (isAdmin.isAdmin()) {
-            adminLayout.visibility = View.VISIBLE
-        } else {
-            adminLayout.visibility = View.GONE
-        }
+        adminLayout.visibility = if (isAdmin.isAdmin()) View.VISIBLE else View.GONE
     }
 }

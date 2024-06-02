@@ -54,9 +54,14 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         layoutParams.height = availableHeight
         fragmentContainer.layoutParams = layoutParams
 
-        val fragment = Games_List_Horizontal_Fragment.newInstance("Genres", "Action")
+        val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent")
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
+            .commit()
+
+        val fragment2 = Games_List_Horizontal_Fragment.newInstance("Genres", "Action")
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container2, fragment2)
             .commit()
 
         //searchView.isEnabled = false

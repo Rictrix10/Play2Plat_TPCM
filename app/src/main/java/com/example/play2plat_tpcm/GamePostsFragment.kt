@@ -43,6 +43,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private lateinit var commentEditTextView: EditText
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
+    private var gameId: Int = 0
 
     private var selectedImageUri: Uri? = null
 
@@ -58,6 +59,9 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            gameId = it.getInt(ARG_GAME_ID)
+        }
     }
 
     override fun onCreateView(
@@ -83,11 +87,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         val userId = sharedPreferences.getInt("user_id", 0)
 
         // Chama a API para obter os posts do jogo
-        getGamePosts()
+
+        getGamePosts(gameId)
 
         sendImageView.setOnClickListener {
             val comments = commentEditTextView.text.toString()
-            val gameId = 1
             val context = requireContext()
             val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
             val file = bitmapToFile(context, bitmap)
@@ -183,8 +187,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     }
 
-    private fun getGamePosts() {
-        val gameId = 1 // Defina o ID do jogo para obter os comentários
+    private fun getGamePosts(gameId: Int) {
+        // Defina o ID do jogo para obter os comentários
         ApiManager.apiService.getCommentByGame(gameId).enqueue(object : Callback<List<GameCommentsResponse>> {
             override fun onResponse(
                 call: Call<List<GameCommentsResponse>>,
@@ -237,9 +241,13 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
     companion object {
+        private const val ARG_GAME_ID = "gameId"
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(gameId: Int) =
             GamePostsFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_GAME_ID, gameId)
+                }
             }
     }
 }
