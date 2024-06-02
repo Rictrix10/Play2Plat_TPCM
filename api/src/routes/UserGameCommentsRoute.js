@@ -14,5 +14,7 @@ router.get('/user-game-comments/:gameId', UserGameCommentsController.getComments
 
 router.get('/user-game-comment-preview', UserGameCommentsController.getPostsPreview);
 
+router.get('/user-game-comments-by-user/:userId', UserGameCommentsController.getPostsByUserId);
+
 module.exports = router;
 

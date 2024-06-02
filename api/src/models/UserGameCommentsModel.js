@@ -66,9 +66,9 @@ const UserGameCommentsModel = {
                 isAnswer: null
             },
             orderBy: {
-                id: 'desc'
+                id: 'desc' // Ordena pelos mais recentes
             },
-            take: 5,
+            take: 5, // Limita a 5 resultados
             include: {
                 user: {
                     select: {
@@ -85,8 +85,65 @@ const UserGameCommentsModel = {
                 }
             }
         });
+    },
+
+    getPostsByUserId: async (userId) => {
+        const userComments = await prisma.userGameComment.findMany({
+            where: {
+                userId: userId,
+                isAnswer: null
+            },
+            orderBy: {
+                id: 'desc' // Ordena pelos mais recentes
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                    }
+                },
+                game: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        });
+
+        const otherComments = await prisma.userGameComment.findMany({
+            where: {
+                userId: {
+                    not: userId
+                },
+                isAnswer: null
+            },
+            orderBy: {
+                id: 'desc' // Ordena pelos mais recentes
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                    }
+                },
+                game: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        });
+
+        return [...userComments, ...otherComments];
     }
 };
 
 module.exports = UserGameCommentsModel;
+
 
