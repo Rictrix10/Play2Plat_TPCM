@@ -111,6 +111,30 @@ const UserGameCommentsController = {
             res.status(500).json({ error: 'Erro ao buscar respostas' });
         }
     }
+updateUserGameComment: async (req, res) => {
+        try {
+            const { userId, gameId } = req.params;
+            const newCommentData = req.body;
+
+            const updatedComment = await UserGameCommentModel.updateUserGameComment(parseInt(userId, 10), parseInt(gameId, 10), newCommentData);
+            res.json(updatedComment);
+        } catch (error) {
+            console.error('Erro ao atualizar comentário do usuário:', error);
+            res.status(500).json({ error: 'Erro ao atualizar comentário do usuário' });
+        }
+    },
+
+    deleteUserGameComment: async (req, res) => {
+        try {
+            const { userId, gameId } = req.params;
+
+            await UserGameCommentModel.deleteUserGameComment(parseInt(userId, 10), parseInt(gameId, 10));
+            res.sendStatus(204);
+        } catch (error) {
+            console.error('Erro ao excluir comentário do usuário:', error);
+            res.status(500).json({ error: 'Erro ao excluir comentário do usuário' });
+        }
+    }
 };
 
 module.exports = UserGameCommentsController;

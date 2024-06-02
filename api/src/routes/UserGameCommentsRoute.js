@@ -18,6 +18,10 @@ router.get('/user-game-comments-by-user/:userId', UserGameCommentsController.get
 
 router.get('/user-game-comments-responses/:postId', UserGameCommentsController.getResponsesByPostId);
 
+router.patch('/userGameComments/:userId/:gameId', UserGameCommentController.updateUserGameComment);
+
+router.delete('/userGameComments/:userId/:gameId', UserGameCommentController.deleteUserGameComment);
+
 module.exports = router;
 
 
