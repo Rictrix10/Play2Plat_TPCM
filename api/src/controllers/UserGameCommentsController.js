@@ -73,15 +73,6 @@ const UserGameCommentsController = {
             res.status(500).json({ error: 'Erro ao buscar comentários' });
         }
     }
-getPostsPreview: async (req, res) => {
-        try {
-            const comments = await UserGameCommentsModel.getPostsPreview();
-            res.json(comments);
-        } catch (error) {
-            console.error('Erro ao buscar posts de visualização:', error);
-            res.status(500).json({ error: 'Erro ao buscar posts de visualização' });
-        }
-    }
 };
 
 module.exports = UserGameCommentsController;

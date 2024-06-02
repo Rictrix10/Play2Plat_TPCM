@@ -12,6 +12,6 @@ router.delete('/user-game-comment/:id', UserGameCommentsController.deleteUserGam
 
 router.get('/user-game-comments/:gameId', UserGameCommentsController.getCommentsByGameId);
 
-router.get('/user-game-comment-preview', UserGameCommentsController.getPostsPreview);
+
 
 module.exports = router;

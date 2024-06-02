@@ -59,34 +59,6 @@ const UserGameCommentsModel = {
             }
         });
     }
-getPostsPreview: async () => {
-        return await prisma.userGameComment.findMany({
-            where: {
-                isAnswer: null
-            },
-            orderBy: {
-                id: 'desc' // Ordena pelos mais recentes
-            },
-            take: 5, // Limita a 5 resultados
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        username: true,
-                        avatar: true
-                    }
-                },
-                game: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                }
-            }
-        });
-    }
 };
-
-module.exports = UserGameCommentsModel;
 
 module.exports = UserGameCommentsModel;
