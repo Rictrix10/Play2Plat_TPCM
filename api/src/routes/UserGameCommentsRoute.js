@@ -10,8 +10,8 @@ router.get('/userGameComments/game/:gameId', UserGameCommentsController.getComme
 router.get('/userGameComments/postsPreview', UserGameCommentsController.getPostsPreview);
 router.get('/userGameComments/user/:userId', UserGameCommentsController.getPostsByUserId);
 router.get('/userGameComments/responses/:postId', UserGameCommentsController.getResponsesByPostId);
-router.patch('/userGameComments/:userId/:gameId', UserGameCommentsController.updateUserGameComment);
-router.delete('/userGameComments/:userId/:gameId', UserGameCommentsController.deletingUserGameComment);
+router.patch('/Comments/:userId/:gameId', UserGameCommentsController.updateUserGameComment);
+router.delete('/Comments/:userId/:gameId', UserGameCommentsController.deletingUserGameComment);
 
 module.exports = router;
 
