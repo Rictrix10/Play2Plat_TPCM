@@ -1,26 +1,31 @@
 package com.example.play2plat_tpcm
 
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import android.view.ViewTreeObserver
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.SearchView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var searchView: SearchView
+    private var searchQuery: String? = null
+    private lateinit var fragmentContainer: FrameLayout
+    private lateinit var imageBackView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
         }
     }
 
@@ -28,8 +33,85 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_games_searched_, container, false)
+        val view = inflater.inflate(R.layout.fragment_games_searched_, container, false)
+        fragmentContainer = view.findViewById(R.id.fragment_container)
+
+        // Initialize searchView
+        searchView = view.findViewById(R.id.search_view)
+        imageBackView = view.findViewById(R.id.back_icon)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    if (it.length >= 3) {
+                        // Perform the search
+                        showSearchedGames("Search", it)
+                    } else {
+                        // Mostrar uma mensagem de erro informando que pelo menos três caracteres são necessários
+                        // Por exemplo:
+                        Toast.makeText(requireContext(), "Por favor, insira pelo menos três caracteres.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // You can handle text change here if needed
+                return false
+            }
+        })
+
+        imageBackView.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        val searchbarHeight = 50.dpToPx()
+
+        // Obtém a altura da tela
+        val displayMetrics = resources.displayMetrics
+        val screenHeight = displayMetrics.heightPixels
+
+        // Calcula a altura disponível para o FrameLayout
+        val availableHeight = screenHeight - searchbarHeight
+
+        // Define a altura do FrameLayout
+        val layoutParams = fragmentContainer.layoutParams
+        layoutParams.height = availableHeight
+        fragmentContainer.layoutParams = layoutParams
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        searchView.isIconified = false
+        searchView.isFocusable = true
+        searchView.isIconifiedByDefault = false
+        searchView.requestFocusFromTouch()
+
+        // Abrir o teclado
+        //val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        //imm?.showSoftInput(searchView.findFocus(), InputMethodManager.SHOW_IMPLICIT)
+
+        /*
+        // Utiliza ViewTreeObserver para garantir que a SearchView receba foco
+        view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                // Remove o listener para evitar chamadas repetidas
+                view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                // Focar na SearchView e mostrar o teclado
+            }
+        })
+
+         */
+    }
+
+    private fun showSearchedGames(filterType: String, parameter: String) {
+        val fragment = Games_List_Grid_Fragment.newInstance(filterType, parameter)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 
     private fun redirectToViewGame(gameId: Int) {
@@ -46,13 +128,22 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
         redirectToViewGame(gameId)
     }
 
+    private fun showKeyboard() {
+        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    }
+
+
+    private fun Int.dpToPx(): Int {
+        val scale = resources.displayMetrics.density
+        return (this * scale + 0.5f).toInt()
+    }
+
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             GamesSearched_Fragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }

@@ -24,15 +24,18 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
     private lateinit var recyclerView: RecyclerView
     private lateinit var gameCoverAdapter: Games_List_Grid_Adapter
     private var filterType: String? = null
+    private var paramater: String? = null
     private var userId: Int = 0
 
     companion object {
         private const val ARG_FILTER_TYPE = "filter_type"
+        private const val ARG_PARAMATER = "paramater"
 
-        fun newInstance(filterType: String): Games_List_Grid_Fragment {
+        fun newInstance(filterType: String, paramater: String): Games_List_Grid_Fragment {
             val fragment = Games_List_Grid_Fragment()
             val args = Bundle()
             args.putString(ARG_FILTER_TYPE, filterType)
+            args.putString(ARG_PARAMATER, paramater)
             fragment.arguments = args
             return fragment
         }
@@ -42,6 +45,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         super.onCreate(savedInstanceState)
         arguments?.let {
             filterType = it.getString(ARG_FILTER_TYPE)
+            paramater= it.getString(ARG_PARAMATER)
         }
 
         // Retrieve userId from SharedPreferences
@@ -69,6 +73,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         when (filterType) {
             "Playing", "Wish List", "Paused", "Concluded" -> getStateCollection(filterType!!)
             "Favorite" -> getFavoriteGames()
+            "Search"->getSearchedGamesbyName(paramater!!)
             else -> getStateCollection("Playing")
         }
     }
@@ -117,16 +122,15 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         })
     }
 
-    /*
-    private fun getSearchedGamesbyName() {
-        val name = "League"
+
+    private fun getSearchedGamesbyName(name: String) {
         ApiManager.apiService.getSearchedGamesByName(name).enqueue(object : Callback<List<Collections>> {
             override fun onResponse(
                 call: Call<List<Collections>>,
                 response: Response<List<Collections>>
             ) {
                 if (response.isSuccessful) {
-                    val games = response.body()?.map { it.game.toGame() } ?: emptyList()
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
                     gameCoverAdapter.updateGames(games)
                 } else {
@@ -139,7 +143,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             }
         })
     }
-     */
+
+
 
     // Handle game click event
     override fun onGameClick(gameId: Int) {

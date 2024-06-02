@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +24,8 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var GamesAdapter: GamesAdapter
     private lateinit var fragmentContainer: FrameLayout
+    //private lateinit var searchView: SearchView
+    private lateinit var searchButton: Button
     private var GamesList: MutableList<Collections> = mutableListOf()
 
     override fun onCreateView(
@@ -32,7 +37,8 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         GamesAdapter = GamesAdapter(GamesList, this)
         fragmentContainer = view.findViewById(R.id.fragment_container)
-
+        //searchView = view.findViewById(R.id.search_view) // Assuming you have a SearchView with this ID
+        searchButton = view.findViewById(R.id.search)
 
         val textViewHeight = 50.dpToPx()
 
@@ -48,22 +54,32 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         layoutParams.height = availableHeight
         fragmentContainer.layoutParams = layoutParams
 
-        val fragment = Games_List_Horizontal_Fragment.newInstance("Genres", "Action")
+        val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent")
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
 
+        val fragment2 = Games_List_Horizontal_Fragment.newInstance("Genres", "Action")
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container2, fragment2)
+            .commit()
+
+        //searchView.isEnabled = false
+
+        // Set up SearchView click listener
+        searchButton.setOnClickListener {
+            redirectToGamesSearched()
+        }
 
         return view
     }
 
-    private fun showGamesbyGenres(filterType: String, paramater: String) {
-        val fragment = Games_List_Horizontal_Fragment.newInstance(filterType, paramater)
+    private fun seachGamebyName(filterType: String, paramater: String) {
+        val fragment = Games_List_Grid_Fragment.newInstance(filterType, paramater)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
-
 
     private fun redirectToViewGame(gameId: Int) {
         val platforms = arrayListOf<String>()
@@ -81,8 +97,20 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     }
 
     override fun onGamePictureClick(gameId: Int) {
-
         redirectToViewGame(gameId)
+    }
+
+    private fun redirectToGamesSearched() {
+        val gamesSearchedFragment = GamesSearched_Fragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, gamesSearchedFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 }
 

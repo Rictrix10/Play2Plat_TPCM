@@ -101,7 +101,7 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
     // No método showFilteredGames
     private fun showFilteredGames(filterType: String) {
-        val fragment = Games_List_Grid_Fragment.newInstance(filterType)
+        val fragment = Games_List_Grid_Fragment.newInstance(filterType, "")
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()

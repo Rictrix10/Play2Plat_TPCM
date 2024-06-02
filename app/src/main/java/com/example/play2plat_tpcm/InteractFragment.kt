@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Avaliation
@@ -17,9 +18,11 @@ import retrofit2.Response
 class InteractFragment : Fragment() {
 
     private lateinit var starViews: List<ImageView>
+    private lateinit var postsLayout: LinearLayout
     private var currentRating = 0
     private var gameId: Int = 0
     private var userId: Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +37,7 @@ class InteractFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_interact, container, false)
-
+        postsLayout = view.findViewById(R.id.posts_box)
         // Initialize star views
         starViews = listOf(
             view.findViewById(R.id.star1),
@@ -53,6 +56,10 @@ class InteractFragment : Fragment() {
         userId = sharedPreferences.getInt("user_id", 0)
 
         loadUserAvaliation(userId, gameId)
+
+        postsLayout.setOnClickListener {
+            redirectToGamePosts(gameId)
+        }
 
         return view
     }
@@ -167,6 +174,15 @@ class InteractFragment : Fragment() {
                 // Handle failure
             }
         })
+    }
+
+    private fun redirectToGamePosts(gameId: Int) {
+
+        val gamePostsFragment = GamePostsFragment.newInstance(gameId)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, gamePostsFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     companion object {

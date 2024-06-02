@@ -162,5 +162,9 @@ interface ApiService {
 
     @GET("game-genre/name/{genreName}")
     fun getGamesByGenre(@Path("genreName") genreName: String): Call<List<Collections>>
+
+    @GET("gamess/descending")
+    fun getRecentGames(): Call<List<Collections>>
+
 }
 

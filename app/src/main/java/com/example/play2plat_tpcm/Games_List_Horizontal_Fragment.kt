@@ -83,6 +83,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
             "Playing", "Wish List", "Paused", "Concluded" -> getStateCollection(filterType!!)
             "Favorite" -> getFavoriteGames()
             "Genres" -> getGamesByGenre(paramater!!)
+            "Recent" -> getRecentGames()
             else -> getStateCollection("Playing")
         }
     }
@@ -133,6 +134,27 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
 
     private fun getGamesByGenre(genreName: String) {
         ApiManager.apiService.getGamesByGenre(genreName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getRecentGames() {
+        ApiManager.apiService.getRecentGames().enqueue(object : Callback<List<Collections>> {
             override fun onResponse(
                 call: Call<List<Collections>>,
                 response: Response<List<Collections>>
