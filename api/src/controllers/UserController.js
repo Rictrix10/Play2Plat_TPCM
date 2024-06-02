@@ -5,7 +5,7 @@ const validator = require('validator');
 const UserController = {
     createUser: async (req, res) => {
         try {
-            const { email, password, username, avatar, userTypeId } = req.body;
+            const { email, password, username, avatar, userTypeId, isDeleted } = req.body;
 
             // Verificar se o email é válido
             if (!validator.isEmail(email)) {
@@ -36,7 +36,7 @@ const UserController = {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             // Criar o novo utilizador
-            const newUser = await UserModel.createUser(email, hashedPassword, username, avatar, userTypeId);
+            const newUser = await UserModel.createUser(email, hashedPassword, username, avatar, userTypeId, isDeleted);
             res.status(201).json(newUser);
         } catch (error) {
             console.error('Erro ao criar utilizador:', error.message);
@@ -66,6 +66,7 @@ const UserController = {
                     username: user.username,
                     avatar: user.avatar,
                     userType: user.userType.name,
+                    isDeleted: user.isDeleted,
                     platforms: user.platforms
                 });
             } catch (error) {
@@ -76,13 +77,14 @@ const UserController = {
     updateUser: async (req, res) => {
         try {
             const userId = parseInt(req.params.id); // Converter o ID para Int
-            const { email, password, username, avatar, userTypeId } = req.body;
+            const { email, password, username, avatar, userTypeId, isDeleted } = req.body;
 
             const data = {
                 email,
                 username,
                 avatar,
-                userTypeId
+                userTypeId,
+                isDeleted
             };
 
             if (password) {

@@ -2,8 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const GameModel = {
-createGame: async (name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId) => {
-    try {
+    createGame: async (name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId ) => {
         return await prisma.game.create({
             data: {
                 name,
@@ -12,17 +11,11 @@ createGame: async (name, description, isFree, releaseDate, pegiInfo, coverImage,
                 releaseDate,
                 pegiInfo,
                 coverImage,
-                sequenceId: sequenceId,
-                sequence: { connect: { id: sequenceId } },
-                companyId: companyId,
-                company: { connect: { id: companyId } } // Conecta a empresa existente pelo ID
+                sequenceId,
+                companyId
             }
         });
-    } catch (error) {
-        console.error('Erro ao criar jogo:', error);
-        throw error;
-    }
-},
+    },
     getGames: async () => {
             return await prisma.game.findMany();
     },
