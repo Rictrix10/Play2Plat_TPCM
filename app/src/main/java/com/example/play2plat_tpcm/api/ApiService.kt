@@ -163,23 +163,23 @@ interface ApiService {
     @GET("game-genre/name/{genreName}")
     fun getGamesByGenre(@Path("genreName") genreName: String): Call<List<Collections>>
 
-    @GET("/games/descending")
+    @GET("/gamess/descending")
     fun getRecentGames(): Call<List<Collections>>
 
     @DELETE("users/soft-delete/{userId}")
     fun deleteAccount(@Path("userId") userId: Int): Call<Void>
 
     @GET("companies/random-name")
-    fun getRandomCompany(): Call<String>
+    fun getRandomCompany(): Call<Paramater>
 
     @GET("sequences/random-name")
-    fun getRandomSequence(): Call<String>
+    fun getRandomSequence(): Call<Paramater>
 
     @GET("genres/random-name")
     fun getRandomGenre(): Call<Paramater>
 
     @GET("platforms/random-name")
-    fun getRandomPlatform(): Call<String>
+    fun getRandomPlatform(): Call<Paramater>
 
 }
 

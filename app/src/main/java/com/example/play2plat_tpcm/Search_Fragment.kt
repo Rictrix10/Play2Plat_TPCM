@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,6 +30,8 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     //private lateinit var searchView: SearchView
     private lateinit var searchButton: Button
     private var GamesList: MutableList<Collections> = mutableListOf()
+    private lateinit var sharedPreferences: SharedPreferences
+    private var countValue: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,21 +64,48 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             .replace(R.id.fragment_container2, fragment2)
             .commit()
 
-        getRandomGenre { genre ->
-            Log.d("Search", "Resposta da API: $genre")
-            val fragment = Games_List_Horizontal_Fragment.newInstance("Genres", genre)
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit()
-        }
-        //searchView.isEnabled = false
-
         // Set up SearchView click listener
         searchButton.setOnClickListener {
             redirectToGamesSearched()
         }
 
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        countValue = sharedPreferences.getInt("countValue", 0)
+        Log.d("Search_Fragment", "Valor de countValue no onCreateView: $countValue")
+        val genreValue = sharedPreferences.getString("genre", null)
+        Log.d("Search_Fragment", "Valor de genre nas SharedPreferences: $genreValue")
+
+
+        val fragment = if (genreValue != null) {
+            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue)
+        } else {
+            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
+            Games_List_Horizontal_Fragment.newInstance("Genres", "")
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        countValue++
+        sharedPreferences.edit().putInt("countValue", countValue).apply()
+
+        // Verificar se countValue é um divisor de 10
+        if (countValue % 10 == 0) {
+            getRandomGenre { genre ->
+                sharedPreferences.edit().putString("genre", genre).apply()
+                Log.d("Search_Fragment", "Novo valor de genre: $genre")
+            }
+            getRandomSequence { sequence ->
+                sharedPreferences.edit().putString("sequence", sequence).apply()
+                Log.d("Search_Fragment", "Novo valor de sequence: $sequence")
+            }
+        }
     }
 
 
@@ -100,14 +130,67 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         })
     }
 
+    private fun getRandomSequence(onSequenceReceived: (String) -> Unit) {
+        ApiManager.apiService.getRandomSequence().enqueue(object : Callback<Paramater> {
+            override fun onResponse(call: Call<Paramater>, response: Response<Paramater>) {
+                if (response.isSuccessful) {
+                    val sequenceResponse = response.body()
+                    if (sequenceResponse != null && sequenceResponse.name != null) {
+                        onSequenceReceived(sequenceResponse.name)
+                    } else {
+                        Log.e("Games_List_Grid_Fragment", "Sequence or sequence paramater is null")
+                    }
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Failed to get sequence: ${response.errorBody()}")
+                }
+            }
 
+            override fun onFailure(call: Call<Paramater>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
 
+    private fun getRandomCompany(onCompanyReceived: (String) -> Unit) {
+        ApiManager.apiService.getRandomCompany().enqueue(object : Callback<Paramater> {
+            override fun onResponse(call: Call<Paramater>, response: Response<Paramater>) {
+                if (response.isSuccessful) {
+                    val companyResponse = response.body()
+                    if (companyResponse != null && companyResponse.name != null) {
+                        onCompanyReceived(companyResponse.name)
+                    } else {
+                        Log.e("Games_List_Grid_Fragment", "Company or company paramater is null")
+                    }
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Failed to get company: ${response.errorBody()}")
+                }
+            }
 
-    private fun seachGamebyName(filterType: String, paramater: String) {
-        val fragment = Games_List_Grid_Fragment.newInstance(filterType, paramater)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+            override fun onFailure(call: Call<Paramater>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getRandomPlatform(onPlatformReceived: (String) -> Unit) {
+        ApiManager.apiService.getRandomPlatform().enqueue(object : Callback<Paramater> {
+            override fun onResponse(call: Call<Paramater>, response: Response<Paramater>) {
+                if (response.isSuccessful) {
+                    val platformResponse = response.body()
+                    if (platformResponse != null && platformResponse.name != null) {
+                        onPlatformReceived(platformResponse.name)
+                    } else {
+                        Log.e("Games_List_Grid_Fragment", "Platform or platform paramater is null")
+                    }
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Failed to get platform: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<Paramater>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
     }
 
     private fun redirectToViewGame(gameId: Int) {
