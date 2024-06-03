@@ -93,68 +93,105 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         sendImageView.setOnClickListener {
             val comments = commentEditTextView.text.toString()
             val context = requireContext()
-            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
-            val file = bitmapToFile(context, bitmap)
-            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+            val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+            val userId = sharedPreferences.getInt("user_id", 0)
 
-            // Envia a imagem para o servidor
-            val call = ApiManager.apiService.uploadImage(imagePart)
-            call.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                    if (response.isSuccessful) {
-                        val imageUrl = response.body()?.string()
-                        imageUrl?.let {
-                            val pattern = Regex("\"url\":\"(\\S+)\"") // Cria um padrão regex para extrair a URL
-                            val matchResult = pattern.find(it)
+            if (selectedImageUri != null) {
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
+                val file = bitmapToFile(context, bitmap)
+                val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-                            matchResult?.let { result ->
-                                val coverImageUrl = result.groupValues[1] // Obtém o valor correspondente ao grupo capturado
+                // Envia a imagem para o servidor
+                val call = ApiManager.apiService.uploadImage(imagePart)
+                call.enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        if (response.isSuccessful) {
+                            val imageUrl = response.body()?.string()
+                            imageUrl?.let {
+                                val pattern = Regex("\"url\":\"(\\S+)\"") // Cria um padrão regex para extrair a URL
+                                val matchResult = pattern.find(it)
 
-                                val newComment = Comment(
-                                    comments = comments,
-                                    image = coverImageUrl,
-                                    isAnswer = null,
-                                    userId = userId,
-                                    gameId = gameId,
-                                    latitude = 0.0,
-                                    longitude = 0.0,
-                                )
+                                matchResult?.let { result ->
+                                    val coverImageUrl = result.groupValues[1] // Obtém o valor correspondente ao grupo capturado
 
-                                Log.d("AddNewComment", "Novo comentário: $newComment")
+                                    val newComment = Comment(
+                                        comments = comments,
+                                        image = coverImageUrl,
+                                        isAnswer = null,
+                                        userId = userId,
+                                        gameId = gameId,
+                                        latitude = 0.0,
+                                        longitude = 0.0,
+                                    )
 
-                                // Fazer a chamada para a API para salvar o comentário
-                                ApiManager.apiService.addComment(newComment)
-                                    .enqueue(object : Callback<Comment> {
-                                        override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
-                                            if (response.isSuccessful) {
-                                                val postComment = response.body()
-                                                Log.d("AddNewComment", "Comentário criado com sucesso: $postComment")
-                                                Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
-                                            } else {
-                                                Log.e("AddNewComment", "Error posting comment: ${response.message()}")
-                                                Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
+                                    Log.d("AddNewComment", "Novo comentário: $newComment")
+
+                                    // Fazer a chamada para a API para salvar o comentário
+                                    ApiManager.apiService.addComment(newComment)
+                                        .enqueue(object : Callback<Comment> {
+                                            override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+                                                if (response.isSuccessful) {
+                                                    val postComment = response.body()
+                                                    Log.d("AddNewComment", "Comentário criado com sucesso: $postComment")
+                                                    Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
+                                                } else {
+                                                    Log.e("AddNewComment", "Error posting comment: ${response.message()}")
+                                                    Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
+                                                }
                                             }
-                                        }
 
-                                        override fun onFailure(call: Call<Comment>, t: Throwable) {
-                                            Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                                        }
-                                    })
+                                            override fun onFailure(call: Call<Comment>, t: Throwable) {
+                                                Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                                            }
+                                        })
+                                }
+                            }
+                        } else {
+                            // Erro no upload
+                            Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        // Erro na requisição
+                        Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                    }
+                })
+            } else {
+                val newComment = Comment(
+                    comments = comments,
+                    image = null,
+                    isAnswer = null,
+                    userId = userId,
+                    gameId = gameId,
+                    latitude = 0.0,
+                    longitude = 0.0,
+                )
+
+                Log.d("AddNewComment", "Novo comentário sem imagem: $newComment")
+
+                // Fazer a chamada para a API para salvar o comentário
+                ApiManager.apiService.addComment(newComment)
+                    .enqueue(object : Callback<Comment> {
+                        override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+                            if (response.isSuccessful) {
+                                val postComment = response.body()
+                                Log.d("AddNewComment", "Comentário criado com sucesso: $postComment")
+                                Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Log.e("AddNewComment", "Error posting comment: ${response.message()}")
+                                Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    } else {
-                        // Erro no upload
-                        Log.e("AddNewComment", "Erro no upload: ${response.message()}")
-                    }
-                }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    // Erro na requisição
-                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                }
-            })
+                        override fun onFailure(call: Call<Comment>, t: Throwable) {
+                            Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                        }
+                    })
+            }
         }
+
 
         return view
     }
