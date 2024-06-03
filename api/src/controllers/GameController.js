@@ -192,6 +192,36 @@ getGameById: async (req, res) => {
           }
       },
 
+    getGamesBySameCompanyId: async (req, res) => {
+        try {
+            const gameId = parseInt(req.params.gameId, 10);
+            if (isNaN(gameId)) {
+                return res.status(400).json({ error: 'ID inválido' });
+            }
+
+            const games = await GameModel.getGamesBySameCompanyId(gameId);
+            res.json(games);
+        } catch (error) {
+            console.error('Erro ao buscar jogos pela mesma empresa:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos pela mesma empresa' });
+        }
+    },
+
+    getGamesBySameSequenceId: async (req, res) => {
+        try {
+            const gameId = parseInt(req.params.gameId, 10);
+            if (isNaN(gameId)) {
+                return res.status(400).json({ error: 'ID inválido' });
+            }
+
+            const games = await GameModel.getGamesBySameSequenceId(gameId);
+            res.json(games);
+        } catch (error) {
+            console.error('Erro ao buscar jogos pela mesma sequência:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos pela mesma sequência' });
+        }
+    },
+
 
   };
 

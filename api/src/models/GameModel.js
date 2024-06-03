@@ -224,7 +224,61 @@ getGamesByDescendingId: async () => {
         }
     },
 
-    // ... outros métodos ...
+     getGamesBySameCompanyId: async (gameId) => {
+         try {
+             const game = await prisma.game.findUnique({
+                 where: { id: gameId },
+             });
+             if (!game) {
+                 throw new Error('Game not found');
+             }
+
+             const games = await prisma.game.findMany({
+                 where: {
+                     companyId: game.companyId,
+                     id: { not: gameId },
+                 },
+                 select: {
+                     id: true,
+                     name: true,
+                     coverImage: true,
+                 },
+             });
+
+             return games;
+         } catch (error) {
+             console.error('Erro ao buscar jogos pela mesma empresa:', error);
+             throw error;
+         }
+     },
+
+     getGamesBySameSequenceId: async (gameId) => {
+         try {
+             const game = await prisma.game.findUnique({
+                 where: { id: gameId },
+             });
+             if (!game) {
+                 throw new Error('Game not found');
+             }
+
+             const games = await prisma.game.findMany({
+                 where: {
+                     sequenceId: game.sequenceId,
+                     id: { not: gameId },
+                 },
+                 select: {
+                     id: true,
+                     name: true,
+                     coverImage: true,
+                 },
+             });
+
+             return games;
+         } catch (error) {
+             console.error('Erro ao buscar jogos pela mesma sequência:', error);
+             throw error;
+         }
+     },
 };
 
 module.exports = GameModel;
