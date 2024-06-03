@@ -82,9 +82,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="parent"
             android:layout_gravity="center_horizontal"/>
-
-
     </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/game_sections2"
