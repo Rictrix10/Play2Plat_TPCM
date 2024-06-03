@@ -17,6 +17,7 @@ model user {
   avatar            String?
   userType          userType          @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
   userTypeId        Int
+  isDeleted         Boolean?
   platforms         platform[]
   avaliations       avaliation[]
   userPlatforms     userPlatform[]
@@ -80,7 +81,7 @@ model game {
   coverImage        String?
   sequence          sequence?   @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
   company           company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  sequenceId        Int
+  sequenceId        Int?
   companyId         Int
   genres            genre[]
   dlcs              dlc[]
