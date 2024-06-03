@@ -2,6 +2,7 @@ package com.example.play2plat_tpcm
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Collections
 import com.example.play2plat_tpcm.api.Game
+import com.example.play2plat_tpcm.api.Paramater
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -54,16 +56,18 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         layoutParams.height = availableHeight
         fragmentContainer.layoutParams = layoutParams
 
-        val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent")
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-
-        val fragment2 = Games_List_Horizontal_Fragment.newInstance("Genres", "Action")
+        val fragment2 = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent")
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container2, fragment2)
             .commit()
 
+        getRandomGenre { genre ->
+            Log.d("Search", "Resposta da API: $genre")
+            val fragment = Games_List_Horizontal_Fragment.newInstance("Genres", genre)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
+        }
         //searchView.isEnabled = false
 
         // Set up SearchView click listener
@@ -73,6 +77,31 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         return view
     }
+
+
+    private fun getRandomGenre(onGenreReceived: (String) -> Unit) {
+        ApiManager.apiService.getRandomGenre().enqueue(object : Callback<Paramater> {
+            override fun onResponse(call: Call<Paramater>, response: Response<Paramater>) {
+                if (response.isSuccessful) {
+                    val genreResponse = response.body()
+                    if (genreResponse != null && genreResponse.name != null) {
+                        onGenreReceived(genreResponse.name)
+                    } else {
+                        Log.e("Games_List_Grid_Fragment", "Genre or genre paramater is null")
+                    }
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Failed to get genre: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<Paramater>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+
+
 
     private fun seachGamebyName(filterType: String, paramater: String) {
         val fragment = Games_List_Grid_Fragment.newInstance(filterType, paramater)
