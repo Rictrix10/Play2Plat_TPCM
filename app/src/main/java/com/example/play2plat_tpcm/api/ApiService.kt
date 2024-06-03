@@ -166,5 +166,8 @@ interface ApiService {
     @GET("gamess/descending")
     fun getRecentGames(): Call<List<Collections>>
 
+    @DELETE("users/soft-delete/{userId}")
+    fun deleteAccount(@Path("userId") userId: Int): Call<Void>
+
 }
 
