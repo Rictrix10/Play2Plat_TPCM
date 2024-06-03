@@ -10,7 +10,9 @@ const GenreModel = {
         });
     },
     getGenres: async () => {
-            return await prisma.genre.findMany();
+            return await prisma.genre.findMany({
+                orderBy: { name: 'asc' }
+            });
     },
         getRandomGenreName: async () => {
             const genres = await prisma.genre.findMany({

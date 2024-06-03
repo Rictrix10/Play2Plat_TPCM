@@ -10,7 +10,9 @@ const SequenceModel = {
         });
     },
     getSequences: async () => {
-            return await prisma.sequence.findMany();
+            return await prisma.sequence.findMany({
+              orderBy: { name: 'asc' }
+            });
     }
 };
 

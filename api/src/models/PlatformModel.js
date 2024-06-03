@@ -10,7 +10,9 @@ const PlatformModel = {
         });
     },
     getPlatforms: async () => {
-            return await prisma.platform.findMany();
+            return await prisma.platform.findMany({
+               orderBy: { name: 'asc' }
+            });
     }
 };
 

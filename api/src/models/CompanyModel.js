@@ -10,7 +10,9 @@ const CompanyModel = {
         });
     },
     getCompanies: async () => {
-            return await prisma.company.findMany();
+        return await prisma.company.findMany({
+            orderBy: { name: 'asc' }
+        });
     }
 };
 
