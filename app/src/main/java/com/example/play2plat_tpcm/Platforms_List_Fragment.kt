@@ -51,7 +51,7 @@ class Platforms_List_Fragment : Fragment() {
         // Lista de todos os layouts e suas respectivas plataformas
         val platformLayouts = mapOf(
             "PC" to pcLayout,
-            "Xbox" to xboxLayout,
+            "XBox" to xboxLayout,
             "PlayStation" to playstationLayout,
             "Switch" to switchLayout,
             "Android" to androidLayout,
@@ -176,8 +176,8 @@ class Platforms_List_Fragment : Fragment() {
 
     private fun platformToId(platform: String): Int {
         return when (platform) {
-            "PC" -> 3
-            "Xbox" -> 2
+            "PC" -> 2
+            "Xbox" -> 3
             "PlayStation" -> 4
             "Switch" -> 5
             "Android" -> 6
