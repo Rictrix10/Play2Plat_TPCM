@@ -1,5 +1,6 @@
 package com.example.play2plat_tpcm
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -12,18 +13,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import com.squareup.picasso.Picasso
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 
 private const val ARG_USER_ID = "user_id"
 
@@ -35,8 +41,11 @@ class Profile_Fragment : Fragment() {
     private lateinit var containerLayout: ConstraintLayout
     private lateinit var backIconImageView: ImageView
     private lateinit var logoutButton: Button
+    private lateinit var deleteButton: Button
     private var userId: Int = 0
     private var currentUserId: Int = 0
+    private var user: User? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +66,7 @@ class Profile_Fragment : Fragment() {
         containerLayout = view.findViewById(R.id.container_layout)
         backIconImageView = view.findViewById(R.id.back_icon)
         logoutButton = view.findViewById(R.id.logout_button)
+        deleteButton = view.findViewById(R.id.delete_button)
 
         // Configurar a visibilidade do ícone de edição
         if (userId == currentUserId) {
@@ -82,6 +92,11 @@ class Profile_Fragment : Fragment() {
         logoutButton.setOnClickListener {
             logout()
         }
+
+        deleteButton.setOnClickListener {
+            deleteAccountWithConfirmation()
+        }
+
 
         val fragment = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite")
         requireActivity().supportFragmentManager.beginTransaction()
@@ -131,17 +146,86 @@ class Profile_Fragment : Fragment() {
     }
 
     private fun logout() {
-        // Eliminar dados guardados no SharedPreferences
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.clear()
-        editor.apply()
+        // Cria o alerta de confirmação
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Confirmação")
+            setMessage("Você realmente deseja fazer logout?")
+            setPositiveButton("Sim") { dialog, which ->
+                // Eliminar dados guardados no SharedPreferences
+                val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.clear()
+                editor.apply()
 
-        // Redirecionar para a LoginActivity
-        val intent = Intent(activity, LoginPage::class.java)
-        startActivity(intent)
-        activity?.finish()
+                // Redirecionar para a LoginActivity
+                val intent = Intent(activity, LoginPage::class.java)
+                startActivity(intent)
+                activity?.finish()
+            }
+            setNegativeButton("Não") { dialog, which ->
+                // Fecha o diálogo sem fazer logout
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
     }
+
+
+    private fun deleteAccountWithConfirmation() {
+        val inflater = LayoutInflater.from(requireContext())
+        val view = inflater.inflate(R.layout.dialog_confirm_delete, null)
+        val passwordEditText = view.findViewById<EditText>(R.id.password_edit_text)
+
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Confirmação")
+            setView(view)
+            setPositiveButton("Sim") { dialog, which ->
+                val password = passwordEditText.text.toString()
+
+                lifecycleScope.launch {
+                    val userPassword = ""
+                    if (password.isNotEmpty() && password == userPassword) {
+                        deleteAccount(userId)
+                    } else {
+                        Toast.makeText(context, "Password incorreta", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            setNegativeButton("Não") { dialog, which ->
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
+    }
+
+
+
+
+
+    private fun deleteAccount(userId: Int) {
+
+        ApiManager.apiService.deleteAccount(userId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Conta eliminada com sucesso", Toast.LENGTH_SHORT).show()
+                    // Redirecionar para a tela de login após deletar a conta
+                    val intent = Intent(activity, LoginPage::class.java)
+                    startActivity(intent)
+                    activity?.finish()
+                } else {
+                    Toast.makeText(context, "Falha ao eliminar a conta", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(context, "Erro: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
 
     private fun loadImage(avatarUrl: String?) {
         if (!avatarUrl.isNullOrEmpty()) {
