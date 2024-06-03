@@ -11,7 +11,7 @@ router.get('/games/company/:companyName', GameController.getGamesByCompany);
 router.get('/games/sequence/:sequenceName', GameController.getGamesBySequence);
 router.get('/games/searchByName/:name', GameController.getGamesByPartialName);
 router.get('/games/free/:isFree', GameController.getGamesByFreeStatus);
-router.get('/games/descending', GameController.getGamesByDescendingId);
+router.get('/gamess/descending', GameController.getGamesByDescendingId);
 router.get('/games/same-company/:gameId', GameController.getGamesBySameCompanyId);
 router.get('/games/same-sequence/:gameId', GameController.getGamesBySameSequenceId);
 
