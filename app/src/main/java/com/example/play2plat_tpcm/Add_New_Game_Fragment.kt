@@ -1,5 +1,8 @@
 package com.example.play2plat_tpcm
 
+import android.animation.Animator
+import android.animation.AnimatorInflater
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -440,14 +443,79 @@ class Add_New_Game_Fragment : Fragment() {
 
 
     private fun toggleListVisibility(listView: ListView, titleView: TextView, iconResource: Int) {
-        if (listView.visibility == View.VISIBLE) {
-            listView.visibility = View.GONE
-            titleView.setCompoundDrawablesWithIntrinsicBounds(iconResource, 0, R.drawable.icon_up, 0)
-        } else {
-            listView.visibility = View.VISIBLE
-            titleView.setCompoundDrawablesWithIntrinsicBounds(iconResource, 0, R.drawable.icon_down, 0)
+        val isExpanded = listView.visibility == View.VISIBLE
+
+        val initialHeight = if (isExpanded) listView.height else 0
+        val targetHeight = if (isExpanded) 0 else getTargetHeight(listView)
+
+        val valueAnimator = ValueAnimator.ofInt(initialHeight, targetHeight)
+        valueAnimator.addUpdateListener { animator ->
+            val animatedValue = animator.animatedValue as Int
+            val layoutParams = listView.layoutParams
+            layoutParams.height = animatedValue
+            listView.layoutParams = layoutParams
         }
+        valueAnimator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                if (!isExpanded) {
+                    listView.visibility = View.VISIBLE
+                    titleView.setCompoundDrawablesWithIntrinsicBounds(iconResource, 0, R.drawable.icon_down, 0)
+                }
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                if (isExpanded) {
+                    listView.visibility = View.GONE
+                    titleView.setCompoundDrawablesWithIntrinsicBounds(iconResource, 0, R.drawable.icon_up, 0)
+                }
+                // Reajuste a altura da ListView após a conclusão da animação
+
+            }
+
+            override fun onAnimationCancel(animation: Animator) {}
+            override fun onAnimationRepeat(animation: Animator) {}
+        })
+
+        valueAnimator.duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        valueAnimator.start()
     }
+
+
+    private fun getTargetHeight(view: View): Int {
+        val listAdapter = (view as ListView).adapter ?: return 0
+        val totalItems = listAdapter.count
+
+        // Calcula a altura dos itens
+        var totalHeight = 0
+        for (i in 0 until totalItems) {
+            val listItem = listAdapter.getView(i, null, view)
+            listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            totalHeight += listItem.measuredHeight
+        }
+
+        // Se houver mais de 5 itens, calcula a altura dos primeiros 5 itens
+        if (totalItems > 5) {
+            totalHeight = 0
+            for (i in 0 until 5) {
+                val listItem = listAdapter.getView(i, null, view)
+                listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                totalHeight += listItem.measuredHeight
+            }
+        }
+
+        // Define a altura da ListView
+        val params = view.layoutParams
+        val targetHeight = if (totalItems > 5) {
+            totalHeight + (view.dividerHeight * (5 - 1)) // Altura dos 5 itens + divisores
+        } else {
+            totalHeight + (view.dividerHeight * (totalItems - 1)) // Altura de todos os itens + divisores
+        }
+
+        return targetHeight
+    }
+
+
+
 
 
     private fun selectVisualMedia() {
