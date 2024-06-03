@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,6 +30,8 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     //private lateinit var searchView: SearchView
     private lateinit var searchButton: Button
     private var GamesList: MutableList<Collections> = mutableListOf()
+    private lateinit var sharedPreferences: SharedPreferences
+    private var countValue: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +64,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             .replace(R.id.fragment_container2, fragment2)
             .commit()
 
+        /*
         getRandomGenre { genre ->
             Log.d("Search", "Resposta da API: $genre")
             val fragment = Games_List_Horizontal_Fragment.newInstance("Genres", genre)
@@ -68,6 +72,8 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
                 .replace(R.id.fragment_container, fragment)
                 .commit()
         }
+
+         */
         //searchView.isEnabled = false
 
         // Set up SearchView click listener
@@ -75,7 +81,38 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             redirectToGamesSearched()
         }
 
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        countValue = sharedPreferences.getInt("countValue", 0)
+        Log.d("Search_Fragment", "Valor de countValue no onCreateView: $countValue")
+        val genreValue = sharedPreferences.getString("genre", null)
+        Log.d("Search_Fragment", "Valor de genre nas SharedPreferences: $genreValue")
+
+        val fragment = if (genreValue != null) {
+            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue)
+        } else {
+            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
+            Games_List_Horizontal_Fragment.newInstance("Genres", "")
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        countValue++
+        sharedPreferences.edit().putInt("countValue", countValue).apply()
+
+        // Verificar se countValue é um divisor de 10
+        if (countValue % 10 == 0) {
+            getRandomGenre { genre ->
+                sharedPreferences.edit().putString("genre", genre).apply()
+                Log.d("Search_Fragment", "Novo valor de genre: $genre")
+            }
+        }
     }
 
 

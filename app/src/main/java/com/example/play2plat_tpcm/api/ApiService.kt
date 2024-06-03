@@ -163,7 +163,7 @@ interface ApiService {
     @GET("game-genre/name/{genreName}")
     fun getGamesByGenre(@Path("genreName") genreName: String): Call<List<Collections>>
 
-    @GET("/games/descending")
+    @GET("/gamess/descending")
     fun getRecentGames(): Call<List<Collections>>
 
     @DELETE("users/soft-delete/{userId}")
