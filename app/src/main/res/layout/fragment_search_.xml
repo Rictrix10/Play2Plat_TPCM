@@ -1,19 +1,22 @@
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".Search_Fragment"
+    android:id="@+id/main"
     android:background="@drawable/bg_border">
 
 
     <!-- Container para o SearchView e o quadrado preto -->
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp">
 
@@ -22,7 +25,9 @@
             android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:background="@drawable/details"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            >
 
             <Button
                 android:id="@+id/search"
@@ -54,34 +59,32 @@
             android:id="@+id/black_square"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_toRightOf="@id/search_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/search_button"
             android:src="@drawable/filtro"
             android:layout_marginLeft="10dp"
             android:background="@drawable/quadrado"
             android:scaleType="center"/>
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Seções de Jogos -->
     <LinearLayout
         android:id="@+id/game_sections"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/search_container"
         android:orientation="vertical"
         android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_container"
         android:layout_marginBottom="16dp">
-
-        <!-- Action Games -->
 
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_marginHorizontal="2dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_marginHorizontal="2dp"
+            android:layout_gravity="center_horizontal" />
+
     </LinearLayout>
 
 
@@ -89,12 +92,12 @@
         android:id="@+id/game_sections2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/game_sections"
         android:orientation="vertical"
         android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/game_sections"
         android:layout_marginBottom="16dp">
-
-        <!-- Action Games -->
 
         <FrameLayout
             android:id="@+id/fragment_container2"
@@ -106,9 +109,8 @@
             app:layout_constraintTop_toBottomOf="parent"
             android:layout_gravity="center_horizontal"/>
 
-
     </LinearLayout>
 
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

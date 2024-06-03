@@ -27,7 +27,7 @@
                     android:layout_height="wrap_content"
                     android:padding="16dp"
                     android:text="@string/upload_cover"
-                    android:background="@drawable/button_bd"
+                    android:background="@drawable/button_bd_3"
                     android:textColor="#FFFF"/>
 
                 <ImageView
@@ -259,8 +259,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/save"
-                    android:background="@drawable/button_bd"
-                    android:textColor="#FFFF"/>
+                    android:background="@drawable/button_bd_3"
+                    android:textColor="#FFFF"
+                    android:layout_marginBottom="5dp"/>
 
 
             </LinearLayout>

@@ -27,6 +27,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var GamesAdapter: GamesAdapter
     private lateinit var fragmentContainer: FrameLayout
+    private lateinit var fragmentContainer2: FrameLayout
     //private lateinit var searchView: SearchView
     private lateinit var searchButton: Button
     private var GamesList: MutableList<Collections> = mutableListOf()
@@ -42,26 +43,13 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         GamesAdapter = GamesAdapter(GamesList, this)
         fragmentContainer = view.findViewById(R.id.fragment_container)
+        fragmentContainer2 = view.findViewById(R.id.fragment_container2)
         //searchView = view.findViewById(R.id.search_view) // Assuming you have a SearchView with this ID
         searchButton = view.findViewById(R.id.search)
 
-        val textViewHeight = 50.dpToPx()
-
-        // Obtém a altura da tela
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        // Calcula a altura disponível para o FrameLayout
-        val availableHeight = screenHeight - textViewHeight
-
-        // Define a altura do FrameLayout
-        val layoutParams = fragmentContainer.layoutParams
-        layoutParams.height = availableHeight
-        fragmentContainer.layoutParams = layoutParams
-
         val fragment2 = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent")
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container2, fragment2)
+            .replace(R.id.fragment_container, fragment2)
             .commit()
 
         // Set up SearchView click listener
@@ -80,11 +68,11 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             Games_List_Horizontal_Fragment.newInstance("Genres", genreValue)
         } else {
             // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Genres", "")
+            Games_List_Horizontal_Fragment.newInstance("Genres", "Action")
         }
 
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
+            .replace(R.id.fragment_container2, fragment)
             .commit()
 
         return view
