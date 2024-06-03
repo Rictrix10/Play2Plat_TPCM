@@ -20,6 +20,19 @@ const GenreController = {
                 res.status(500).json({ error: 'Erro ao buscar géneros' });
             }
         },
+            getRandomGenreName: async (req, res) => {
+                try {
+                    const genreName = await GenreModel.getRandomGenreName();
+                    if (!genreName) {
+                        res.status(404).json({ error: 'Nenhum género encontrado' });
+                    } else {
+                        res.json({ name: genreName });
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar nome de género aleatório:', error);
+                    res.status(500).json({ error: 'Erro ao buscar nome de género aleatório' });
+                }
+            }
 };
 
 module.exports = GenreController;

@@ -6,4 +6,6 @@ router.post('/genres', GenreController.createGenre);
 
 router.get('/genres', GenreController.getGenres);
 
+router.get('/genres/random-name', GenreController.getRandomGenreName);
+
 module.exports = router;
