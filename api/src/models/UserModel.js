@@ -73,7 +73,15 @@ const UserModel = {
         return await prisma.user.findUnique({
             where: { username }
         });
-    }
+    },
+        softDeleteUser: async (id) => {
+            return await prisma.user.update({
+                where: { id },
+                data: {
+                    isDeleted: true
+                }
+            });
+        },
 };
 
 module.exports = UserModel;

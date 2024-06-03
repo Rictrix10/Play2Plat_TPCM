@@ -115,7 +115,7 @@ const UserController = {
             const { username, password } = req.body;
             const user = await UserModel.findUserByUsername(username);
 
-            if (!user) {
+            if (!user || user.isDeleted) {
                 return res.status(441).json({ error: 'Utilizador não existe' });
             }
 
@@ -130,7 +130,18 @@ const UserController = {
             console.error('Erro ao fazer login:', error);
             res.status(500).json({ error: 'Erro ao fazer login' });
         }
-    }
+    },
+        softDeleteUser: async (req, res) => {
+            try {
+                const userId = parseInt(req.params.id);
+                const user = await UserModel.softDeleteUser(userId);
+
+                res.json(user);
+            } catch (error) {
+                console.error('Erro ao excluir utilizador:', error);
+                res.status(500).json({ error: 'Erro ao excluir utilizador' });
+            }
+        },
 };
 
 module.exports = UserController;

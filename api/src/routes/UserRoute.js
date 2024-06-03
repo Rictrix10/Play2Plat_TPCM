@@ -14,6 +14,5 @@ router.delete('/users/:id', UserController.deleteUser);
 
 router.post('/users/login', UserController.loginUser);
 
-
-
+router.delete('/users/soft-delete/:id', UserController.softDeleteUser);
 module.exports = router;
