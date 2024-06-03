@@ -6,4 +6,6 @@ router.post('/sequences', SequenceController.createSequence);
 
 router.get('/sequences', SequenceController.getSequences);
 
+router.get('/sequences/random-name', SequenceController.getRandomSequenceName);
+
 module.exports = router;

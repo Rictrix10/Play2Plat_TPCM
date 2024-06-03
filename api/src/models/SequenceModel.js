@@ -13,7 +13,19 @@ const SequenceModel = {
             return await prisma.sequence.findMany({
               orderBy: { name: 'asc' }
             });
-    }
+    },
+            getRandomSequenceName: async () => {
+                const sequences = await prisma.sequence.findMany({
+                    select: {
+                        name: true
+                    }
+                });
+                if (sequences.length === 0) {
+                    return null;
+                }
+                const randomIndex = Math.floor(Math.random() * sequences.length);
+                return sequences[randomIndex].name;
+            }
 };
 
 module.exports = SequenceModel;

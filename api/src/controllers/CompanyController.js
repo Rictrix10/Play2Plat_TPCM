@@ -20,6 +20,19 @@ const CompanyController = {
                 res.status(500).json({ error: 'Erro ao buscar empresas' });
             }
         },
+                    getRandomCompanyName: async (req, res) => {
+                        try {
+                            const companyName = await CompanyModel.getRandomCompanyName();
+                            if (!companyName) {
+                                res.status(404).json({ error: 'Nenhuma companhia encontrado' });
+                            } else {
+                                res.json({ name: companyName });
+                            }
+                        } catch (error) {
+                            console.error('Erro ao buscar nome de companhia aleatório:', error);
+                            res.status(500).json({ error: 'Erro ao buscar nome de companhia aleatório' });
+                        }
+                    }
 };
 
 module.exports = CompanyController;

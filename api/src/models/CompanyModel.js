@@ -13,6 +13,18 @@ const CompanyModel = {
         return await prisma.company.findMany({
             orderBy: { name: 'asc' }
         });
+    },
+    getRandomCompanyName: async () => {
+        const companies = await prisma.company.findMany({
+              select: {
+                        name: true
+                    }
+                });
+                if (companies.length === 0) {
+                    return null;
+                }
+                const randomIndex = Math.floor(Math.random() * companies.length);
+                return companies[randomIndex].name;
     }
 };
 
