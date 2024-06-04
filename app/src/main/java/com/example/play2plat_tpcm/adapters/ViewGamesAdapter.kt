@@ -12,7 +12,10 @@ class ViewGamePagerAdapter(
     private val gameId: Int,
     private val description: String,
     private val genres: List<String>,
-    private val platforms: List<String>
+    private val platforms: List<String>,
+    private val gameName: String,
+    private var primaryColor: Int,
+    private var secondaryColor: Int
 ) : FragmentStateAdapter(fragmentActivity) {
 
     override fun getItemCount(): Int {
@@ -22,7 +25,7 @@ class ViewGamePagerAdapter(
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> AboutFragment.newInstance(gameId, description, genres, platforms)
-            1 -> InteractFragment.newInstance(gameId)
+            1 -> InteractFragment.newInstance(gameId, gameName, primaryColor, secondaryColor)
             else -> throw IllegalStateException("Unexpected position: $position")
         }
     }

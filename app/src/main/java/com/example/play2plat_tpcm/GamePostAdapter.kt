@@ -36,7 +36,13 @@ class GamePostsAdapter(
         holder.username.text = post.user.username
         holder.textPost.text = post.comments
         Picasso.get().load(post.user.avatar).into(holder.profilePicture)
-        Picasso.get().load(post.image).into(holder.imagePost)
+
+        if (post.image.isNullOrEmpty()) {
+            holder.imagePost.visibility = View.GONE
+        } else {
+            holder.imagePost.visibility = View.VISIBLE
+            Picasso.get().load(post.image).into(holder.imagePost)
+        }
 
         holder.profilePicture.setOnClickListener {
             onProfilePictureClickListener.onProfilePictureClick(post.user.id)

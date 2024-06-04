@@ -58,6 +58,8 @@ class View_Game_Fragment : Fragment() {
     private var currentUserType: Int = 0
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
+    private var dominantColor: Int = 0
+    private var vibrantColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,8 +126,8 @@ class View_Game_Fragment : Fragment() {
                                 override fun onSuccess() {
                                     val bitmap = (gameImageView.drawable as BitmapDrawable).bitmap
                                     Palette.from(bitmap).generate { palette ->
-                                        val dominantColor = palette?.dominantSwatch?.rgb ?: 0
-                                        val vibrantColor = palette?.vibrantSwatch?.rgb ?: 0
+                                        dominantColor = palette?.dominantSwatch?.rgb ?: 0
+                                        vibrantColor = palette?.vibrantSwatch?.rgb ?: 0
                                         val colors = intArrayOf(dominantColor, vibrantColor)
                                         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                         containerLayout.background = gradientDrawable
@@ -152,7 +154,7 @@ class View_Game_Fragment : Fragment() {
                             viewPager = view.findViewById(R.id.view_pager)
                             tabLayout = view.findViewById(R.id.tab_layout)
 
-                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, platforms)
+                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, dominantColor, vibrantColor)
                             viewPager.adapter = pagerAdapter
 
                             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
