@@ -15,7 +15,7 @@ router.get('/user-game-comment-preview/game/:gameId', UserGameCommentsController
 
 router.get('/user-game-comments-by-user-game/user/:userId/game/:gameId', UserGameCommentsController.getPostsByUserIdGameId);
 
-router.get('/user-game-comments-responses/post/:postId/game/:gameId', UserGameCommentsController.getResponsesByPostIdGameId);
+router.get('/user-game-comments-responses/post/:postId', UserGameCommentsController.getResponsesByPostId);
 
 router.patch('/user-game-comments/:id', UserGameCommentsController.updateUserGameCommentById);
 

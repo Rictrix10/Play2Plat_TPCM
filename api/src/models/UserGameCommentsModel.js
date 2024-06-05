@@ -144,11 +144,10 @@ const UserGameCommentsModel = {
         return [...userComments, ...otherComments];
     },
 
-    getResponsesByPostIdGameId: async (postId, gameId) => {
+    getResponsesByPostId: async (postId) => {
         return await prisma.userGameComment.findMany({
             where: {
-                isAnswer: postId,
-                gameId: gameId
+                isAnswer: postId
             },
             orderBy: {
                 id: 'desc' // Ordena pelos mais recentes
