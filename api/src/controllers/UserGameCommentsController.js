@@ -61,9 +61,13 @@ const UserGameCommentsController = {
         }
     },
 
-    getPostsPreview: async (req, res) => {
+    getGamePostsPreview: async (req, res) => {
         try {
-            const comments = await UserGameCommentsModel.getPostsPreview();
+            const gameId = parseInt(req.params.gameId, 10);
+            if (isNaN(gameId)) {
+                return res.status(400).json({ error: 'gameId inválido' });
+            }
+            const comments = await UserGameCommentsModel.getGamePostsPreview(gameId);
             res.json(comments);
         } catch (error) {
             console.error('Erro ao buscar posts de visualização:', error);
@@ -89,16 +93,20 @@ const UserGameCommentsController = {
         }
     },
 
-    getResponsesByPostId: async (req, res) => {
+    getResponsesByPostIdGameId: async (req, res) => {
         try {
             const postId = parseInt(req.params.postId, 10);
             if (isNaN(postId)) {
                 return res.status(400).json({ error: 'postId inválido' });
             }
-            const comments = await UserGameCommentsModel.getResponsesByPostId(postId);
+            const gameId = parseInt(req.params.gameId, 10);
+            if (isNaN(gameId)) {
+                return res.status(400).json({ error: 'gameId inválido' });
+            }
+            const comments = await UserGameCommentsModel.getResponsesByPostIdGameId(postId, gameId);
             res.json(comments);
         } catch (error) {
-            console.error('Erro ao buscar respostas por postId:', error);
+            console.error('Erro ao buscar respostas:', error);
             res.status(500).json({ error: 'Erro ao buscar respostas' });
         }
     },

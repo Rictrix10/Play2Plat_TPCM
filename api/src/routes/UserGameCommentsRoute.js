@@ -11,11 +11,11 @@ router.get('/user-game-comment/:id', UserGameCommentsController.getUserGameComme
 
 router.get('/user-game-comments/:gameId', UserGameCommentsController.getCommentsByGameId);
 
-router.get('/user-game-comment-preview', UserGameCommentsController.getPostsPreview);
+router.get('/user-game-comment-preview/game/:gameId', UserGameCommentsController.getGamePostsPreview);
 
 router.get('/user-game-comments-by-user-game/user/:userId/game/:gameId', UserGameCommentsController.getPostsByUserIdGameId);
 
-router.get('/user-game-comments-responses/:postId', UserGameCommentsController.getResponsesByPostId);
+router.get('/user-game-comments-responses/post/:postId/game/:gameId', UserGameCommentsController.getResponsesByPostIdGameId);
 
 router.patch('/user-game-comments/:id', UserGameCommentsController.updateUserGameCommentById);
 

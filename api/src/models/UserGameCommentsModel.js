@@ -54,9 +54,10 @@ const UserGameCommentsModel = {
         });
     },
 
-    getPostsPreview: async () => {
+    getGamePostsPreview: async (gameId) => {
         return await prisma.userGameComment.findMany({
             where: {
+                gameId: gameId,
                 isAnswer: null
             },
             orderBy: {
@@ -113,6 +114,7 @@ const UserGameCommentsModel = {
                 userId: {
                     not: userId
                 },
+                gameId: gameId,
                 isAnswer: null
             },
             orderBy: {
@@ -138,10 +140,11 @@ const UserGameCommentsModel = {
         return [...userComments, ...otherComments];
     },
 
-    getResponsesByPostId: async (postId) => {
+    getResponsesByPostIdGameId: async (postId, gameId) => {
         return await prisma.userGameComment.findMany({
             where: {
-                isAnswer: postId
+                isAnswer: postId,
+                gameId: gameId
             },
             orderBy: {
                 id: 'desc' // Ordena pelos mais recentes
