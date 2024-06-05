@@ -10,17 +10,15 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Collections
-import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Paramater
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
@@ -28,11 +26,18 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var GamesAdapter: GamesAdapter
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var fragmentContainer2: FrameLayout
+    private lateinit var fragmentContainer3: FrameLayout
+    private lateinit var fragmentContainer4: FrameLayout
+    private lateinit var fragmentContainer5: FrameLayout
+    private lateinit var fragmentContainer6: FrameLayout
+    private lateinit var fragmentContainer7: FrameLayout
     //private lateinit var searchView: SearchView
     private lateinit var searchButton: Button
     private var GamesList: MutableList<Collections> = mutableListOf()
     private lateinit var sharedPreferences: SharedPreferences
     private var countValue: Int = 0
+    private val uniqueGenres: Set<String> = HashSet()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,12 +49,16 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         GamesAdapter = GamesAdapter(GamesList, this)
         fragmentContainer = view.findViewById(R.id.fragment_container)
         fragmentContainer2 = view.findViewById(R.id.fragment_container2)
-        //searchView = view.findViewById(R.id.search_view) // Assuming you have a SearchView with this ID
+        fragmentContainer3 = view.findViewById(R.id.fragment_container3)
+        fragmentContainer4 = view.findViewById(R.id.fragment_container4)
+        fragmentContainer5 = view.findViewById(R.id.fragment_container5)
+        fragmentContainer6 = view.findViewById(R.id.fragment_container6)
+        fragmentContainer7 = view.findViewById(R.id.fragment_container7)
         searchButton = view.findViewById(R.id.search)
 
-        val fragment2 = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent")
+        val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0)
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment2)
+            .replace(R.id.fragment_container, fragment)
             .commit()
 
         // Set up SearchView click listener
@@ -61,18 +70,78 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         countValue = sharedPreferences.getInt("countValue", 0)
         Log.d("Search_Fragment", "Valor de countValue no onCreateView: $countValue")
         val genreValue = sharedPreferences.getString("genre", null)
-        Log.d("Search_Fragment", "Valor de genre nas SharedPreferences: $genreValue")
+        val companyValue = sharedPreferences.getString("company", null)
+        val genreValue2 = sharedPreferences.getString("genre2", null)
+        val platformValue = sharedPreferences.getString("platform", null)
+        val genreValue3 = sharedPreferences.getString("genre3", null)
+        val sequenceValue = sharedPreferences.getString("sequence", null)
 
 
-        val fragment = if (genreValue != null) {
-            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue)
+
+        val fragment2 = if (genreValue != null) {
+            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue, 0)
         } else {
             // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Genres", "Action")
+            Games_List_Horizontal_Fragment.newInstance("Genres", "Action", 0)
         }
 
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container2, fragment)
+            .replace(R.id.fragment_container2, fragment2)
+            .commit()
+
+        val fragment3 = if (companyValue != null) {
+            Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0)
+        } else {
+            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
+            Games_List_Horizontal_Fragment.newInstance("Companies", "Sony", 0)
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container3, fragment3)
+            .commit()
+
+        val fragment4 = if (genreValue2 != null) {
+            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue2, 0)
+        } else {
+            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
+            Games_List_Horizontal_Fragment.newInstance("Genres", "Online Multiplayer", 0)
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container4, fragment4)
+            .commit()
+
+        val fragment5 = if (platformValue != null) {
+            Games_List_Horizontal_Fragment.newInstance("Platforms", platformValue, 0)
+        } else {
+            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
+            Games_List_Horizontal_Fragment.newInstance("Platforms", "PC", 0)
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container5, fragment5)
+            .commit()
+
+        val fragment6 = if (genreValue3 != null) {
+            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue3, 0)
+        } else {
+            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
+            Games_List_Horizontal_Fragment.newInstance("Genres", "Survival", 0)
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container6, fragment6)
+            .commit()
+
+        val fragment7 = if (sequenceValue != null) {
+            Games_List_Horizontal_Fragment.newInstance("Sequences", sequenceValue, 0)
+        } else {
+            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
+            Games_List_Horizontal_Fragment.newInstance("Sequences", "Super Mario", 0)
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container7, fragment7)
             .commit()
 
         return view
@@ -88,6 +157,22 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             getRandomGenre { genre ->
                 sharedPreferences.edit().putString("genre", genre).apply()
                 Log.d("Search_Fragment", "Novo valor de genre: $genre")
+            }
+            getRandomCompany { company ->
+                sharedPreferences.edit().putString("company", company).apply()
+                Log.d("Search_Fragment", "Novo valor de company: $company")
+            }
+            getRandomGenre { genre2 ->
+                sharedPreferences.edit().putString("genre2", genre2).apply()
+                Log.d("Search_Fragment", "Novo valor de genre2: $genre2")
+            }
+            getRandomPlatform { platform ->
+                sharedPreferences.edit().putString("platform", platform).apply()
+                Log.d("Search_Fragment", "Novo valor de platform: $platform")
+            }
+            getRandomGenre { genre3 ->
+                sharedPreferences.edit().putString("genre3", genre3).apply()
+                Log.d("Search_Fragment", "Novo valor de genre3: $genre3")
             }
             getRandomSequence { sequence ->
                 sharedPreferences.edit().putString("sequence", sequence).apply()

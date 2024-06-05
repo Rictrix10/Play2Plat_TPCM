@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +19,7 @@ import com.example.play2plat_tpcm.api.Collections
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.GameFavorite
 import com.example.play2plat_tpcm.api.ListFavoriteGames
+import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,19 +29,23 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var gameCoverAdapter: Games_List_Horizontal_Adapter
     private lateinit var titleText: TextView
+    private lateinit var arrowRight: ImageView
     private var filterType: String? = null
     private var paramater: String? = null
+    private var paramaterInt: Int? = 0
     private var userId: Int = 0
 
     companion object {
         private const val ARG_FILTER_TYPE = "filter_type"
         private const val ARG_PARAMATER = "paramater"
+        private const val ARG_PARAMATER_INT = "paramaterInt"
 
-        fun newInstance(filterType: String, paramater: String): Games_List_Horizontal_Fragment {
+        fun newInstance(filterType: String, paramater: String, paramaterInt: Int): Games_List_Horizontal_Fragment {
             val fragment = Games_List_Horizontal_Fragment()
             val args = Bundle()
             args.putString(ARG_FILTER_TYPE, filterType)
             args.putString(ARG_PARAMATER, paramater)
+            args.putInt(ARG_PARAMATER_INT, paramaterInt)
             fragment.arguments = args
             return fragment
         }
@@ -50,6 +56,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         arguments?.let {
             filterType = it.getString(ARG_FILTER_TYPE)
             paramater= it.getString(ARG_PARAMATER)
+            paramaterInt = it.getInt(ARG_PARAMATER_INT)
         }
 
         // Retrieve userId from SharedPreferences
@@ -63,18 +70,36 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     ): View? {
         val view = inflater.inflate(R.layout.fragment_games_list_horizontal, container, false)
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
+        arrowRight = view.findViewById(R.id.iconArrowRight)
 
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this)
         recyclerView.adapter = gameCoverAdapter
         titleText = view.findViewById(R.id.text_view)
 
-        titleText.text = "$paramater Games"
-
+        if (filterType == "Companies") {
+            titleText.text = "From $paramater"
+        } else {
+            titleText.text = "$paramater Games"
+        }
 
         loadGames()
 
+
+        arrowRight.setOnClickListener {
+            redirectToViewMoreGames_Fragment(filterType, paramater)
+
+        }
+
         return view
+    }
+
+    private fun redirectToViewMoreGames_Fragment(filterType: String?, paramater: String?) {
+        val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance(filterType ?: "", paramater ?: "")
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, viewMoreGamesFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
 
@@ -83,7 +108,12 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
             "Playing", "Wish List", "Paused", "Concluded" -> getStateCollection(filterType!!)
             "Favorite" -> getFavoriteGames()
             "Genres" -> getGamesByGenre(paramater!!)
+            "Sequences"-> getGamesBySequence(paramater!!)
+            "Platforms"-> getGamesByPlatform(paramater!!)
+            "Companies"-> getGamesByCompany(paramater!!)
             "Recent" -> getRecentGames()
+            "SameSequence" -> getGamesSameSequence(paramaterInt!!)
+            "SameCompany" -> getGamesSameCompany(paramaterInt!!)
             else -> getStateCollection("Playing")
         }
     }
@@ -132,6 +162,69 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         })
     }
 
+    private fun getGamesByCompany(companyName: String) {
+        ApiManager.apiService.getGamesByCompany(companyName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getGamesByPlatform(platformName: String) {
+        ApiManager.apiService.getGamesByPlatform(platformName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getGamesBySequence(sequenceName: String) {
+        ApiManager.apiService.getGamesBySequence(sequenceName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
     private fun getGamesByGenre(genreName: String) {
         ApiManager.apiService.getGamesByGenre(genreName).enqueue(object : Callback<List<Collections>> {
             override fun onResponse(
@@ -174,26 +267,49 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         })
     }
 
-        /*
-    private fun loadFreeGames() {
-        ApiManager.apiService.getAllGames().enqueue(object : Callback<List<Game>> {
-            override fun onResponse(call: Call<List<Game>>, response: Response<List<Game>>) {
+    private fun getGamesSameSequence(gameId: Int) {
+        ApiManager.apiService.getGamesSameSequence(gameId).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
                 if (response.isSuccessful) {
-                    val games = response.body()
-                    if (games != null) {
-                        GamesList.clear()
-                        GamesList.addAll(games)
-                        GamesAdapter.notifyDataSetChanged()
-                    }
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
             }
 
-            override fun onFailure(call: Call<List<Game>>, t: Throwable) {
-
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
             }
         })
     }
-     */
+
+    private fun getGamesSameCompany(gameId: Int) {
+        ApiManager.apiService.getGamesSameCompany(gameId).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+
 
     // Handle game click event
     override fun onGameClick(gameId: Int) {
@@ -232,5 +348,13 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
             sequenceId = 0, // Se não tiver essa informação, pode deixar 0 ou ajustar conforme necessário
             companyId = 0
         )
+    }
+
+    private fun redirectToViewMoreGames() {
+        val viewMoreGamesFragment= ViewMoreGames_Fragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, viewMoreGamesFragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
