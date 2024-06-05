@@ -81,10 +81,11 @@ const UserGameCommentsModel = {
         });
     },
 
-    getPostsByUserId: async (userId) => {
+    getPostsByUserIdGameId: async (userId, gameId) => {
         const userComments = await prisma.userGameComment.findMany({
             where: {
                 userId: userId,
+                gameId: gameId,
                 isAnswer: null
             },
             orderBy: {

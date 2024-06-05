@@ -71,13 +71,17 @@ const UserGameCommentsController = {
         }
     },
 
-    getPostsByUserId: async (req, res) => {
+    getPostsByUserIdGameId: async (req, res) => {
         try {
             const userId = parseInt(req.params.userId, 10);
+            const gameId = parseInt(req.params.gameId, 10);
             if (isNaN(userId)) {
                 return res.status(400).json({ error: 'userId inválido' });
             }
-            const comments = await UserGameCommentsModel.getPostsByUserId(userId);
+            if (isNaN(gameId)) {
+               return res.status(400).json({ error: 'gameId inválido' });
+            }
+            const comments = await UserGameCommentsModel.getPostsByUserIdGameId(userId, gameId);
             res.json(comments);
         } catch (error) {
             console.error('Erro ao buscar posts por userId:', error);
