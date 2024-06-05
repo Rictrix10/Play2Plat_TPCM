@@ -78,7 +78,6 @@ class View_Game_Fragment : Fragment() {
         nameTextView = view.findViewById(R.id.name)
         companyTextView = view.findViewById(R.id.company)
 
-
         gameImageView = view.findViewById(R.id.game)
         pegiInfoImageView = view.findViewById(R.id.pegi_info)
         isFreeImageView = view.findViewById(R.id.isFree)
@@ -131,6 +130,23 @@ class View_Game_Fragment : Fragment() {
                                         val colors = intArrayOf(dominantColor, vibrantColor)
                                         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                         containerLayout.background = gradientDrawable
+
+                                        Log.d("View_Game_Fragment", "Calculated Colors for Gradient: $dominantColor and $vibrantColor")
+
+                                        // Instancie o ViewPagerAdapter aqui com as cores calculadas
+                                        viewPager = view.findViewById(R.id.view_pager)
+                                        tabLayout = view.findViewById(R.id.tab_layout)
+
+                                        val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, dominantColor, vibrantColor)
+                                        viewPager.adapter = pagerAdapter
+
+                                        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                                            tab.text = when (position) {
+                                                0 -> "About"
+                                                1 -> "Interact"
+                                                else -> null
+                                            }
+                                        }.attach()
                                     }
                                 }
 
@@ -145,25 +161,9 @@ class View_Game_Fragment : Fragment() {
                                 18 -> R.drawable.pegi18
                                 else -> 0
                             }
-                            if (pegiImageResId != 0) {
+                            if (pegiImageResId!= 0) {
                                 Picasso.get().load(pegiImageResId).into(pegiInfoImageView)
                             }
-
-                            val platforms = game.platforms
-
-                            viewPager = view.findViewById(R.id.view_pager)
-                            tabLayout = view.findViewById(R.id.tab_layout)
-
-                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, dominantColor, vibrantColor)
-                            viewPager.adapter = pagerAdapter
-
-                            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                                tab.text = when (position) {
-                                    0 -> "About"
-                                    1 -> "Interact"
-                                    else -> null
-                                }
-                            }.attach()
                         }
                     }
                 }

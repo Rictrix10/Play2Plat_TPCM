@@ -5,9 +5,11 @@ import com.example.play2plat_tpcm.User_Profile_Fragment
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +19,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
@@ -40,10 +44,16 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var gameTextView: TextView
+    private lateinit var ReplyingTo: TextView
     private lateinit var commentEditTextView: EditText
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
+    private lateinit var container_layout: ConstraintLayout
     private var gameId: Int = 0
+    private var gameName: String? = null
+    private var primaryColor: Int = 0
+    private var secondaryColor: Int = 0
+    private var isAnswerPostId: Int = 0
 
     private var selectedImageUri: Uri? = null
 
@@ -61,6 +71,9 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         super.onCreate(savedInstanceState)
         arguments?.let {
             gameId = it.getInt(ARG_GAME_ID)
+            gameName = it.getString(ARG_GAME_NAME)
+            primaryColor = it.getInt(ARG_PRIMARY_COLOR)
+            secondaryColor = it.getInt(ARG_SECONDARY_COLOR)
         }
     }
 
@@ -77,6 +90,15 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         commentEditTextView = view.findViewById(R.id.comment)
         imageImageView = view.findViewById(R.id.image_icon)
         sendImageView = view.findViewById(R.id.send_icon)
+        container_layout = view.findViewById(R.id.container)
+        ReplyingTo = view.findViewById(R.id.replying_to_text)
+        gameTextView.text = gameName
+
+        Log.d("Posts_Fragment", "Colors for Gradient: $primaryColor and $secondaryColor")
+
+        val colors = intArrayOf(primaryColor, secondaryColor)
+        val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
+        container_layout.background = gradientDrawable
 
         imageImageView.setOnClickListener {
             Log.d("Image for Comment", "Select image button clicked")
@@ -89,6 +111,25 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         // Chama a API para obter os posts do jogo
 
         getGamePosts(gameId)
+
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                // Não estamos interessados em movimentos de arrastar e soltar, então retornamos falso aqui
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // Aqui é onde tratamos o gesto de arrastar à esquerda
+                val position = viewHolder.adapterPosition
+                val gamePost = (recyclerView.adapter as GamePostsAdapter).getPostAtPosition(position)
+                // Obtém o ID do post arrastado
+
+                isAnswerPostId = gamePost.id
+                ReplyingTo.visibility = View.VISIBLE
+                ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(gamePost.user.username)
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         sendImageView.setOnClickListener {
             val comments = commentEditTextView.text.toString()
@@ -118,7 +159,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                                     val newComment = Comment(
                                         comments = comments,
                                         image = coverImageUrl,
-                                        isAnswer = null,
+                                        isAnswer = if (isAnswerPostId != null && isAnswerPostId != 0) isAnswerPostId else null,
                                         userId = userId,
                                         gameId = gameId,
                                         latitude = 0.0,
@@ -191,7 +232,6 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     })
             }
         }
-
 
         return view
     }
@@ -277,13 +317,23 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
          */
     }
 
+
+
+
     companion object {
         private const val ARG_GAME_ID = "gameId"
+        private const val ARG_GAME_NAME = "gameName"
+        private const val ARG_PRIMARY_COLOR = "primaryColor"
+        private const val ARG_SECONDARY_COLOR = "secondaryColor"
+
         @JvmStatic
-        fun newInstance(gameId: Int) =
+        fun newInstance(gameId: Int, gameName: String, primaryColor: Int, secondaryColor: Int) =
             GamePostsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_GAME_ID, gameId)
+                    putString(ARG_GAME_NAME, gameName)
+                    putInt(ARG_PRIMARY_COLOR, primaryColor)
+                    putInt(ARG_SECONDARY_COLOR, secondaryColor)
                 }
             }
     }

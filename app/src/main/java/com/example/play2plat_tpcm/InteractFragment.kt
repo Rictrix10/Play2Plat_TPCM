@@ -62,6 +62,8 @@ class InteractFragment : Fragment() {
 
         loadUserAvaliation(userId, gameId)
 
+        Log.d("Interact_Fragment", "Colors for Gradient: $primaryColor and $secondaryColor")
+
         postsLayout.setOnClickListener {
             redirectToGamePosts(gameId)
         }
@@ -183,7 +185,7 @@ class InteractFragment : Fragment() {
 
     private fun redirectToGamePosts(gameId: Int) {
 
-        val gamePostsFragment = GamePostsFragment.newInstance(gameId)
+        val gamePostsFragment = GamePostsFragment.newInstance(gameId,gameName!!, primaryColor, secondaryColor)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, gamePostsFragment)
             .addToBackStack(null)
