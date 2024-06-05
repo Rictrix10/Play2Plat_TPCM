@@ -83,6 +83,7 @@ const UserGameCommentsModel = {
     },
 
     getPostsByUserIdGameId: async (userId, gameId) => {
+        // Obter no máximo dois posts mais recentes do usuário especificado
         const userComments = await prisma.userGameComment.findMany({
             where: {
                 userId: userId,
@@ -92,6 +93,7 @@ const UserGameCommentsModel = {
             orderBy: {
                 id: 'desc' // Ordena pelos mais recentes
             },
+            take: 2, // Limita a no máximo 2 resultados
             include: {
                 user: {
                     select: {
@@ -109,13 +111,15 @@ const UserGameCommentsModel = {
             }
         });
 
+        // Obter os posts restantes, incluindo os do usuário especificado mas excluindo os já listados
+        const userCommentIds = userComments.map(comment => comment.id);
         const otherComments = await prisma.userGameComment.findMany({
             where: {
-                userId: {
-                    not: userId
-                },
                 gameId: gameId,
-                isAnswer: null
+                isAnswer: null,
+                id: {
+                    notIn: userCommentIds
+                }
             },
             orderBy: {
                 id: 'desc' // Ordena pelos mais recentes
