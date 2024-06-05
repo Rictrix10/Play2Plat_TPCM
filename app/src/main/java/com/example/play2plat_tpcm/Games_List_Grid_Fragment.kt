@@ -74,6 +74,11 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             "Playing", "Wish List", "Paused", "Concluded" -> getStateCollection(filterType!!)
             "Favorite" -> getFavoriteGames()
             "Search"->getSearchedGamesbyName(paramater!!)
+            "Genres" -> getGamesByGenre(paramater!!)
+            "Sequences"-> getGamesBySequence(paramater!!)
+            "Platforms"-> getGamesByPlatform(paramater!!)
+            "Companies"-> getGamesByCompany(paramater!!)
+            "Recent" -> getRecentGames()
             else -> getStateCollection("Playing")
         }
     }
@@ -143,6 +148,112 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             }
         })
     }
+
+    private fun getGamesByCompany(companyName: String) {
+        ApiManager.apiService.getGamesByCompany(companyName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getGamesByPlatform(platformName: String) {
+        ApiManager.apiService.getGamesByPlatform(platformName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getGamesBySequence(sequenceName: String) {
+        ApiManager.apiService.getGamesBySequence(sequenceName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getGamesByGenre(genreName: String) {
+        ApiManager.apiService.getGamesByGenre(genreName).enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun getRecentGames() {
+        ApiManager.apiService.getRecentGames().enqueue(object : Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
 
 
 

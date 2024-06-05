@@ -160,9 +160,6 @@ interface ApiService {
     @GET("games/searchByName/{name}")
     fun getSearchedGamesByName(@Path("name") name: String): Call<List<Collections>>
 
-    @GET("game-genre/name/{genreName}")
-    fun getGamesByGenre(@Path("genreName") genreName: String): Call<List<Collections>>
-
     @GET("gamess/descending")
     fun getRecentGames(): Call<List<Collections>>
 
@@ -180,6 +177,26 @@ interface ApiService {
 
     @GET("platforms/random-name")
     fun getRandomPlatform(): Call<Paramater>
+
+    @GET("game-genre/name/{genreName}")
+    fun getGamesByGenre(@Path("genreName") genreName: String): Call<List<Collections>>
+
+    @GET("platform-games/name/{platformName}")
+    fun getGamesByPlatform(@Path("platformName") platformName: String): Call<List<Collections>>
+
+    @GET("games/sequence/{sequenceName}")
+    fun getGamesBySequence(@Path("sequenceName") sequenceName: String): Call<List<Collections>>
+
+    @GET("games/company/{companyName}")
+    fun getGamesByCompany(@Path("companyName") companyName: String): Call<List<Collections>>
+
+    @GET("games/same-sequence/{gameId}")
+    fun getGamesSameSequence(@Path("gameId") gameId: Int): Call<List<Collections>>
+
+    @GET("games/same-company/{gameId}")
+    fun getGamesSameCompany(@Path("gameId") gameId: Int): Call<List<Collections>>
+
+
 
 }
 

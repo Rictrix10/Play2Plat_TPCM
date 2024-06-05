@@ -70,4 +70,44 @@
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/game_sequence"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/platforms_fragment_container"
+        android:layout_marginBottom="16dp">
+
+        <FrameLayout
+            android:id="@+id/fragment_sequence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/game_company"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/game_sequence"
+        android:layout_marginBottom="16dp">
+
+        <FrameLayout
+            android:id="@+id/fragment_company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
