@@ -56,6 +56,7 @@ class GamePostsAdapter(
     class GamePostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profilePicture: CircleImageView = itemView.findViewById(R.id.profile_picture)
         val username: TextView = itemView.findViewById(R.id.username)
+        val location: TextView = itemView.findViewById(R.id.location)
         val textPost: TextView = itemView.findViewById(R.id.text_post)
         val imagePost: ImageView = itemView.findViewById(R.id.image_post)
         val responseList: RecyclerView = itemView.findViewById(R.id.response_list)
