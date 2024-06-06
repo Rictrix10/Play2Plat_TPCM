@@ -142,6 +142,28 @@ const UserController = {
                 res.status(500).json({ error: 'Erro ao excluir utilizador' });
             }
         },
+            verifyPassword: async (req, res) => {
+                try {
+                    const userId = parseInt(req.params.id);
+                    const { password } = req.body;
+
+                    const storedPassword = await UserModel.getPasswordByUserId(userId);
+                    if (!storedPassword) {
+                        return res.status(404).json({ error: 'Usuário não encontrado' });
+                    }
+
+                    const isPasswordValid = await bcrypt.compare(password, storedPassword);
+
+                    if (!isPasswordValid) {
+                        return res.status(400).json({ error: 'Senha incorreta' });
+                    }
+
+                    res.json({ message: 'Senha correta' });
+                } catch (error) {
+                    console.error('Erro ao verificar senha:', error);
+                    res.status(500).json({ error: 'Erro ao verificar senha' });
+                }
+            },
 };
 
 module.exports = UserController;

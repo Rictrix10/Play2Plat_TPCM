@@ -82,6 +82,19 @@ const UserModel = {
                 }
             });
         },
+
+            getPasswordByUserId: async (id) => {
+                try {
+                    const user = await prisma.user.findUnique({
+                        where: { id },
+                        select: { password: true }
+                    });
+                    return user ? user.password : null;
+                } catch (error) {
+                    console.error('Erro ao buscar senha por ID de usuário:', error);
+                    throw error;
+                }
+            },
 };
 
 module.exports = UserModel;
