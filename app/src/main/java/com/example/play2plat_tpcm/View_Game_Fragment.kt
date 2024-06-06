@@ -28,11 +28,14 @@ import android.util.Log
 
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.viewpager2.widget.ViewPager2
 import com.example.play2plat_tpcm.api.Avaliation
 import com.example.play2plat_tpcm.api.UserGame
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class View_Game_Fragment : Fragment() {
 
@@ -58,6 +61,8 @@ class View_Game_Fragment : Fragment() {
     private var currentUserType: Int = 0
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
+    private var dominantColor: Int = 0
+    private var vibrantColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +81,6 @@ class View_Game_Fragment : Fragment() {
         nameTextView = view.findViewById(R.id.name)
         companyTextView = view.findViewById(R.id.company)
 
-
         gameImageView = view.findViewById(R.id.game)
         pegiInfoImageView = view.findViewById(R.id.pegi_info)
         isFreeImageView = view.findViewById(R.id.isFree)
@@ -86,6 +90,9 @@ class View_Game_Fragment : Fragment() {
         collectionAccordion = view.findViewById(R.id.collection_accordion)
         collectionTitle = view.findViewById(R.id.collection_title)
         collectionList = view.findViewById(R.id.collection_list)
+
+        viewPager = view.findViewById(R.id.view_pager)
+        tabLayout = view.findViewById(R.id.tab_layout)
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
@@ -126,14 +133,53 @@ class View_Game_Fragment : Fragment() {
                                     Palette.from(bitmap).generate { palette ->
                                         val dominantColor = palette?.dominantSwatch?.rgb ?: 0
                                         val vibrantColor = palette?.vibrantSwatch?.rgb ?: 0
-                                        val colors = intArrayOf(dominantColor, vibrantColor)
-                                        val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
-                                        containerLayout.background = gradientDrawable
+
+                                        val colorDifferenceThreshold = 8 // Define o limiar de diferença entre cores
+                                        val colorDifference = colourDistance(dominantColor, vibrantColor)
+
+                                        if (colorDifference < colorDifferenceThreshold) {
+                                            // Se a diferença for muito baixa, escurecer ligeiramente a cor vibrante
+                                            val darkerVibrantColor = ColorUtils.blendARGB(vibrantColor, Color.BLACK, 0.7f)
+                                            val colors = intArrayOf(dominantColor, darkerVibrantColor)
+                                            val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
+                                            containerLayout.background = gradientDrawable
+                                            // Usar a cor mais escura no pagerAdapter
+                                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, dominantColor, darkerVibrantColor)
+                                            viewPager.adapter = pagerAdapter
+                                        } else {
+                                            // Se a diferença for suficiente, use as cores normalmente
+                                            val colors = intArrayOf(dominantColor, vibrantColor)
+                                            val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
+                                            containerLayout.background = gradientDrawable
+                                            // Usar a cor vibrante normal no pagerAdapter
+                                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, dominantColor, vibrantColor)
+                                            viewPager.adapter = pagerAdapter
+                                        }
+
+
+                                        Log.d("View_Game_Fragment", "Calculated Colors for Gradient: $dominantColor and $vibrantColor")
+
+                                        // Instancie o ViewPagerAdapter aqui com as cores calculadas
+
+
+
+
+                                        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                                            tab.text = when (position) {
+                                                0 -> "About"
+                                                1 -> "Interact"
+                                                else -> null
+                                            }
+                                        }.attach()
                                     }
                                 }
 
-                                override fun onError(e: Exception?) {}
+                                override fun onError(e: Exception?) {
+                                    // Tratar erro de carregamento da imagem
+                                }
                             })
+
+
 
                             val pegiImageResId = when (game.pegiInfo) {
                                 3 -> R.drawable.pegi3
@@ -143,25 +189,9 @@ class View_Game_Fragment : Fragment() {
                                 18 -> R.drawable.pegi18
                                 else -> 0
                             }
-                            if (pegiImageResId != 0) {
+                            if (pegiImageResId!= 0) {
                                 Picasso.get().load(pegiImageResId).into(pegiInfoImageView)
                             }
-
-                            val platforms = game.platforms
-
-                            viewPager = view.findViewById(R.id.view_pager)
-                            tabLayout = view.findViewById(R.id.tab_layout)
-
-                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, platforms)
-                            viewPager.adapter = pagerAdapter
-
-                            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                                tab.text = when (position) {
-                                    0 -> "About"
-                                    1 -> "Interact"
-                                    else -> null
-                                }
-                            }.attach()
                         }
                     }
                 }
@@ -203,6 +233,23 @@ class View_Game_Fragment : Fragment() {
         handleAccordionSelection()
     }
 
+
+    fun colourDistance(color1: Int, color2: Int): Double {
+        val r1 = Color.red(color1)
+        val g1 = Color.green(color1)
+        val b1 = Color.blue(color1)
+        val r2 = Color.red(color2)
+        val g2 = Color.green(color2)
+        val b2 = Color.blue(color2)
+        return sqrt((r1 - r2).toDouble().pow(2) + (g1 - g2).toDouble().pow(2) + (b1 - b2).toDouble().pow(2))
+    }
+
+    fun darkenColor(color: Int, factor: Float): Int {
+        val hsv = FloatArray(3)
+        Color.colorToHSV(color, hsv)
+        hsv[2] *= (1f - factor) // Reduzir o valor da componente de brilho (Value)
+        return Color.HSVToColor(hsv)
+    }
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
         collectionAdapter = CollectionsAdapter(context, collectionInfoValues, collectionTitle) { selectedOption ->

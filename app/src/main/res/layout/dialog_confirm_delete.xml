@@ -3,13 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/button_bd_3">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Você realmente deseja eliminar a conta?"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/WHITE"/>
 
     <EditText
         android:id="@+id/password_edit_text"
@@ -17,5 +19,7 @@
         android:layout_height="wrap_content"
         android:hint="Digite sua password"
         android:inputType="textPassword"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:textColor="@color/WHITE"
+        android:textColorHint="@color/WHITE"/>
 </LinearLayout>

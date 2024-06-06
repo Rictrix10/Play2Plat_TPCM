@@ -22,12 +22,17 @@ class InteractFragment : Fragment() {
     private var currentRating = 0
     private var gameId: Int = 0
     private var userId: Int = 0
-
+    private var gameName: String? = null
+    private var primaryColor: Int = 0
+    private var secondaryColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             gameId = it.getInt(ARG_GAME_ID)
+            gameName = it.getString(ARG_GAME_NAME)
+            primaryColor = it.getInt(ARG_PRIMARY_COLOR)
+            secondaryColor = it.getInt(ARG_SECONDARY_COLOR)
         }
     }
 
@@ -56,6 +61,8 @@ class InteractFragment : Fragment() {
         userId = sharedPreferences.getInt("user_id", 0)
 
         loadUserAvaliation(userId, gameId)
+
+        Log.d("Interact_Fragment", "Colors for Gradient: $primaryColor and $secondaryColor")
 
         postsLayout.setOnClickListener {
             redirectToGamePosts(gameId)
@@ -178,7 +185,7 @@ class InteractFragment : Fragment() {
 
     private fun redirectToGamePosts(gameId: Int) {
 
-        val gamePostsFragment = GamePostsFragment.newInstance(gameId)
+        val gamePostsFragment = GamePostsFragment.newInstance(gameId,gameName!!, primaryColor, secondaryColor)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, gamePostsFragment)
             .addToBackStack(null)
@@ -187,12 +194,18 @@ class InteractFragment : Fragment() {
 
     companion object {
         private const val ARG_GAME_ID = "gameId"
+        private const val ARG_GAME_NAME = "gameName"
+        private const val ARG_PRIMARY_COLOR = "primaryColor"
+        private const val ARG_SECONDARY_COLOR = "secondaryColor"
 
         @JvmStatic
-        fun newInstance(gameId: Int) =
+        fun newInstance(gameId: Int, gameName: String, primaryColor: Int, secondaryColor: Int) =
             InteractFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_GAME_ID, gameId)
+                    putString(ARG_GAME_NAME, gameName)
+                    putInt(ARG_PRIMARY_COLOR, primaryColor)
+                    putInt(ARG_SECONDARY_COLOR, secondaryColor)
                 }
             }
     }
