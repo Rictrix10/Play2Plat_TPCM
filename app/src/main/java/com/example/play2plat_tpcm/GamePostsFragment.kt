@@ -1,7 +1,5 @@
 package com.example.play2plat_tpcm
 
-import com.example.play2plat_tpcm.Profile_Fragment
-import com.example.play2plat_tpcm.User_Profile_Fragment
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -15,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -26,9 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Comment
-import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.GameCommentsResponse
-import com.example.play2plat_tpcm.api.UserRegister
 import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -40,7 +37,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 
-class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickListener {
+class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickListener, GamePostsAdapter.OnReplyClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var gameTextView: TextView
@@ -81,11 +78,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate o layout para este fragmento
         val view = inflater.inflate(R.layout.fragment_game_posts, container, false)
 
         recyclerView = view.findViewById(R.id.recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         gameTextView = view.findViewById(R.id.game_title)
         commentEditTextView = view.findViewById(R.id.comment)
         imageImageView = view.findViewById(R.id.image_icon)
@@ -94,200 +90,116 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         ReplyingTo = view.findViewById(R.id.replying_to_text)
         gameTextView.text = gameName
 
-        Log.d("Posts_Fragment", "Colors for Gradient: $primaryColor and $secondaryColor")
-
         val colors = intArrayOf(primaryColor, secondaryColor)
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
         container_layout.background = gradientDrawable
 
         imageImageView.setOnClickListener {
-            Log.d("Image for Comment", "Select image button clicked")
             selectVisualMedia()
         }
+
+        val backButton = view.findViewById<ImageButton>(R.id.back_button)
+        backButton.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
 
         // Chama a API para obter os posts do jogo
+        getGamePosts(gameId, userId)
 
-        getGamePosts(gameId)
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                // Não estamos interessados em movimentos de arrastar e soltar, então retornamos falso aqui
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                // Aqui é onde tratamos o gesto de arrastar à esquerda
-                val position = viewHolder.adapterPosition
-                val gamePost = (recyclerView.adapter as GamePostsAdapter).getPostAtPosition(position)
-                // Obtém o ID do post arrastado
-
-                isAnswerPostId = gamePost.id
-                ReplyingTo.visibility = View.VISIBLE
-                ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(gamePost.user.username)
-            }
-        })
-        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         sendImageView.setOnClickListener {
             val comments = commentEditTextView.text.toString()
-            val context = requireContext()
-            val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
-            val userId = sharedPreferences.getInt("user_id", 0)
-
             if (selectedImageUri != null) {
-                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
-                val file = bitmapToFile(context, bitmap)
+                val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+                val file = bitmapToFile(requireContext(), bitmap)
                 val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
                 val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-                // Envia a imagem para o servidor
                 val call = ApiManager.apiService.uploadImage(imagePart)
                 call.enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.isSuccessful) {
                             val imageUrl = response.body()?.string()
                             imageUrl?.let {
-                                val pattern = Regex("\"url\":\"(\\S+)\"") // Cria um padrão regex para extrair a URL
+                                val pattern = Regex("\"url\":\"(\\S+)\"")
                                 val matchResult = pattern.find(it)
-
                                 matchResult?.let { result ->
-                                    val coverImageUrl = result.groupValues[1] // Obtém o valor correspondente ao grupo capturado
-
-                                    val newComment = Comment(
-                                        comments = comments,
-                                        image = coverImageUrl,
-                                        isAnswer = if (isAnswerPostId != null && isAnswerPostId != 0) isAnswerPostId else null,
-                                        userId = userId,
-                                        gameId = gameId,
-                                        latitude = 0.0,
-                                        longitude = 0.0,
-                                    )
-
-                                    Log.d("AddNewComment", "Novo comentário: $newComment")
-
-                                    // Fazer a chamada para a API para salvar o comentário
-                                    ApiManager.apiService.addComment(newComment)
-                                        .enqueue(object : Callback<Comment> {
-                                            override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
-                                                if (response.isSuccessful) {
-                                                    val postComment = response.body()
-                                                    Log.d("AddNewComment", "Comentário criado com sucesso: $postComment")
-                                                    Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
-                                                } else {
-                                                    Log.e("AddNewComment", "Error posting comment: ${response.message()}")
-                                                    Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
-                                                }
-                                            }
-
-                                            override fun onFailure(call: Call<Comment>, t: Throwable) {
-                                                Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                                            }
-                                        })
+                                    val coverImageUrl = result.groupValues[1]
+                                    postComment(comments, coverImageUrl, userId, gameId)
                                 }
                             }
                         } else {
-                            // Erro no upload
                             Log.e("AddNewComment", "Erro no upload: ${response.message()}")
                         }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        // Erro na requisição
                         Log.e("AddNewComment", "Erro na requisição: ${t.message}")
                     }
                 })
             } else {
-                val newComment = Comment(
-                    comments = comments,
-                    image = null,
-                    isAnswer = null,
-                    userId = userId,
-                    gameId = gameId,
-                    latitude = 0.0,
-                    longitude = 0.0,
-                )
-
-                Log.d("AddNewComment", "Novo comentário sem imagem: $newComment")
-
-                // Fazer a chamada para a API para salvar o comentário
-                ApiManager.apiService.addComment(newComment)
-                    .enqueue(object : Callback<Comment> {
-                        override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
-                            if (response.isSuccessful) {
-                                val postComment = response.body()
-                                Log.d("AddNewComment", "Comentário criado com sucesso: $postComment")
-                                Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Log.e("AddNewComment", "Error posting comment: ${response.message()}")
-                                Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<Comment>, t: Throwable) {
-                            Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                        }
-                    })
+                postComment(comments, null, userId, gameId)
             }
         }
 
         return view
     }
 
-    private fun redirectToMyProfile() {
-        val profileFragment = Profile_Fragment()
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, profileFragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun redirectToUserProfile(userId: Int) {
-        val userProfileFragment = User_Profile_Fragment.newInstance(userId)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, userProfileFragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    override fun onProfilePictureClick(userId: Int) {
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val currentUserId = sharedPreferences.getInt("user_id", 0)
-
-        if (userId == currentUserId) {
-            redirectToMyProfile()
-        } else {
-            redirectToUserProfile(userId)
-        }
-
-    }
-
-    private fun getGamePosts(gameId: Int) {
-        // Defina o ID do jogo para obter os comentários
-        ApiManager.apiService.getCommentByGame(gameId).enqueue(object : Callback<List<GameCommentsResponse>> {
+    private fun getGamePosts(gameId: Int, userId: Int) {
+        ApiManager.apiService.getPosts(userId, gameId).enqueue(object : Callback<List<GameCommentsResponse>> {
             override fun onResponse(
                 call: Call<List<GameCommentsResponse>>,
                 response: Response<List<GameCommentsResponse>>
             ) {
                 if (response.isSuccessful) {
                     val gamePosts = response.body()
-                    Log.d("GamePostsFragment", "Resposta da API: $gamePosts")
                     if (gamePosts != null) {
-                        recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment)
+                        recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment)
                     }
                 } else {
                     Log.e("GamePostsFragment", "Erro na resposta: ${response.errorBody()}")
-                    // Tratar erro
                 }
             }
 
             override fun onFailure(call: Call<List<GameCommentsResponse>>, t: Throwable) {
                 Log.e("GamePostsFragment", "Falha na chamada da API: ${t.message}")
-                // Tratar falha
             }
         })
+    }
+
+    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int) {
+        val newComment = Comment(
+            comments = comments,
+            image = imageUrl,
+            isAnswer = if (isAnswerPostId != 0) isAnswerPostId else null,
+            userId = userId,
+            gameId = gameId,
+            latitude = 0.0,
+            longitude = 0.0,
+        )
+
+        ApiManager.apiService.addComment(newComment)
+            .enqueue(object : Callback<Comment> {
+                override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+                    if (response.isSuccessful) {
+                        val postComment = response.body()
+                        Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
+                        getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
+                    } else {
+                        Log.e("AddNewComment", "Error posting comment: ${response.message()}")
+                        Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Comment>, t: Throwable) {
+                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                }
+            })
     }
 
     private fun bitmapToFile(context: Context, bitmap: Bitmap): File {
@@ -306,19 +218,21 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         pickVisualMediaLauncher.launch("image/*")
     }
 
-    private fun loadImage(imageUrl: String?) {
-        if (!imageUrl.isNullOrEmpty()) {
-            Picasso.get().load(imageUrl).into(imageImageView)
-        }
-        /*else {
-            profileImageView.setImageResource(R.drawable.noimageuser)
-        }
-
-         */
+    override fun onProfilePictureClick(userId: Int) {
+        val viewGameFragment = Profile_Fragment.newInstance(userId)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, viewGameFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
-
-
+    override fun onReplyClick(postId: Int, username: String) {
+        // Implementação da ação ao clicar no ícone de resposta
+        // Você pode realizar a lógica necessária para responder a um comentário aqui
+        isAnswerPostId = postId
+        ReplyingTo.visibility = View.VISIBLE
+        ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(username)
+    }
 
     companion object {
         private const val ARG_GAME_ID = "gameId"
@@ -338,3 +252,4 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             }
     }
 }
+
