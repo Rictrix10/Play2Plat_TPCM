@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:background="@drawable/tab_bd"
+        android:paddingTop="5dp">
+
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/games_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_games"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/first_icon"/>
+
+            <TextView
+                android:id="@+id/commerce_first_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/games"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/favorites_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/sec_icon"/>
+
+            <TextView
+                android:id="@+id/commerce_sec_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/favorites"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/search_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_search"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/third_icon"/>
+
+            <TextView
+                android:id="@+id/commerce_third_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/search"
+                />
+        </LinearLayout>
+
+        <!-- Novo LinearLayout para o novo item -->
+        <LinearLayout
+            android:onClick="onClick"
+            android:id="@+id/profile_lay"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/icon_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:id="@+id/fourth_icon"/>
+
+            <TextView
+                android:id="@+id/commerce_fourth_text"
+                android:textColor="#FFFF"
+                android:layout_marginTop="3dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/profile"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
