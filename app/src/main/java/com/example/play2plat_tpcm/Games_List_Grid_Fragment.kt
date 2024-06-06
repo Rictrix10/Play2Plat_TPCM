@@ -1,5 +1,6 @@
 package com.example.play2plat_tpcm
 
+import android.content.res.Configuration
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -60,7 +61,13 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         val view = inflater.inflate(R.layout.fragment_games_list_grid, container, false)
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
 
-        recyclerView.layoutManager = GridLayoutManager(context, 3)
+        val layoutManager = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            GridLayoutManager(context, 5)
+        } else {
+            GridLayoutManager(context, 3)
+        }
+        recyclerView.layoutManager = layoutManager
+
         gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
         recyclerView.adapter = gameCoverAdapter
 
@@ -68,6 +75,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
 
         return view
     }
+
+
 
     private fun loadGames() {
         when (filterType) {
