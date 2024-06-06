@@ -45,6 +45,7 @@ class Profile_Fragment : Fragment() {
     private var userId: Int = 0
     private var currentUserId: Int = 0
     private var user: User? = null
+    private var userPassword: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,13 +90,7 @@ class Profile_Fragment : Fragment() {
         }
 
         // Configurar ação do botão de logout
-        logoutButton.setOnClickListener {
-            logout()
-        }
 
-        deleteButton.setOnClickListener {
-            deleteAccountWithConfirmation()
-        }
 
 
         val fragment = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0)
@@ -115,6 +110,8 @@ class Profile_Fragment : Fragment() {
                     if (user != null) {
                         usernameTextView.text = user.username
                         loadImage(user.avatar)
+
+                        userPassword = user.password
 
                         val platforms = user.platforms
                         val canEditPlatforms = userId == currentUserId
@@ -136,12 +133,12 @@ class Profile_Fragment : Fragment() {
             }
         })
 
-        view.findViewById<Button>(R.id.redirect_button)?.setOnClickListener {
-            val fragment = newInstance(1) // Passar o ID do usuário desejado
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.layout, fragment)
-                .addToBackStack(null)
-                .commit()
+        logoutButton.setOnClickListener {
+            logout()
+        }
+
+        deleteButton.setOnClickListener {
+            deleteAccountWithConfirmation(userPassword)
         }
     }
 
@@ -171,8 +168,7 @@ class Profile_Fragment : Fragment() {
         }
     }
 
-
-    private fun deleteAccountWithConfirmation() {
+    private fun deleteAccountWithConfirmation(Password: String) {
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.dialog_confirm_delete, null)
         val passwordEditText = view.findViewById<EditText>(R.id.password_edit_text)
@@ -184,11 +180,10 @@ class Profile_Fragment : Fragment() {
                 val password = passwordEditText.text.toString()
 
                 lifecycleScope.launch {
-                    val userPassword = ""
-                    if (password.isNotEmpty() && password == userPassword) {
+                    if (password.isNotEmpty() && password == Password) { // Verifica a senha correta
                         deleteAccount(userId)
                     } else {
-                        Toast.makeText(context, "Password incorreta", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Password incorreta ${userPassword}", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -200,12 +195,7 @@ class Profile_Fragment : Fragment() {
         }
     }
 
-
-
-
-
     private fun deleteAccount(userId: Int) {
-
         ApiManager.apiService.deleteAccount(userId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
@@ -224,6 +214,7 @@ class Profile_Fragment : Fragment() {
             }
         })
     }
+
 
 
 
