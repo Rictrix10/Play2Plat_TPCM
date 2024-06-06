@@ -209,17 +209,6 @@
 
             </LinearLayout>
 
-
-            <Button
-                android:id="@+id/redirect_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Redirect to Profile 1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/game_sections2" />
-
             <Button
                 android:id="@+id/logout_button"
                 android:layout_width="wrap_content"
@@ -229,8 +218,8 @@
                 android:background="@drawable/button_bd_6"
                 android:textColor="@color/WHITE"
                 android:text="Logout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/redirect_button" />
+                app:layout_constraintTop_toBottomOf="@id/game_sections2"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <Button
                 android:id="@+id/delete_button"
@@ -243,7 +232,7 @@
                 android:textColor="#FF0000"
                 android:text="Delete Account"
                 app:layout_constraintEnd_toStartOf="@id/logout_button"
-                app:layout_constraintTop_toBottomOf="@id/redirect_button" />
+                app:layout_constraintTop_toBottomOf="@id/game_sections2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
