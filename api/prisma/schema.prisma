@@ -79,6 +79,7 @@ model game {
   releaseDate       DateTime?
   pegiInfo          Int
   coverImage        String?
+  isDeleted         Boolean?
   sequence          sequence?   @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
   company           company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   sequenceId        Int?
@@ -158,6 +159,7 @@ model userGameComment {
   date          DateTime?
   latitude      Float
   longitude     Float
+  location      String?
 
 }
 
