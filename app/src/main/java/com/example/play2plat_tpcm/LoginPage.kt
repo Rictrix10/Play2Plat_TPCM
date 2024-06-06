@@ -116,9 +116,6 @@ class LoginPage : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putInt("user_id", user.id)
-        editor.putString("user_email", user.email)
-        editor.putString("user_username", user.username)
-        editor.putString("user_password", user.password)
         editor.putInt("user_type_id", user.userTypeId)
         editor.apply()
     }

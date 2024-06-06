@@ -5,7 +5,6 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
@@ -202,9 +201,13 @@ interface ApiService {
     @GET("user-game-comments/{id}")
     fun getPostsPreview(@Path("id") id: Int): Call<List<GameCommentsResponse>>
 
-    @GET("https://play2-plat-tpcm.vercel.app/api/user-game-comments-responses/post/{postId}")
+    @GET("user-game-comments-responses/post/{postId}")
     fun getAnswers(@Path("postId") userId: Int): Call<List<GameCommentsResponse>>
 
+    @GET("avaliation/average/{gameId}")
+    fun getAverageAvaliations(@Path("gameId") gameId: Int): Call<AverageStars>
 
+    @POST("users/verify-password/{userId}")
+    fun verifyPassword(@Path("userId") userId: Int, @Body password: Password): Call<Void>
 
 }

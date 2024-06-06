@@ -24,6 +24,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import com.squareup.picasso.Picasso
 import com.example.play2plat_tpcm.api.ApiManager
+import com.example.play2plat_tpcm.api.Paramater
+import com.example.play2plat_tpcm.api.Password
 import com.example.play2plat_tpcm.api.User
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -111,8 +113,6 @@ class Profile_Fragment : Fragment() {
                         usernameTextView.text = user.username
                         loadImage(user.avatar)
 
-                        userPassword = user.password
-
                         val platforms = user.platforms
                         val canEditPlatforms = userId == currentUserId
                         if(platforms != null){
@@ -138,7 +138,7 @@ class Profile_Fragment : Fragment() {
         }
 
         deleteButton.setOnClickListener {
-            deleteAccountWithConfirmation(userPassword)
+            deleteAccountWithConfirmation()
         }
     }
 
@@ -149,10 +149,7 @@ class Profile_Fragment : Fragment() {
             setMessage("Você realmente deseja fazer logout?")
             setPositiveButton("Sim") { dialog, which ->
                 // Eliminar dados guardados no SharedPreferences
-                val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-                editor.clear()
-                editor.apply()
+                clearSharedPreferences()
 
                 // Redirecionar para a LoginActivity
                 val intent = Intent(activity, LoginPage::class.java)
@@ -168,7 +165,7 @@ class Profile_Fragment : Fragment() {
         }
     }
 
-    private fun deleteAccountWithConfirmation(Password: String) {
+    private fun deleteAccountWithConfirmation() {
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.dialog_confirm_delete, null)
         val passwordEditText = view.findViewById<EditText>(R.id.password_edit_text)
@@ -179,12 +176,18 @@ class Profile_Fragment : Fragment() {
             setPositiveButton("Sim") { dialog, which ->
                 val password = passwordEditText.text.toString()
 
-                lifecycleScope.launch {
-                    if (password.isNotEmpty() && password == Password) { // Verifica a senha correta
-                        deleteAccount(userId)
-                    } else {
-                        Toast.makeText(context, "Password incorreta ${userPassword}", Toast.LENGTH_SHORT).show()
-                    }
+                if (password.isNotEmpty()) {
+                    verifyPassword(currentUserId, password, object : PasswordVerificationCallback {
+                        override fun onVerificationSuccess() {
+                            deleteAccount(userId)
+                        }
+
+                        override fun onVerificationFailure() {
+                            Toast.makeText(context, "Password incorreta", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                } else {
+                    Toast.makeText(context, "Password não pode estar vazia", Toast.LENGTH_SHORT).show()
                 }
             }
             setNegativeButton("Não") { dialog, which ->
@@ -195,12 +198,35 @@ class Profile_Fragment : Fragment() {
         }
     }
 
+
+    private fun verifyPassword(userId: Int, password: String, callback: PasswordVerificationCallback) {
+        val inputPass = Password(password)
+        ApiManager.apiService.verifyPassword(userId, inputPass).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    callback.onVerificationSuccess()
+                } else if (response.code() == 400) {
+                    callback.onVerificationFailure()
+                } else {
+                    Toast.makeText(context, "Erro desconhecido: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(context, "Erro: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
     private fun deleteAccount(userId: Int) {
         ApiManager.apiService.deleteAccount(userId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Conta eliminada com sucesso", Toast.LENGTH_SHORT).show()
                     // Redirecionar para a tela de login após deletar a conta
+                    clearSharedPreferences()
+
                     val intent = Intent(activity, LoginPage::class.java)
                     startActivity(intent)
                     activity?.finish()
@@ -215,7 +241,18 @@ class Profile_Fragment : Fragment() {
         })
     }
 
+    private fun clearSharedPreferences() {
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()
+    }
 
+
+    interface PasswordVerificationCallback {
+        fun onVerificationSuccess()
+        fun onVerificationFailure()
+    }
 
 
     private fun loadImage(avatarUrl: String?) {
