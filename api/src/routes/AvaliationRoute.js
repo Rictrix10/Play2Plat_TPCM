@@ -7,5 +7,5 @@ router.get('/avaliation', AvaliationController.getAvaliations);
 router.get('/avaliation/user/:userId', AvaliationController.getAvaliationByUserId);
 router.patch('/avaliation/user/:userId/game/:gameId', AvaliationController.patchAvaliationByUserIdAndGameId);
 router.delete('/avaliation/user/:userId/game/:gameId', AvaliationController.deleteAvaliationByUserIdAndGameId);
-
+router.get('/avaliation/average/:gameId', AvaliationController.getAverageStarsByGameId);
 module.exports = router;

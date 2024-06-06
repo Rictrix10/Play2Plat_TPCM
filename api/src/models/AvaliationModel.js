@@ -37,7 +37,14 @@ const AvaliationModel = {
                 gameId: gameId
             }
         });
-    }
+    },
+        getAverageStarsByGameId: async (gameId) => {
+            const result = await prisma.avaliation.aggregate({
+                where: { gameId },
+                _avg: { stars: true }
+            });
+            return result._avg.stars;
+        },
 };
 
 module.exports = AvaliationModel;
