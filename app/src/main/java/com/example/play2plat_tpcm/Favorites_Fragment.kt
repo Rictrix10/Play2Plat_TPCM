@@ -47,14 +47,18 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
         layoutParams.height = availableHeight
         fragmentContainer.layoutParams = layoutParams
 
-        val fragment = Games_List_Grid_Fragment.newInstance("Favorite", "")
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-
+        if (!childFragmentManager.isStateSaved()) {
+            val fragment = Games_List_Grid_Fragment.newInstance("Favorite", "")
+            childFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
+        } else {
+            // Lide com o caso em que o estado da instância já foi salvo
+        }
 
         return view
     }
+
 
     private fun redirectToViewGame(gameId: Int) {
         val platforms = arrayListOf<String>()

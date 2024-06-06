@@ -62,10 +62,8 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         collectionAccordion.setOnClickListener {
             toggleListVisibility(collectionList, collectionTitle)
             // Aqui, além de alternar a visibilidade da lista, atualizamos os jogos com base na coleção selecionada
-
         }
 
-// No método onCreateView, logo após inicializar o collectionTitle
         collectionTitle.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // Não precisamos fazer nada aqui
@@ -95,17 +93,29 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         layoutParams.height = availableHeight
         fragmentContainer.layoutParams = layoutParams
 
+        if (!childFragmentManager.isStateSaved()) {
+            val fragment = Games_List_Grid_Fragment.newInstance("Playing", "")
+            childFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
+        } else {
+            // Lidar com o caso em que o estado da instância já foi salvo
+        }
 
         return view
     }
 
-    // No método showFilteredGames
     private fun showFilteredGames(filterType: String) {
-        val fragment = Games_List_Grid_Fragment.newInstance(filterType, "")
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+        if (!childFragmentManager.isStateSaved()) {
+            val fragment = Games_List_Grid_Fragment.newInstance(filterType, "")
+            childFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
+        } else {
+            // Lidar com o caso em que o estado da instância já foi salvo
+        }
     }
+
 
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
