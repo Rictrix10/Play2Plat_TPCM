@@ -1,9 +1,13 @@
 package com.example.play2plat_tpcm
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.GradientDrawable
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,13 +23,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Comment
 import com.example.play2plat_tpcm.api.GameCommentsResponse
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -36,6 +42,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.util.Locale
 
 class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickListener, GamePostsAdapter.OnReplyClickListener {
 
@@ -46,6 +54,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
     private lateinit var container_layout: ConstraintLayout
+
     private var gameId: Int = 0
     private var gameName: String? = null
     private var primaryColor: Int = 0
@@ -53,6 +62,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private var isAnswerPostId: Int = 0
 
     private var selectedImageUri: Uri? = null
+
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
@@ -72,6 +86,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             primaryColor = it.getInt(ARG_PRIMARY_COLOR)
             secondaryColor = it.getInt(ARG_SECONDARY_COLOR)
         }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
     override fun onCreateView(
@@ -103,48 +119,14 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             requireActivity().onBackPressed()
         }
 
-
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
 
         // Chama a API para obter os posts do jogo
         getGamePosts(gameId, userId)
 
-
-
         sendImageView.setOnClickListener {
-            val comments = commentEditTextView.text.toString()
-            if (selectedImageUri != null) {
-                val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
-                val file = bitmapToFile(requireContext(), bitmap)
-                val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
-
-                val call = ApiManager.apiService.uploadImage(imagePart)
-                call.enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        if (response.isSuccessful) {
-                            val imageUrl = response.body()?.string()
-                            imageUrl?.let {
-                                val pattern = Regex("\"url\":\"(\\S+)\"")
-                                val matchResult = pattern.find(it)
-                                matchResult?.let { result ->
-                                    val coverImageUrl = result.groupValues[1]
-                                    postComment(comments, coverImageUrl, userId, gameId)
-                                }
-                            }
-                        } else {
-                            Log.e("AddNewComment", "Erro no upload: ${response.message()}")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                    }
-                })
-            } else {
-                postComment(comments, null, userId, gameId)
-            }
+            getLocationAndPostComment(userId, gameId)
         }
 
         return view
@@ -158,8 +140,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             ) {
                 if (response.isSuccessful) {
                     val gamePosts = response.body()
-                    if (gamePosts != null) {
+                    if (gamePosts != null && gamePosts.isNotEmpty()) { // Verifique se gamePosts não é nulo e não está vazio
+                        getLocationName(gamePosts[0].latitude, gamePosts[0].longitude)
                         recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment)
+                    } else {
+                        Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")
                     }
                 } else {
                     Log.e("GamePostsFragment", "Erro na resposta: ${response.errorBody()}")
@@ -172,15 +157,91 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         })
     }
 
-    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int) {
+
+    private fun getLocationAndPostComment(userId: Int, gameId: Int) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                latitude = location.latitude
+                longitude = location.longitude
+
+                val comments = commentEditTextView.text.toString()
+                if (selectedImageUri != null) {
+                    val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+                    val file = bitmapToFile(requireContext(), bitmap)
+                    val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                    val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+
+                    val call = ApiManager.apiService.uploadImage(imagePart)
+                    call.enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            if (response.isSuccessful) {
+                                val imageUrl = response.body()?.string()
+                                imageUrl?.let {
+                                    val pattern = Regex("\"url\":\"(\\S+)\"")
+                                    val matchResult = pattern.find(it)
+                                    matchResult?.let { result ->
+                                        val coverImageUrl = result.groupValues[1]
+                                        postComment(comments, coverImageUrl, userId, gameId, latitude, longitude)
+                                    }
+                                }
+                            } else {
+                                Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                        }
+                    })
+                } else {
+                    postComment(comments, null, userId, gameId, latitude, longitude)
+                }
+            } else {
+                Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getLocationName(latitude: Double, longitude: Double): String {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        var locationText = ""
+
+        try {
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses != null && addresses.isNotEmpty()) {
+                val address = addresses[0]
+                val cityName = address.locality
+                val countryName = address.countryName
+                locationText = "$cityName, $countryName"
+            } else {
+                locationText = "Location Not Found"
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            locationText = "Location Not Found"
+        }
+
+        return locationText
+    }
+
+
+
+
+    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double, longitude: Double) {
         val newComment = Comment(
             comments = comments,
             image = imageUrl,
             isAnswer = if (isAnswerPostId != 0) isAnswerPostId else null,
             userId = userId,
             gameId = gameId,
-            latitude = 0.0,
-            longitude = 0.0,
+            latitude = latitude,
+            longitude = longitude,
         )
 
         ApiManager.apiService.addComment(newComment)
@@ -227,8 +288,6 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
     override fun onReplyClick(postId: Int, username: String) {
-        // Implementação da ação ao clicar no ícone de resposta
-        // Você pode realizar a lógica necessária para responder a um comentário aqui
         isAnswerPostId = postId
         ReplyingTo.visibility = View.VISIBLE
         ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(username)
@@ -239,6 +298,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         private const val ARG_GAME_NAME = "gameName"
         private const val ARG_PRIMARY_COLOR = "primaryColor"
         private const val ARG_SECONDARY_COLOR = "secondaryColor"
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
 
         @JvmStatic
         fun newInstance(gameId: Int, gameName: String, primaryColor: Int, secondaryColor: Int) =
@@ -252,4 +312,3 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             }
     }
 }
-
