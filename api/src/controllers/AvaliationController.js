@@ -68,7 +68,7 @@ const AvaliationController = {
                 if (averageStars === null) {
                     return res.status(404).json({ error: 'Avaliações não encontradas para este gameId' });
                 }
-                res.json(averageStars);
+                res.json({ averageStars });
             } catch (error) {
                 console.error('Erro ao calcular média de estrelas:', error);
                 res.status(500).json({ error: 'Erro ao calcular média de estrelas' });
