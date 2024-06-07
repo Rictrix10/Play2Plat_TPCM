@@ -93,11 +93,11 @@
             android:layout_marginEnd="8dp"/>
 
         <ImageView
-            android:id="@+id/send_icon"
+            android:id="@+id/image_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/send"
-            android:contentDescription="Send"
+            android:src="@drawable/image"
+            android:contentDescription="Select Image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/replying_to_text"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -118,19 +118,19 @@
             android:textColor="#393657"
             android:textColorHint="#847BD7"
             android:textSize="16sp"
-            app:layout_constraintStart_toEndOf="@id/send_icon"
-            app:layout_constraintEnd_toStartOf="@id/image_icon"
+            app:layout_constraintStart_toEndOf="@id/image_icon"
+            app:layout_constraintEnd_toStartOf="@id/send_icon"
             app:layout_constraintTop_toBottomOf="@id/replying_to_text"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"/>
 
         <ImageView
-            android:id="@+id/image_icon"
+            android:id="@+id/send_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/image"
-            android:contentDescription="Select Image"
+            android:src="@drawable/send"
+            android:contentDescription="Send"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

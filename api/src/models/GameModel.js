@@ -216,6 +216,7 @@ getGamesByDescendingId: async () => {
                 orderBy: {
                     id: 'desc',
                 },
+                take: 30,
             });
             return games;
         } catch (error) {
