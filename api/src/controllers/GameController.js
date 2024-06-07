@@ -305,16 +305,7 @@ getGameById: async (req, res) => {
                         break;
                 }
 
-                const games = await prisma.game.findMany({
-                    where: filters,
-                    orderBy: orderBy,
-                    include: {
-                        company: true,
-                        sequence: true,
-                        genres: true,
-                        platforms: true,
-                    },
-                });
+                const games = await GameModel.getFilteredGames(filters, orderBy);
 
                 res.json(games);
             } catch (error) {
@@ -322,7 +313,6 @@ getGameById: async (req, res) => {
                 res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
             }
         },
-
   };
 
 module.exports = GameController;

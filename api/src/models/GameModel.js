@@ -280,6 +280,19 @@ getGamesByDescendingId: async () => {
              throw error;
          }
      },
+         getFilteredGames: async (filters, orderBy) => {
+             return prisma.game.findMany({
+                 where: filters,
+                 orderBy: orderBy,
+                 include: {
+                     company: true,
+                     sequence: true,
+                     genres: true,
+                     platforms: true,
+                 },
+             });
+         },
+
 };
 
 module.exports = GameModel;
