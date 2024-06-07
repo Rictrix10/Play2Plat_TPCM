@@ -228,9 +228,11 @@ getFilteredGames: async (req, res) => {
     try {
         const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
 
+        /*
         const filters = {
             isDeleted: { not: true },
         };
+        */
 
         if (sequence) {
             const sequenceRecord = await prisma.sequence.findUnique({
@@ -239,10 +241,8 @@ getFilteredGames: async (req, res) => {
             if (!sequenceRecord) {
                 return res.status(404).json({ error: 'Sequence not found' });
             }
-            const sequenceId = sequenceRecord.id; // Obtendo o ID da sequência encontrada
-            return res.status(201).json({ sequenceId: sequenceId });
+            filters.sequenceId = sequenceRecord.id;
         }
-
 
         if (genres && genres.length > 0) {
             const genreGames = await prisma.gameGenre.findMany({
