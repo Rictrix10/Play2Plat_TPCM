@@ -14,6 +14,7 @@ router.get('/games/free/:isFree', GameController.getGamesByFreeStatus);
 router.get('/gamess/descending', GameController.getGamesByDescendingId);
 router.get('/games/same-company/:gameId', GameController.getGamesBySameCompanyId);
 router.get('/games/same-sequence/:gameId', GameController.getGamesBySameSequenceId);
+router.post('/games/filter', GameController.getFilteredGames);
 
 module.exports = router;
 

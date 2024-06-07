@@ -222,6 +222,99 @@ getGameById: async (req, res) => {
         }
     },
 
+    const getFilteredGames = async (req, res) => {
+        try {
+            const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
+
+            const filters = {
+                isDeleted: false,
+            };
+
+            if (genres && genres.length > 0) {
+                const genreGames = await prisma.gameGenre.findMany({
+                    where: { genre: { name: { in: genres } } },
+                    select: { gameId: true },
+                });
+                const gameIdsByGenre = genreGames.map(gg => gg.gameId);
+                filters.id = { in: gameIdsByGenre };
+            }
+
+            if (platforms && platforms.length > 0) {
+                const platformGames = await prisma.platformGame.findMany({
+                    where: { platform: { name: { in: platforms } } },
+                    select: { gameId: true },
+                });
+                const gameIdsByPlatform = platformGames.map(pg => pg.gameId);
+                filters.id = { in: (filters.id ? filters.id.in : []).concat(gameIdsByPlatform) };
+            }
+
+            if (company) {
+                const companyRecord = await prisma.company.findUnique({
+                    where: { name: company },
+                });
+                if (companyRecord) {
+                    filters.companyId = companyRecord.id;
+                } else {
+                    return res.status(404).json({ error: 'Company not found' });
+                }
+            }
+
+            if (sequence) {
+                const sequenceRecord = await prisma.sequence.findUnique({
+                    where: { name: sequence },
+                });
+                if (sequenceRecord) {
+                    filters.sequenceId = sequenceRecord.id;
+                } else {
+                    return res.status(404).json({ error: 'Sequence not found' });
+                }
+            }
+
+            if (free !== undefined) {
+                filters.isFree = free;
+            }
+
+            const orderBy = {};
+            switch (orderType) {
+                case 'alphabetical':
+                    orderBy.name = isAscending ? 'asc' : 'desc';
+                    break;
+                case 'recent':
+                    orderBy.id = isAscending ? 'asc' : 'desc';
+                    break;
+                case 'averageStars':
+                    orderBy.avaliations = {
+                        _avg: { stars: isAscending ? 'asc' : 'desc' },
+                    };
+                    break;
+                case 'mostFavorited':
+                    orderBy.userGameFavorites = {
+                        _count: { _all: isAscending ? 'asc' : 'desc' },
+                    };
+                    break;
+                default:
+                    orderBy.id = isAscending ? 'asc' : 'desc';
+                    break;
+            }
+
+            const games = await prisma.game.findMany({
+                where: filters,
+                orderBy: orderBy,
+                include: {
+                    company: true,
+                    sequence: true,
+                    genres: true,
+                    platforms: true,
+                },
+            });
+
+            res.json(games);
+        } catch (error) {
+            console.error('Erro ao buscar jogos filtrados:', error);
+            res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
+        }
+    };
+
 
   };
 
