@@ -1,4 +1,6 @@
 const GameModel = require('../models/GameModel');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const GameController = {
     createGame: async (req, res) => {
@@ -314,7 +316,7 @@ getGameById: async (req, res) => {
             console.error('Erro ao buscar jogos filtrados:', error);
             res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
         }
-    }
+    },
 
   };
 
