@@ -228,11 +228,11 @@ getFilteredGames: async (req, res) => {
     try {
         const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
 
-        /*
+
         const filters = {
             isDeleted: { not: true },
         };
-        */
+
 
         if (sequence) {
             const sequenceRecord = await prisma.sequence.findUnique({
@@ -304,7 +304,10 @@ getFilteredGames: async (req, res) => {
         }
 
         const games = await prisma.game.findMany({
-            where: filters,
+            //where: filters,
+            where: {
+                sequenceId: 10
+            },
             orderBy: orderBy,
             include: {
                 company: true,
