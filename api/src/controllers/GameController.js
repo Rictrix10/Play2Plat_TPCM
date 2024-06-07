@@ -230,8 +230,10 @@ getGameById: async (req, res) => {
             const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
 
             const filters = {
-                isDeleted: false,
-            };
+                            isDeleted: {
+                                not: true, // Ajuste para buscar onde isDeleted não é true
+                            },
+                        };
 
             if (genres && genres.length > 0) {
                 const genreGames = await prisma.gameGenre.findMany({
