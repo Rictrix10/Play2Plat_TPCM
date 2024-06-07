@@ -239,6 +239,9 @@ getFilteredGames: async (req, res) => {
             if (!sequenceRecord) {
                 return res.status(404).json({ error: 'Sequence not found' });
             }
+            else{
+                return res.status(201).json({sequenceRecord.id})
+            }
             filters.sequenceId = sequenceRecord.id;
         }
 
