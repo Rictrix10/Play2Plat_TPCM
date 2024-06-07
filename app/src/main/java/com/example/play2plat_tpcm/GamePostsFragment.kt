@@ -30,6 +30,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Comment
 import com.example.play2plat_tpcm.api.GameCommentsResponse
+import com.example.play2plat_tpcm.api.GeoNamesResponse
+import com.example.play2plat_tpcm.api.GeoNamesServiceBuilder.service
+import com.example.play2plat_tpcm.api.LocationInfo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.squareup.picasso.Picasso
@@ -140,9 +143,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             ) {
                 if (response.isSuccessful) {
                     val gamePosts = response.body()
-                    if (gamePosts != null && gamePosts.isNotEmpty()) { // Verifique se gamePosts não é nulo e não está vazio
-                        getLocationName(gamePosts[0].latitude, gamePosts[0].longitude)
-                        recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment)
+                    if (gamePosts != null && gamePosts.isNotEmpty()) {
+                        getLocationName(gamePosts[0].latitude, gamePosts[0].longitude) { locationInfo ->
+                            recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment)
+                        }
                     } else {
                         Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")
                     }
@@ -170,37 +174,39 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 latitude = location.latitude
                 longitude = location.longitude
 
-                val comments = commentEditTextView.text.toString()
-                if (selectedImageUri != null) {
-                    val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
-                    val file = bitmapToFile(requireContext(), bitmap)
-                    val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                    val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+                getLocationName(latitude, longitude) { locationInfo ->  // Passando o lambda
+                    val comments = commentEditTextView.text.toString()
+                    if (selectedImageUri != null) {
+                        val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+                        val file = bitmapToFile(requireContext(), bitmap)
+                        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                        val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-                    val call = ApiManager.apiService.uploadImage(imagePart)
-                    call.enqueue(object : Callback<ResponseBody> {
-                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                            if (response.isSuccessful) {
-                                val imageUrl = response.body()?.string()
-                                imageUrl?.let {
-                                    val pattern = Regex("\"url\":\"(\\S+)\"")
-                                    val matchResult = pattern.find(it)
-                                    matchResult?.let { result ->
-                                        val coverImageUrl = result.groupValues[1]
-                                        postComment(comments, coverImageUrl, userId, gameId, latitude, longitude)
+                        val call = ApiManager.apiService.uploadImage(imagePart)
+                        call.enqueue(object : Callback<ResponseBody> {
+                            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                if (response.isSuccessful) {
+                                    val imageUrl = response.body()?.string()
+                                    imageUrl?.let {
+                                        val pattern = Regex("\"url\":\"(\\S+)\"")
+                                        val matchResult = pattern.find(it)
+                                        matchResult?.let { result ->
+                                            val coverImageUrl = result.groupValues[1]
+                                            postComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
+                                        }
                                     }
+                                } else {
+                                    Log.e("AddNewComment", "Erro no upload: ${response.message()}")
                                 }
-                            } else {
-                                Log.e("AddNewComment", "Erro no upload: ${response.message()}")
                             }
-                        }
 
-                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                        }
-                    })
-                } else {
-                    postComment(comments, null, userId, gameId, latitude, longitude)
+                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                            }
+                        })
+                    } else {
+                        postComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
+                    }
                 }
             } else {
                 Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
@@ -208,9 +214,14 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
     }
 
-    private fun getLocationName(latitude: Double, longitude: Double): String {
+
+    private fun getLocationName(
+        latitude: Double,
+        longitude: Double,
+        onResult: (LocationInfo) -> Unit
+    ) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
-        var locationText = ""
+        var locationInfo = LocationInfo(null, null, null, null, null, null)
 
         try {
             val addresses = geocoder.getFromLocation(latitude, longitude, 1)
@@ -218,22 +229,36 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 val address = addresses[0]
                 val cityName = address.locality
                 val countryName = address.countryName
-                locationText = "$cityName, $countryName"
+                val countryCode = address.countryCode
+                val postalCode = address.postalCode
+
+                locationInfo = LocationInfo(cityName, countryName, countryCode, postalCode, null, null)
+
+                if (postalCode != null && countryCode != null) {
+                    getPostalCodeInfo(postalCode, countryCode, "rictrix") { updatedLocationInfo ->
+                        val finalLocationInfo = locationInfo.copy(
+                            adminName1 = updatedLocationInfo.adminName1,
+                            adminName2 = updatedLocationInfo.adminName2
+                        )
+                        onResult(finalLocationInfo)
+                    }
+                } else {
+                    onResult(locationInfo)
+                }
             } else {
-                locationText = "Location Not Found"
+                onResult(locationInfo)
             }
         } catch (e: IOException) {
             e.printStackTrace()
-            locationText = "Location Not Found"
+            onResult(locationInfo)
         }
-
-        return locationText
     }
 
 
 
 
-    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double, longitude: Double) {
+    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double, longitude: Double, locationInfo: LocationInfo) {
+        val locationName = "${locationInfo.countryName}, ${locationInfo.adminName1}, ${locationInfo.adminName2}"
         val newComment = Comment(
             comments = comments,
             image = imageUrl,
@@ -242,6 +267,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             gameId = gameId,
             latitude = latitude,
             longitude = longitude,
+            location = locationName
         )
 
         ApiManager.apiService.addComment(newComment)
@@ -262,6 +288,43 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 }
             })
     }
+
+    private fun getPostalCodeInfo(
+        postalCode: String,
+        countryCode: String,
+        username: String,
+        onResult: (LocationInfo) -> Unit
+    ) {
+        val call = service.getLocationInfo(postalCode, countryCode, username)
+        call.enqueue(object : Callback<GeoNamesResponse> {
+            override fun onResponse(call: Call<GeoNamesResponse>, response: Response<GeoNamesResponse>) {
+                if (response.isSuccessful) {
+                    val locationInfoResponse = response.body()
+                    if (locationInfoResponse != null && locationInfoResponse.postalCodes.isNotEmpty()) {
+                        val firstResult = locationInfoResponse.postalCodes[0]
+                        val locationInfo = LocationInfo(
+                            null, null, null, postalCode,
+                            firstResult.adminName1, firstResult.adminName2
+                        )
+                        onResult(locationInfo)
+                    } else {
+                        Log.e("PostalCodeInfo", "No results found for postal code: $postalCode")
+                        onResult(LocationInfo(null, null, null, postalCode, null, null))
+                    }
+                } else {
+                    Log.e("PostalCodeInfo", "Error: ${response.message()}")
+                    onResult(LocationInfo(null, null, null, postalCode, null, null))
+                }
+            }
+
+            override fun onFailure(call: Call<GeoNamesResponse>, t: Throwable) {
+                Log.e("PostalCodeInfo", "Failure: ${t.message}")
+                onResult(LocationInfo(null, null, null, postalCode, null, null))
+            }
+        })
+    }
+
+
 
     private fun bitmapToFile(context: Context, bitmap: Bitmap): File {
         val filesDir = context.filesDir

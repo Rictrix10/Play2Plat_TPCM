@@ -9,6 +9,7 @@ data class GameCommentsResponse(
     val gameId: Int,
     val latitude: Double,
     val longitude: Double,
+    val location: String,
     val user: UserComment,
     val game: GameComment
 )

@@ -8,4 +8,5 @@ data class Comment(
     val gameId: Int,
     val latitude: Double,
     val longitude: Double,
+    val location: String
 )
