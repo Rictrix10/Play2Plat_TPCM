@@ -71,6 +71,7 @@ class GamePostsAdapter(
     override fun onBindViewHolder(holder: GamePostViewHolder, position: Int) {
         val post = posts[position]
         holder.username.text = post.user.username
+        holder.location.text = post.location
         holder.textPost.text = post.comments
         Picasso.get().load(post.user.avatar).into(holder.profilePicture)
 
