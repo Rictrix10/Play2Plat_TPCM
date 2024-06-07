@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const UserGameCommentsModel = {
-    createUserGameComment: async (comments, image, isAnswer, userId, gameId, latitude, longitude) => {
+    createUserGameComment: async (comments, image, isAnswer, userId, gameId, latitude, longitude, location) => {
         return await prisma.userGameComment.create({
             data: {
                 comments,
@@ -11,7 +11,8 @@ const UserGameCommentsModel = {
                 userId,
                 gameId,
                 latitude,
-                longitude
+                longitude,
+                location
             }
         });
     },
@@ -170,7 +171,7 @@ const UserGameCommentsModel = {
         });
     },
 
-     updateUserGameCommentById: async (id, comments, image, isAnswer, latitude, longitude) => {
+     updateUserGameCommentById: async (id, comments, image, isAnswer, latitude, longitude, location) => {
              return await prisma.userGameComment.update({
                  where: { id: id },
                  data: {
@@ -178,7 +179,8 @@ const UserGameCommentsModel = {
                      image: image,
                      isAnswer: isAnswer,
                      latitude: latitude,
-                     longitude: longitude
+                     longitude: longitude,
+                     location: location
                  }
              });
          },

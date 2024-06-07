@@ -3,7 +3,7 @@ const UserGameCommentsModel = require('../models/UserGameCommentsModel');
 const UserGameCommentsController = {
     createUserGameComment: async (req, res) => {
         try {
-            const { comments, image, isAnswer, userId, gameId, latitude, longitude } = req.body;
+            const { comments, image, isAnswer, userId, gameId, latitude, longitude, location } = req.body;
             const newComment = await UserGameCommentsModel.createUserGameComment(
                 comments,
                 image,
@@ -11,7 +11,8 @@ const UserGameCommentsController = {
                 userId,
                 gameId,
                 latitude,
-                longitude
+                longitude,
+                location
             );
             res.status(201).json(newComment);
         } catch (error) {
@@ -110,7 +111,7 @@ const UserGameCommentsController = {
      updateUserGameCommentById: async (req, res) => {
              try {
                  const commentId = parseInt(req.params.id, 10);
-                 const { comments, image, isAnswer, latitude, longitude } = req.body;
+                 const { comments, image, isAnswer, latitude, longitude, location } = req.body;
 
                  const updatedComment = await UserGameCommentsModel.updateUserGameCommentById(
                      commentId,
@@ -118,7 +119,8 @@ const UserGameCommentsController = {
                      image,
                      isAnswer,
                      latitude,
-                     longitude
+                     longitude,
+                     location
                  );
 
                  if (updatedComment) {
