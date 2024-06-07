@@ -272,7 +272,7 @@ getGameById: async (req, res) => {
                         where: { name: sequence },
                     });
                     if (sequenceRecord) {
-                        filters.sequenceId = sequenceRecord.id;
+                        filters.sequence = { id: sequenceRecord.id };
                     } else {
                         return res.status(404).json({ error: 'Sequence not found' });
                     }

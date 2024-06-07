@@ -292,7 +292,6 @@ getGamesByDescendingId: async () => {
                  },
              });
          },
-
 };
 
 module.exports = GameModel;
