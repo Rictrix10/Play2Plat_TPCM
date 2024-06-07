@@ -234,6 +234,12 @@ getGameById: async (req, res) => {
                     },
                 };
 
+                        if (sequence) {
+                            filters.sequence = {
+                                name: sequence
+                            };
+                        }
+
                 if (genres && genres.length > 0) {
                     const genreGames = await prisma.gameGenre.findMany({
                         where: { genre: { name: { in: genres } } },
@@ -305,7 +311,16 @@ getGameById: async (req, res) => {
                         break;
                 }
 
-                const games = await GameModel.getFilteredGames(filters, orderBy);
+                        const games = await prisma.game.findMany({
+                            where: filters,
+                            orderBy: orderBy,
+                            include: {
+                                company: true,
+                                sequence: true,
+                                genres: true,
+                                platforms: true,
+                            },
+                        });
 
                 res.json(games);
             } catch (error) {
