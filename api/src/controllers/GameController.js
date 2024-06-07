@@ -222,7 +222,8 @@ getGameById: async (req, res) => {
         }
     },
 
-    const getFilteredGames = async (req, res) => {
+
+    getFilteredGames: async (req, res) => {
         try {
             const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
 
@@ -313,8 +314,7 @@ getGameById: async (req, res) => {
             console.error('Erro ao buscar jogos filtrados:', error);
             res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
         }
-    };
-
+    }
 
   };
 
