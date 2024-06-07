@@ -303,17 +303,19 @@ getFilteredGames: async (req, res) => {
                 break;
         }
 
-        const games = await prisma.game.findMany({
-            where: filters.sequenceId,
+    const games = await prisma.game.findMany({
+        where: {
+            sequenceId: filters.sequenceId,
+        },
+        orderBy: orderBy,
+        include: {
+            company: true,
+            sequence: true,
+            genres: true,
+            platforms: true,
+        },
+    });
 
-            orderBy: orderBy,
-            include: {
-                company: true,
-                sequence: true,
-                genres: true,
-                platforms: true,
-            },
-        });
 
         res.json(games);
     } catch (error) {
