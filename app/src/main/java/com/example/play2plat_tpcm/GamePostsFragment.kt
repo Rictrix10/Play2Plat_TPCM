@@ -258,7 +258,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
 
     private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double, longitude: Double, locationInfo: LocationInfo) {
-        val locationName = "${locationInfo.cityName}, ${locationInfo.postalCode}, ${locationInfo.countryName} (${locationInfo.countryCode}), ${locationInfo.adminName1}, ${locationInfo.adminName2}"
+        val locationName = "${locationInfo.countryName}, ${locationInfo.adminName1}, ${locationInfo.adminName2}"
         val newComment = Comment(
             comments = comments,
             image = imageUrl,
