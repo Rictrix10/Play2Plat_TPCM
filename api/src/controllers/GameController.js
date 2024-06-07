@@ -304,10 +304,8 @@ getFilteredGames: async (req, res) => {
         }
 
         const games = await prisma.game.findMany({
-            //where: filters,
-            where: {
-                sequenceId: 10
-            },
+            where: filters.sequenceId,
+
             orderBy: orderBy,
             include: {
                 company: true,
