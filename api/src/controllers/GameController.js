@@ -244,6 +244,16 @@ getFilteredGames: async (req, res) => {
             filters.sequenceId = sequenceRecord.id;
         }
 
+        if (company) {
+            const companyRecord = await prisma.company.findUnique({
+                  where: { name: company },
+            });
+            if (!companyRecord) {
+                return res.status(404).json({ error: 'Company not found' });
+            }
+                filters.companyId = companyRecord.id;
+        }
+
         if (genres && genres.length > 0) {
             const genreGames = await prisma.gameGenre.findMany({
                 where: { genre: { name: { in: genres } } },
@@ -264,16 +274,6 @@ getFilteredGames: async (req, res) => {
             } else {
                 filters.id = { in: gameIdsByPlatform };
             }
-        }
-
-        if (company) {
-            const companyRecord = await prisma.company.findUnique({
-                where: { name: company },
-            });
-            if (!companyRecord) {
-                return res.status(404).json({ error: 'Company not found' });
-            }
-            filters.companyId = companyRecord.id;
         }
 
         if (free !== undefined) {
@@ -306,6 +306,7 @@ getFilteredGames: async (req, res) => {
     const games = await prisma.game.findMany({
         where: {
             sequenceId: filters.sequenceId,
+            companyId: filters.companyId,
         },
         orderBy: orderBy,
         include: {
