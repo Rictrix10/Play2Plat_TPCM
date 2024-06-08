@@ -56,10 +56,14 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         fragmentContainer7 = view.findViewById(R.id.fragment_container7)
         searchButton = view.findViewById(R.id.search)
 
-        val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+        if (!parentFragmentManager.isStateSaved()) {
+            val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
+        } else {
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+        }
 
         // Set up SearchView click listener
         searchButton.setOnClickListener {
@@ -76,73 +80,83 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         val genreValue3 = sharedPreferences.getString("genre3", null)
         val sequenceValue = sharedPreferences.getString("sequence", null)
 
-
-
-        val fragment2 = if (genreValue != null) {
-            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue, 0)
+        if (!parentFragmentManager.isStateSaved()) {
+            val fragment2 = if (genreValue != null) {
+                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue, 0)
+            } else {
+                Games_List_Horizontal_Fragment.newInstance("Genres", "Action", 0)
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container2, fragment2)
+                .commit()
         } else {
-            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Genres", "Action", 0)
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container2, fragment2)
-            .commit()
-
-        val fragment3 = if (companyValue != null) {
-            Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0)
+        if (!parentFragmentManager.isStateSaved()) {
+            val fragment3 = if (companyValue != null) {
+                Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0)
+            } else {
+                Games_List_Horizontal_Fragment.newInstance("Companies", "Sony", 0)
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container3, fragment3)
+                .commit()
         } else {
-            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Companies", "Sony", 0)
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container3, fragment3)
-            .commit()
-
-        val fragment4 = if (genreValue2 != null) {
-            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue2, 0)
+        if (!parentFragmentManager.isStateSaved()) {
+            val fragment4 = if (genreValue2 != null) {
+                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue2, 0)
+            } else {
+                Games_List_Horizontal_Fragment.newInstance("Genres", "Online Multiplayer", 0)
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container4, fragment4)
+                .commit()
         } else {
-            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Genres", "Online Multiplayer", 0)
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container4, fragment4)
-            .commit()
-
-        val fragment5 = if (platformValue != null) {
-            Games_List_Horizontal_Fragment.newInstance("Platforms", platformValue, 0)
+        if (!parentFragmentManager.isStateSaved()) {
+            val fragment5 = if (platformValue != null) {
+                Games_List_Horizontal_Fragment.newInstance("Platforms", platformValue, 0)
+            } else {
+                Games_List_Horizontal_Fragment.newInstance("Platforms", "PC", 0)
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container5, fragment5)
+                .commit()
         } else {
-            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Platforms", "PC", 0)
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container5, fragment5)
-            .commit()
-
-        val fragment6 = if (genreValue3 != null) {
-            Games_List_Horizontal_Fragment.newInstance("Genres", genreValue3, 0)
+        if (!parentFragmentManager.isStateSaved()) {
+            val fragment6 = if (genreValue3 != null) {
+                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue3, 0)
+            } else {
+                Games_List_Horizontal_Fragment.newInstance("Genres", "Survival", 0)
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container6, fragment6)
+                .commit()
         } else {
-            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Genres", "Survival", 0)
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container6, fragment6)
-            .commit()
-
-        val fragment7 = if (sequenceValue != null) {
-            Games_List_Horizontal_Fragment.newInstance("Sequences", sequenceValue, 0)
+        if (!parentFragmentManager.isStateSaved()) {
+            val fragment7 = if (sequenceValue != null) {
+                Games_List_Horizontal_Fragment.newInstance("Sequences", sequenceValue, 0)
+            } else {
+                Games_List_Horizontal_Fragment.newInstance("Sequences", "Super Mario", 0)
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container7, fragment7)
+                .commit()
         } else {
-            // Se genreValue for nulo, você pode passar uma string vazia ou outro valor padrão
-            Games_List_Horizontal_Fragment.newInstance("Sequences", "Super Mario", 0)
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
-
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container7, fragment7)
-            .commit()
 
         return view
     }
