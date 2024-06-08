@@ -348,16 +348,34 @@ getFilteredGames: async (req, res) => {
 
                 const sortedGameIds = gamesWithAverageStars.map(game => game.id);
 
-                // Definir a ordem de classificação para os IDs dos jogos
                 const sortOrder = isAscending ? 'asc' : 'desc';
-                orderBy.id = {
-                    in: sortedGameIds,
-                    mode: sortOrder,
+                const orderBy = {
+                    id: {
+                        in: sortedGameIds,
+                        mode: sortOrder,
+                    },
                 };
+
+                const games = await prisma.game.findMany({
+                    where: {
+                        sequenceId: filters.sequenceId,
+                        companyId: filters.companyId,
+                        id: filters.genreGameIds,
+                        id: filters.platformGameIds,
+                        isFree: free
+                    },
+                    orderBy: orderBy,
+                    include: {
+                        company: true,
+                        sequence: true,
+                        genres: true,
+                        platforms: true,
+                        avaliations: true
+                    },
+                });
+
+                res.json(games);
                 break;
-
-
-
 
             /*
             case 'averageStars':
