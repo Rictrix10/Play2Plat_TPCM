@@ -346,15 +346,15 @@ getFilteredGames: async (req, res) => {
                     return 0;
                 });
 
-                // Extrair os IDs ordenados dos jogos
                 const sortedGameIds = gamesWithAverageStars.map(game => game.id);
 
-                // Definir o orderBy para os IDs ordenados dos jogos
-                orderBy.id = isAscending ? { in: sortedGameIds } : { in: sortedGameIds.reverse() };
+                // Definir a ordem de classificação para os IDs dos jogos
+                const sortOrder = isAscending ? 'asc' : 'desc';
+                orderBy.id = {
+                    in: sortedGameIds,
+                    mode: sortOrder,
+                };
                 break;
-
-
-
             /*
             case 'averageStars':
                 orderBy: {
