@@ -80,6 +80,7 @@ model game {
   pegiInfo          Int
   coverImage        String?
   isDeleted         Boolean?
+  averageStars      Float?
   sequence          sequence?   @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
   company           company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   sequenceId        Int?
