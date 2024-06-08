@@ -254,31 +254,33 @@ getFilteredGames: async (req, res) => {
                 filters.companyId = companyRecord.id;
         }
 
-        if (genres && genres.length > 0) {
-            const genreGames = await prisma.gameGenre.findMany({
-                where: { genre: { name: { in: genres } } },
-                select: { gameId: true },
-            });
-            const gameIdsByGenre = genreGames.map(gg => gg.gameId);
-            filters.id = { in: gameIdsByGenre };
-        }
+                if (genres && genres.length > 0) {
+                    const genreRecords = await prisma.genre.findMany({
+                        where: { name: { in: genres } },
+                        select: { id: true },
+                    });
+                    const genreIds = genreRecords.map(genre => genre.id);
 
-        if (platforms && platforms.length > 0) {
-            const platformGames = await prisma.platformGame.findMany({
-                where: { platform: { name: { in: platforms } } },
-                select: { gameId: true },
-            });
-            const gameIdsByPlatform = platformGames.map(pg => pg.gameId);
-            if (filters.id) {
-                filters.id.in = filters.id.in.concat(gameIdsByPlatform);
-            } else {
-                filters.id = { in: gameIdsByPlatform };
-            }
-        }
+                    const genreGames = await prisma.gameGenre.findMany({
+                        where: { genreId: { in: genreIds } },
+                        select: { gameId: true },
+                    });
+                    const gameIdsByGenre = genreGames.map(gg => gg.gameId);
+                    filters.genreGameIds = { in: gameIdsByGenre };
+                }
 
-        if (free !== undefined) {
-            filters.isFree = free;
-        }
+                if (platforms && platforms.length > 0) {
+                    const platformGames = await prisma.platformGame.findMany({
+                        where: { platform: { name: { in: platforms } } },
+                        select: { gameId: true },
+                    });
+                    const gameIdsByPlatform = platformGames.map(pg => pg.gameId);
+                    if (filters.id) {
+                        filters.id.in = filters.id.in.concat(gameIdsByPlatform);
+                    } else {
+                        filters.id = { in: gameIdsByPlatform };
+                    }
+                }
 
         const orderBy = {};
         switch (orderType) {
@@ -307,6 +309,7 @@ getFilteredGames: async (req, res) => {
         where: {
             sequenceId: filters.sequenceId,
             companyId: filters.companyId,
+            id: filters.genreGameIds
         },
         orderBy: orderBy,
         include: {
