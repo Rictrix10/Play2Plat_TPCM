@@ -231,21 +231,6 @@ getGameById: async (req, res) => {
         }
     },
 
-    const getAverageStarsById = async (gameId) => {
-        try {
-            const avaliations = await prisma.avaliation.findMany({
-                where: {
-                    gameId: gameId
-                }
-            });
-
-            return calculateAverageStars(avaliations);
-        } catch (error) {
-            console.error('Erro ao calcular média de estrelas:', error);
-            throw new Error('Erro ao calcular média de estrelas');
-        }
-    },
-
 getFilteredGames: async (req, res) => {
     try {
         const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
@@ -377,7 +362,4 @@ getFilteredGames: async (req, res) => {
   }
 
 
-module.exports = {
-    GameController,
-    getAverageStarsById // Exportando a nova função
-};
+module.exports = GameController;
