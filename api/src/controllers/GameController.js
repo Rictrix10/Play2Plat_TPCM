@@ -291,9 +291,11 @@ getFilteredGames: async (req, res) => {
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
             case 'averageStars':
-                orderBy.avaliations = {
-                    _avg: { stars: isAscending ? 'asc' : 'desc' },
-                };
+                games = games.sort((a, b) => {
+                    const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
+                    const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
+                    return isAscending ? avgA - avgB : avgB - avgA;
+                });
                 break;
             case 'mostFavorited':
                 orderBy.userGameFavorites = {
