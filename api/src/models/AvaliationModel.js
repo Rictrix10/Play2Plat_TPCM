@@ -3,13 +3,15 @@ const prisma = new PrismaClient();
 
 const AvaliationModel = {
     createAvaliation: async (stars, userId, gameId) => {
-        return await prisma.avaliation.create({
+        const newAvaliation = await prisma.avaliation.create({
             data: {
                 stars,
                 userId,
                 gameId
             }
         });
+        await AvaliationModel.updateAverageStars(gameId);
+        return newAvaliation;
     },
     getAvaliations: async () => {
         return await prisma.avaliation.findMany();
@@ -22,29 +24,40 @@ const AvaliationModel = {
         });
     },
     updateAvaliationByUserIdAndGameId: async (userId, gameId, data) => {
-        return await prisma.avaliation.updateMany({
+        const updatedAvaliation = await prisma.avaliation.updateMany({
             where: {
                 userId: userId,
                 gameId: gameId
             },
             data: data
         });
+        await AvaliationModel.updateAverageStars(gameId);
+        return updatedAvaliation;
     },
     deleteAvaliationByUserIdAndGameId: async (userId, gameId) => {
-        return await prisma.avaliation.deleteMany({
+        const deletedAvaliation = await prisma.avaliation.deleteMany({
             where: {
                 userId: userId,
                 gameId: gameId
             }
         });
+        await AvaliationModel.updateAverageStars(gameId);
+        return deletedAvaliation;
     },
-        getAverageStarsByGameId: async (gameId) => {
-            const result = await prisma.avaliation.aggregate({
-                where: { gameId },
-                _avg: { stars: true }
-            });
-            return result._avg.stars;
-        },
+    getAverageStarsByGameId: async (gameId) => {
+        const result = await prisma.avaliation.aggregate({
+            where: { gameId },
+            _avg: { stars: true }
+        });
+        return result._avg.stars;
+    },
+    updateAverageStars: async (gameId) => {
+        const averageStars = await AvaliationModel.getAverageStarsByGameId(gameId);
+        await prisma.game.update({
+            where: { id: gameId },
+            data: { averageStars: averageStars }
+        });
+    }
 };
 
 module.exports = AvaliationModel;

@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 const GameController = {
     createGame: async (req, res) => {
         try {
-            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId  } = req.body;
-            const newGame = await GameModel.createGame(name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId );
+            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars  } = req.body;
+            const newGame = await GameModel.createGame(name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars );
             res.status(201).json(newGame);
         } catch (error) {
             console.error('Erro ao criar jogo:', error);
@@ -18,20 +18,20 @@ const GameController = {
                 const games = await GameModel.getGames();
 
                 // Itera sobre cada jogo e calcula a média de estrelas para cada um
-                const gamesWithAverageStars = await Promise.all(games.map(async (game) => {
+                const gamesWithAverage = await Promise.all(games.map(async (game) => {
                     const avaliations = await prisma.avaliation.findMany({
                         where: {
                             gameId: game.id
                         }
                     });
-                    const averageStars = calculateAverageStars(avaliations);
+                    const average = calculateAverage(avaliations);
                     return {
                         ...game,
-                        averageStars: averageStars
+                        average: average
                     };
                 }));
 
-                res.json(gamesWithAverageStars);
+                res.json(gamesWithAverage);
             } catch (error) {
                 console.error('Erro ao buscar jogos:', error);
                 res.status(500).json({ error: 'Erro ao buscar jogos' });
@@ -65,7 +65,7 @@ getGameById: async (req, res) => {
             }
         });
 
-        const averageStars = calculateAverageStars(avaliations);
+        const average = calculateAverage(avaliations);
 
         res.json({
             id: game.id,
@@ -77,10 +77,11 @@ getGameById: async (req, res) => {
             coverImage: game.coverImage,
             sequence: sequenceName, // Usa sequenceName em vez de game.sequence.name
             company: game.company.name,
+            averageStars: game.averageStars,
             genres: genres,
             platforms: platforms,
             avaliations: avaliations,
-            averageStars: averageStars
+            average: average
         });
     } catch (error) {
         console.error('Erro ao buscar jogo por ID:', error);
@@ -91,7 +92,7 @@ getGameById: async (req, res) => {
     updateGame: async (req, res) => {
         try {
             const gameId = parseInt(req.params.id);
-            const { name, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId } = req.body;
+            const { name, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars } = req.body;
 
             const updatedGame = await GameModel.updateGame(gameId, {
                 name,
@@ -100,7 +101,8 @@ getGameById: async (req, res) => {
                 pegiInfo,
                 coverImage,
                 sequenceId,
-                companyId
+                companyId,
+                averageStars
             });
 
             res.json(updatedGame);
