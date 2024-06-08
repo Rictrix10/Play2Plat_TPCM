@@ -323,18 +323,11 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                orderBy: {
-                    _count: isAscending ? 'asc' : 'desc'
-                };
-                break;
-
-            /*
-            case 'averageStars':
-                orderBy.avaliations = {
+                orderBy.avaliations.stars = {
                      _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
-            */
+
             /*
             case 'averageStars':
                 orderBy: {
@@ -363,10 +356,6 @@ getFilteredGames: async (req, res) => {
             platforms: true,
             avaliations: true
         },
-    });
-
-    games.forEach(game => {
-        game.averageStars = calculateAverageStars(game.avaliations);
     });
 
 
