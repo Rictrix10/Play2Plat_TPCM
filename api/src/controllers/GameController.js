@@ -299,14 +299,14 @@ getFilteredGames: async (req, res) => {
                      _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
-                        case 'averageStars':
-                            filteredGames = filteredGames.filter(game => game.avaliations && game.avaliations.length > 0);
-                            filteredGames.sort((a, b) => {
-                                const avgA = calculateAverageStars(a.avaliations);
-                                const avgB = calculateAverageStars(b.avaliations);
-                                return isAscending ? avgA - avgB : avgB - avgA;
-                            });
-                            break;
+            case 'averageStars':
+                // Não é necessário filtrar os jogos com avaliações aqui
+                filteredGames.sort((a, b) => {
+                    const avgA = calculateAverageStars(a.avaliations);
+                    const avgB = calculateAverageStars(b.avaliations);
+                    return isAscending ? avgA - avgB : avgB - avgA;
+                });
+                break;
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
