@@ -17,8 +17,34 @@ const GameModel = {
         });
     },
     getGames: async () => {
-            return await prisma.game.findMany();
+        try {
+            const games = await prisma.game.findMany({
+                include: {
+                    sequence: true,
+                    company: true,
+                },
+            });
+
+            const gamesWithAverageStars = await Promise.all(games.map(async (game) => {
+                const avaliations = await prisma.avaliation.findMany({
+                    where: {
+                        gameId: game.id
+                    }
+                });
+                const averageStars = calculateAverageStars(avaliations);
+                return {
+                    ...game,
+                    averageStars: averageStars
+                };
+            }));
+
+            return gamesWithAverageStars;
+        } catch (error) {
+            console.error('Erro ao buscar todos os jogos:', error);
+            throw error;
+        }
     },
+
     getGenresByGameId: async (gameId) => {
         try {
             const gameGenres = await prisma.gameGenre.findMany({
