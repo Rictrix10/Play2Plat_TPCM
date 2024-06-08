@@ -323,10 +323,28 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
+                const gamesWithAverageStars = await Promise.all(allGames.map(async (game) => {
+                    const averageStars = await getAverageStars(game.id);
+                    return {
+                        ...game,
+                        averageStars: averageStars
+                    };
+                }));
+                const sortedGames = gamesWithAverageStars.sort((a, b) => {
+                    if (a.averageStars < b.averageStars) return isAscending ? -1 : 1;
+                    if (a.averageStars > b.averageStars) return isAscending ? 1 : -1;
+                    return 0;
+                });
+                res.json(sortedGames);
+                break;
+
+            /*
+            case 'averageStars':
                 orderBy.avaliations = {
-                    stars: { _count: isAscending ? 'asc' : 'desc' }
+                     _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
+            */
 
             /*
             case 'averageStars':
@@ -385,7 +403,7 @@ getFilteredGames: async (req, res) => {
 
   async function getAverageStars(gameId) {
       try {
-          const response = await fetch(`https://play2-plat-tpcm.vercel.app/api/avaliation/average/${gameId}`);
+          const response = await fetch("https://play2-plat-tpcm.vercel.app/api/avaliation/average/${gameId}");
           if (response.status === 404) {
               // Se não houver avaliações para o jogo, retorna 0
               return 0;
