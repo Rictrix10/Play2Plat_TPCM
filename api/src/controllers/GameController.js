@@ -69,9 +69,6 @@ getGameById: async (req, res) => {
     }
 },
 
-
-
-
     updateGame: async (req, res) => {
         try {
             const gameId = parseInt(req.params.id);
@@ -307,13 +304,13 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                // Não é necessário filtrar os jogos com avaliações aqui
                 filteredGames.sort((a, b) => {
                     const avgA = calculateAverageStars(a.avaliations);
                     const avgB = calculateAverageStars(b.avaliations);
                     return isAscending ? avgA - avgB : avgB - avgA;
                 });
                 break;
+
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
@@ -360,5 +357,6 @@ getFilteredGames: async (req, res) => {
           return 0; // Se não houver avaliações, retorna 0
       }
   }
+
 
 module.exports = GameController;
