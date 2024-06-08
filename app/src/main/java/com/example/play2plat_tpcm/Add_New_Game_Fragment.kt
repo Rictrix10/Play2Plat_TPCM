@@ -203,7 +203,7 @@ class Add_New_Game_Fragment : Fragment() {
                 }
             }
 
-            // Validações
+            
             if (gameTitle.isEmpty()) {
                 Toast.makeText(requireContext(), "Por favor, insira um nome para o jogo.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -312,16 +312,22 @@ class Add_New_Game_Fragment : Fragment() {
                                                             })
                                                     }
 
-                                                    // Redirecionar para View_Game_Fragment
-                                                    val platforms = arrayListOf<String>()
-                                                    val viewGameFragment = View_Game_Fragment.newInstance(game.id!!, platforms)
-                                                    requireActivity().supportFragmentManager.beginTransaction()
-                                                        .replace(R.id.layout, viewGameFragment)
-                                                        .addToBackStack(null)
-                                                        .commit()
+                                                    // Verifica se o estado não foi salvo antes de realizar a transação
+                                                    if (!requireActivity().supportFragmentManager.isStateSaved) {
+                                                        // Redirecionar para View_Game_Fragment
+                                                        val platforms = arrayListOf<String>()
+                                                        val viewGameFragment = View_Game_Fragment.newInstance(game.id!!, platforms)
+                                                        requireActivity().supportFragmentManager.beginTransaction()
+                                                            .replace(R.id.layout, viewGameFragment)
+                                                            .addToBackStack(null)
+                                                            .commit()
+                                                    } else {
+                                                        // Lidar com o caso onde o estado já foi salvo
+                                                        Toast.makeText(requireContext(), "Estado da atividade já foi salvo. Tente novamente.", Toast.LENGTH_SHORT).show()
+                                                    }
 
                                                 } ?: run {
-                                                    Log.e("AddNewGame", "Erro: Resposta nula ao criar jogo.")
+                                                    Log.e("AddNewGame", "Erro: Corpo da resposta nulo.")
                                                 }
                                             } else {
                                                 Log.e("AddNewGame", "Erro ao criar jogo: ${response.message()}")
@@ -335,15 +341,16 @@ class Add_New_Game_Fragment : Fragment() {
                             }
                         }
                     } else {
-                        Log.e("AddNewGame", "Erro no upload: ${response.message()}")
+                        Log.e("AddNewGame", "Erro ao fazer upload da imagem: ${response.message()}")
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("AddNewGame", "Failed to upload image: ${t.message}")
+                    Log.e("AddNewGame", "Falha na requisição de upload: ${t.message}")
                 }
             })
         }
+
 
         return view
     }
