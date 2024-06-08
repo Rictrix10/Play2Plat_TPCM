@@ -283,7 +283,6 @@ getFilteredGames: async (req, res) => {
                 }
 
         const orderBy = {};
-        let games = [];
         switch (orderType) {
             case 'alphabetical':
                 orderBy.name = isAscending ? 'asc' : 'desc';
@@ -297,22 +296,13 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                // Consulta para obter os jogos ordenados por averageStars
-                games = await prisma.game.findMany({
-                    where: { id: { in: gameIds } },
-                    include: { avaliations: true },
-                });
-
-                // Filtrar os jogos sem avaliações
-                games = games.filter(game => game.avaliations && game.avaliations.length > 0);
-
-                // Ordenar os jogos por averageStars
-                games.sort((a, b) => {
-                    const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
-                    const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
-                    return isAscending ? avgA - avgB : avgB - avgA;
-                });
-                break;
+                    games = games(game => game.avaliations && game.avaliations.length > 0);
+                    games.sort((a, b) => {
+                        const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
+                        const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
+                        return isAscending ? avgA - avgB : avgB - avgA;
+                    });
+               break;
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
