@@ -297,7 +297,7 @@ getFilteredGames: async (req, res) => {
                 break;
             case 'mostFavorited':
                 orderBy.userGameFavorites = {
-                    _count: { _all: isAscending ? 'asc' : 'desc' },
+                     _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
             default:
