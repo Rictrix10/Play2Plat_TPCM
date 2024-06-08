@@ -300,13 +300,13 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                    games = filteredGames.filter(game => game.avaliations && game.avaliations.length > 0);
-                    games.sort((a, b) => {
-                        const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
-                        const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
-                        return isAscending ? avgA - avgB : avgB - avgA;
-                    });
-               break;
+                 filteredGames = filteredGames.filter(game => game.avaliations && game.avaliations.length > 0);
+                           filteredGames.sort((a, b) => {
+                                const avgA = calculateAverageStars(a.avaliations);
+                                const avgB = calculateAverageStars(b.avaliations);
+                                return isAscending ? avgA - avgB : avgB - avgA;
+                            });
+                            break;
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
@@ -336,6 +336,15 @@ getFilteredGames: async (req, res) => {
         res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
     }
 },
+
+function calculateAverageStars(avaliations) {
+    if (avaliations && avaliations.length > 0) {
+        const totalStars = avaliations.reduce((sum, av) => sum + av.stars, 0);
+        return totalStars / avaliations.length;
+    } else {
+        return 0; // Se não houver avaliações, retorna 0
+    }
+}
 
   };
 
