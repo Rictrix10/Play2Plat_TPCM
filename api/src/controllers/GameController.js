@@ -231,6 +231,21 @@ getGameById: async (req, res) => {
         }
     },
 
+    const getAverageStarsById = async (gameId) => {
+        try {
+            const avaliations = await prisma.avaliation.findMany({
+                where: {
+                    gameId: gameId
+                }
+            });
+
+            return calculateAverageStars(avaliations);
+        } catch (error) {
+            console.error('Erro ao calcular média de estrelas:', error);
+            throw new Error('Erro ao calcular média de estrelas');
+        }
+    },
+
 getFilteredGames: async (req, res) => {
     try {
         const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
@@ -307,9 +322,16 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                filteredGames.sort((a, b) => {
-                    const avgA = calculateAverageStars(a.avaliations);
-                    const avgB = calculateAverageStars(b.avaliations);
+                // Mapeie os jogos em filteredGames para incluir a média de estrelas
+                const gamesWithAverageStars = await Promise.all(filteredGames.map(async (game) => {
+                    const averageStars = await getAverageStarsById(game.id);
+                    return { ...game, averageStars }; // Retorna um novo objeto com averageStars adicionado
+                }));
+
+                // Agora você pode ordenar os jogos com base na média de estrelas
+                gamesWithAverageStars.sort((a, b) => {
+                    const avgA = a.averageStars;
+                    const avgB = b.averageStars;
                     return isAscending ? avgA - avgB : avgB - avgA;
                 });
                 break;
@@ -362,4 +384,7 @@ getFilteredGames: async (req, res) => {
   }
 
 
-module.exports = GameController;
+module.exports = {
+    GameController,
+    getAverageStarsById // Exportando a nova função
+};
