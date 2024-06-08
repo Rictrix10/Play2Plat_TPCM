@@ -65,9 +65,6 @@ const AvaliationController = {
         try {
             const gameId = parseInt(req.params.gameId);
             const averageStars = await AvaliationModel.getAverageStarsByGameId(gameId);
-            if (averageStars === null) {
-                return res.status(404).json({ error: 'Avaliações não encontradas para este gameId' });
-            }
             res.json({ averageStars });
         } catch (error) {
             console.error('Erro ao calcular média de estrelas:', error);

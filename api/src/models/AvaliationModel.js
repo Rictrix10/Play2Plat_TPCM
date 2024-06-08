@@ -49,7 +49,7 @@ const AvaliationModel = {
             where: { gameId },
             _avg: { stars: true }
         });
-        return result._avg.stars;
+        return result._avg.stars !== null ? result._avg.stars : 0; // Se não houver avaliações, retorna 0
     },
     updateAverageStars: async (gameId) => {
         const averageStars = await AvaliationModel.getAverageStarsByGameId(gameId);
