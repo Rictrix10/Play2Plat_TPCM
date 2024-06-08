@@ -278,7 +278,7 @@ getFilteredGames: async (req, res) => {
                     if (filters.id) {
                         filters.id.in = filters.id.in.concat(gameIdsByPlatform);
                     } else {
-                        filters.id = { in: gameIdsByPlatform };
+                        filters.platformGameIds = { in: gameIdsByPlatform };
                     }
                 }
 
@@ -309,7 +309,8 @@ getFilteredGames: async (req, res) => {
         where: {
             sequenceId: filters.sequenceId,
             companyId: filters.companyId,
-            id: filters.genreGameIds
+            id: filters.genreGameIds,
+            id: filters.platformGameIds
         },
         orderBy: orderBy,
         include: {
