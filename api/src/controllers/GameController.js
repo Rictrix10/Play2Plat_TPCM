@@ -306,13 +306,18 @@ getFilteredGames: async (req, res) => {
                      _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
-            case 'averageStars':
-                filteredGames.sort((a, b) => {
-                    const avgA = calculateAverageStars(a.avaliations);
-                    const avgB = calculateAverageStars(b.avaliations);
+        case 'averageStars':
+            filteredGames.sort(async (a, b) => {
+                try {
+                    const avgA = await getAverageStars(a.id);
+                    const avgB = await getAverageStars(b.id);
                     return isAscending ? avgA - avgB : avgB - avgA;
-                });
-                break;
+                } catch (error) {
+                    console.error('Erro ao calcular média de estrelas:', error);
+                    return isAscending ? -1 : 1; // Coloque o jogo com média de estrelas desconhecida no início ou no final da lista
+                }
+            });
+            break;
 
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
@@ -358,6 +363,21 @@ getFilteredGames: async (req, res) => {
           return totalStars / totalAvaliations;
       } else {
           return 0; // Se não houver avaliações, retorna 0
+      }
+  }
+
+  async function getAverageStars(gameId) {
+      try {
+          const response = await fetch(`https://play2-plat-tpcm.vercel.app/api/avaliation/average/${gameId}`);
+          if (response.status === 404) {
+              // Se não houver avaliações para o jogo, retorna 0
+              return 0;
+          }
+          const data = await response.json();
+          return data.averageStars;
+      } catch (error) {
+          console.error('Erro ao buscar média de estrelas:', error);
+          throw new Error('Erro ao buscar média de estrelas');
       }
   }
 
