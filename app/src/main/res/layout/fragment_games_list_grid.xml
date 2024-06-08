@@ -20,6 +20,8 @@
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="3"
-        tools:listitem="@layout/item_game_grid"/>
+        tools:listitem="@layout/item_game_grid"
+        android:layout_marginBottom="100dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
