@@ -348,13 +348,11 @@ getFilteredGames: async (req, res) => {
                 // Extrair apenas os IDs ordenados dos jogos
                 const sortedGameIds = gamesWithAverageStars.map(game => game.id);
 
-                // Definir a ordem de classificação para os IDs dos jogos
+                // Definir a ordem de classificação para a média de estrelas dos jogos
                 const sortOrder = isAscending ? 'asc' : 'desc';
-                orderBy.id = {
-                    in: sortedGameIds,
-                    mode: sortOrder,
-                };
+                orderBy.averageStars = sortOrder;
                 break;
+
 
 
 
