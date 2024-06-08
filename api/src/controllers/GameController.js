@@ -323,8 +323,8 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                orderBy.avaliations.stars = {
-                     _count: isAscending ? 'asc' : 'desc',
+                orderBy.avaliations = {
+                    stars: { _count: isAscending ? 'asc' : 'desc' }
                 };
                 break;
 
