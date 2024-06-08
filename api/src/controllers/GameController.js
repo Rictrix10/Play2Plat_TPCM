@@ -355,12 +355,9 @@ getFilteredGames: async (req, res) => {
                 const sortOrder = isAscending ? 'asc' : 'desc';
 
                 // Constrói o objeto orderBy para ordenar os jogos pelo ID
-                const orderBy = {
-                    id: {
-                        in: sortedGameIds,
-                        mode: sortOrder,
-                    },
-                };
+                    const orderBy = {
+                        averageStars: sortOrder,
+                    };
 
                 // Busca os jogos filtrados com base nos parâmetros fornecidos
                 const games = await prisma.game.findMany({
