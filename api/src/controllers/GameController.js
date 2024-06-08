@@ -337,15 +337,15 @@ getFilteredGames: async (req, res) => {
     }
 },
 
-function calculateAverageStars(avaliations) {
-    if (avaliations && avaliations.length > 0) {
-        const totalStars = avaliations.reduce((sum, av) => sum + av.stars, 0);
-        return totalStars / avaliations.length;
-    } else {
-        return 0; // Se não houver avaliações, retorna 0
-    }
-}
-
   };
+
+  function calculateAverageStars(avaliations) {
+      if (avaliations && avaliations.length > 0) {
+          const totalStars = avaliations.reduce((sum, av) => sum + av.stars, 0);
+          return totalStars / avaliations.length;
+      } else {
+          return 0; // Se não houver avaliações, retorna 0
+      }
+  }
 
 module.exports = GameController;
