@@ -335,22 +335,28 @@ getFilteredGames: async (req, res) => {
                     },
                 });
 
+                // Calcular a média de estrelas para cada jogo
                 const gamesWithAverageStars = gameIdsWithAverageStars.map(game => {
                     const averageStars = calculateAverageStars(game.avaliations);
                     return { id: game.id, averageStars: averageStars };
                 });
 
+                // Ordenar os jogos com base na média de estrelas
                 gamesWithAverageStars.sort((a, b) => {
                     if (a.averageStars < b.averageStars) return isAscending ? -1 : 1;
                     if (a.averageStars > b.averageStars) return isAscending ? 1 : -1;
                     return 0;
                 });
 
+                // Extrair os IDs ordenados dos jogos
                 const sortedGameIds = gamesWithAverageStars.map(game => game.id);
+
+                // Definir o orderBy para os IDs ordenados dos jogos
                 orderBy.id = {
                     in: sortedGameIds,
                 };
                 break;
+
 
             /*
             case 'averageStars':
