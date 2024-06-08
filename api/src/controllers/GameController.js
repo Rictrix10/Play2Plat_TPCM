@@ -307,11 +307,9 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                // Calcula a média de estrelas para cada jogo e ordena com base nessa média
-                for (let game of filteredGames) {
-                    game.averageStars = await getAverageStars(game.id);
-                }
-                filteredGames.sort((a, b) => (isAscending ? a.averageStars - b.averageStars : b.averageStars - a.averageStars));
+                orderBy.avaliations = {
+                     _count: isAscending ? 'asc' : 'desc',
+                };
                 break;
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
