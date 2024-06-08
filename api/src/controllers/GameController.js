@@ -323,28 +323,34 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                const gamesWithAverageStars = await Promise.all(allGames.map(async (game) => {
-                    const averageStars = await getAverageStars(game.id);
-                    return {
-                        ...game,
-                        averageStars: averageStars
-                    };
-                }));
-                const sortedGames = gamesWithAverageStars.sort((a, b) => {
+                const gameIdsWithAverageStars = await prisma.game.findMany({
+                    select: {
+                        id: true,
+                        avaliations: {
+                            select: {
+                                id: true,
+                                stars: true,
+                            },
+                        },
+                    },
+                });
+
+                const gamesWithAverageStars = gameIdsWithAverageStars.map(game => {
+                    const averageStars = calculateAverageStars(game.avaliations);
+                    return { id: game.id, averageStars: averageStars };
+                });
+
+                gamesWithAverageStars.sort((a, b) => {
                     if (a.averageStars < b.averageStars) return isAscending ? -1 : 1;
                     if (a.averageStars > b.averageStars) return isAscending ? 1 : -1;
                     return 0;
                 });
-                res.json(sortedGames);
-                break;
 
-            /*
-            case 'averageStars':
-                orderBy.avaliations = {
-                     _count: isAscending ? 'asc' : 'desc',
+                const sortedGameIds = gamesWithAverageStars.map(game => game.id);
+                orderBy.id = {
+                    in: sortedGameIds,
                 };
                 break;
-            */
 
             /*
             case 'averageStars':
