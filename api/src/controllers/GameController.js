@@ -305,7 +305,8 @@ getFilteredGames: async (req, res) => {
                     }
                 }
 
-        const allGames = await prisma.game.findMany();
+        //const allGames = await prisma.game.findMany();
+        const allGames = await GameController.getGames();
 
         let filteredGames = allGames;
 
