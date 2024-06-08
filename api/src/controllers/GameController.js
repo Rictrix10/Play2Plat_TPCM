@@ -317,13 +317,14 @@ getFilteredGames: async (req, res) => {
         },
     });
 
-            if (orderType === 'averageStars') {
-                games = games.sort((a, b) => {
-                    const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
-                    const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
-                    return isAscending ? avgA - avgB : avgB - avgA;
-                });
-            }
+        if (orderType === 'averageStars') {
+            games = games.filter(game => game.avaliations.length > 0); // Remove jogos sem avaliações
+            games = games.sort((a, b) => {
+                const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
+                const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
+                return isAscending ? avgA - avgB : avgB - avgA;
+            });
+        }
 
 
         res.json(games);
