@@ -63,7 +63,7 @@ getGameById: async (req, res) => {
             company: game.company.name,
             genres: genres,
             platforms: platforms,
-            avaliations: avaliations
+            avaliations: avaliations,
             averageStars: averageStars
         });
     } catch (error) {
