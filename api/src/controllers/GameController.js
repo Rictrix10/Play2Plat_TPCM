@@ -13,28 +13,15 @@ const GameController = {
             res.status(500).json({ error: 'Erro ao criar jogo' });
         }
     },
-        getGames: async () => {
+        getGames: async (req, res) => {
             try {
                 const games = await GameModel.getGames();
-                const gamesWithAverageStars = await Promise.all(games.map(async (game) => {
-                    const avaliations = await prisma.avaliation.findMany({
-                        where: {
-                            gameId: game.id
-                        }
-                    });
-                    const averageStars = calculateAverageStars(avaliations);
-                    return {
-                        ...game,
-                        averageStars: averageStars
-                    };
-                }));
-                return gamesWithAverageStars;
+                res.json(games);
             } catch (error) {
                 console.error('Erro ao buscar jogos:', error);
-                throw error;
+                res.status(500).json({ error: 'Erro ao buscar jogos' });
             }
         },
-
 getGameById: async (req, res) => {
     try {
         const gameId = parseInt(req.params.id, 10); // Converter o ID para número inteiro
