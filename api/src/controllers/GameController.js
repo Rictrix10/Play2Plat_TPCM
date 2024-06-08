@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const GameController = {
     createGame: async (req, res) => {
         try {
-            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars  } = req.body;
+            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars } = req.body;
             const newGame = await GameModel.createGame(name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars );
             res.status(201).json(newGame);
         } catch (error) {
@@ -369,7 +369,7 @@ getFilteredGames: async (req, res) => {
 
   };
 
-  function calculateAverageStars(avaliations) {
+  function calculateAverage(avaliations) {
       if (avaliations && avaliations.length > 0) {
           // Calcula a soma total das estrelas das avaliações
           const totalStars = avaliations.reduce((sum, av) => sum + av.stars, 0);
@@ -384,7 +384,7 @@ getFilteredGames: async (req, res) => {
       }
   }
 
-  async function getAverageStars(gameId) {
+  async function getAverage(gameId) {
       try {
           const response = await fetch("https://play2-plat-tpcm.vercel.app/api/avaliation/average/${gameId}");
           if (response.status === 404) {
@@ -392,7 +392,7 @@ getFilteredGames: async (req, res) => {
               return 0;
           }
           const data = await response.json();
-          return data.averageStars;
+          return data.average;
       } catch (error) {
           console.error('Erro ao buscar média de estrelas:', error);
           throw new Error('Erro ao buscar média de estrelas');
