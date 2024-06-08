@@ -43,6 +43,12 @@ getGameById: async (req, res) => {
             sequenceName = game.sequence.name;
         }
 
+        const avaliations = await prisma.avaliation.findMany({
+            where: {
+                gameId: gameId
+            }
+        });
+
         res.json({
             id: game.id,
             name: game.name,
@@ -54,7 +60,8 @@ getGameById: async (req, res) => {
             sequence: sequenceName, // Usa sequenceName em vez de game.sequence.name
             company: game.company.name,
             genres: genres,
-            platforms: platforms
+            platforms: platforms,
+            avaliations: avaliations
         });
     } catch (error) {
         console.error('Erro ao buscar jogo por ID:', error);
