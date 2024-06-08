@@ -307,16 +307,11 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                filteredGames.sort(async (a, b) => {
-                    try {
-                        const avgA = await getAverageStars(a.id);
-                        const avgB = await getAverageStars(b.id);
-                        return isAscending ? avgA - avgB : avgB - avgA;
-                    } catch (error) {
-                        console.error('Erro ao calcular média de estrelas:', error);
-                        return isAscending ? -1 : 1; // Coloque o jogo com média de estrelas desconhecida no início ou no final da lista
-                    }
-                });
+                // Calcula a média de estrelas para cada jogo e ordena com base nessa média
+                for (let game of filteredGames) {
+                    game.averageStars = await getAverageStars(game.id);
+                }
+                filteredGames.sort((a, b) => (isAscending ? a.averageStars - b.averageStars : b.averageStars - a.averageStars));
                 break;
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
