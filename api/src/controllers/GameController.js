@@ -284,7 +284,7 @@ getFilteredGames: async (req, res) => {
 
         const allGames = await prisma.game.findMany();
 
-        let games = allGames;
+        let Allgames = allGames;
 
         const orderBy = {};
         switch (orderType) {
@@ -300,7 +300,7 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                    games = allGames.filter(game => game.avaliations && game.avaliations.length > 0);
+                    games = AllGames.filter(game => game.avaliations && game.avaliations.length > 0);
                     games.sort((a, b) => {
                         const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
                         const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
