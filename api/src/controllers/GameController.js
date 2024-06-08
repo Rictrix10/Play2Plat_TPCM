@@ -323,32 +323,38 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                const gameIdsWithAverageStars = await prisma.game.findMany({
+                // Busca todos os jogos com suas avaliações
+                const gamesWithAvaliations = await prisma.game.findMany({
                     select: {
                         id: true,
                         avaliations: {
                             select: {
-                                id: true,
                                 stars: true,
                             },
                         },
                     },
                 });
 
-                const gamesWithAverageStars = gameIdsWithAverageStars.map(game => {
+                // Calcula a média de estrelas para cada jogo
+                const gamesWithAverageStars = gamesWithAvaliations.map(game => {
                     const averageStars = calculateAverageStars(game.avaliations);
                     return { id: game.id, averageStars: averageStars };
                 });
 
+                // Ordena os jogos com base na média de estrelas
                 gamesWithAverageStars.sort((a, b) => {
                     if (a.averageStars < b.averageStars) return isAscending ? -1 : 1;
                     if (a.averageStars > b.averageStars) return isAscending ? 1 : -1;
                     return 0;
                 });
 
+                // Extrai apenas os IDs ordenados dos jogos
                 const sortedGameIds = gamesWithAverageStars.map(game => game.id);
 
+                // Define a ordem de classificação para os IDs dos jogos
                 const sortOrder = isAscending ? 'asc' : 'desc';
+
+                // Constrói o objeto orderBy para ordenar os jogos pelo ID
                 const orderBy = {
                     id: {
                         in: sortedGameIds,
@@ -356,6 +362,7 @@ getFilteredGames: async (req, res) => {
                     },
                 };
 
+                // Busca os jogos filtrados com base nos parâmetros fornecidos
                 const games = await prisma.game.findMany({
                     where: {
                         sequenceId: filters.sequenceId,
@@ -364,7 +371,7 @@ getFilteredGames: async (req, res) => {
                         id: filters.platformGameIds,
                         isFree: free
                     },
-                    orderBy: orderBy,
+                    orderBy: orderBy, // Aplica a ordenação
                     include: {
                         company: true,
                         sequence: true,
@@ -374,8 +381,10 @@ getFilteredGames: async (req, res) => {
                     },
                 });
 
+                // Retorna os jogos filtrados e ordenados
                 res.json(games);
                 break;
+
 
             /*
             case 'averageStars':
