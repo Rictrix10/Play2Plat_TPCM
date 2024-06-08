@@ -282,8 +282,7 @@ getFilteredGames: async (req, res) => {
                     }
                 }
 
-        let allGames = [];
-        allGames = await.prisma.game.findMany()
+        const allGames = await prisma.game.findMany();
 
         const orderBy = {};
         switch (orderType) {
