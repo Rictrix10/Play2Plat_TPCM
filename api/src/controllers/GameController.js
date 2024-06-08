@@ -322,19 +322,18 @@ getFilteredGames: async (req, res) => {
                      _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
-
-            /*
             case 'averageStars':
                 orderBy.avaliations = {
                      _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
-            */
-
+            /*
             case 'averageStars':
-                orderBy.averageStars = isAscending ? 'asc' : 'desc';
+                orderBy: {
+                    averageStars: isAscending ? 'asc' : 'desc'
+                };
                 break;
-
+            */
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
@@ -358,23 +357,8 @@ getFilteredGames: async (req, res) => {
         },
     });
 
-    // Calcular a média de estrelas para cada jogo
-    const gamesWithAverageStars = await Promise.all(games.map(async (game) => {
-        const averageStars = calculateAverageStars(game.avaliations);
-        return {
-            ...game,
-            averageStars: averageStars
-        };
-    }));
 
-    // Ordenar os jogos com base na média de estrelas
-    gamesWithAverageStars.sort((a, b) => {
-        if (a.averageStars < b.averageStars) return isAscending ? 1 : -1;
-        if (a.averageStars > b.averageStars) return isAscending ? -1 : 1;
-        return 0;
-    });
-
-    res.json(gamesWithAverageStars);
+        res.json(games);
     } catch (error) {
         console.error('Erro ao buscar jogos filtrados:', error);
         res.status(500).json({ error: 'Erro ao buscar jogos filtrados' });
