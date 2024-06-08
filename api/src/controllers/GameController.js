@@ -341,8 +341,14 @@ getFilteredGames: async (req, res) => {
 
   function calculateAverageStars(avaliations) {
       if (avaliations && avaliations.length > 0) {
+          // Calcula a soma total das estrelas das avaliações
           const totalStars = avaliations.reduce((sum, av) => sum + av.stars, 0);
-          return totalStars / avaliations.length;
+
+          // Calcula o número total de avaliações para o jogo
+          const totalAvaliations = avaliations.length;
+
+          // Calcula a média das estrelas
+          return totalStars / totalAvaliations;
       } else {
           return 0; // Se não houver avaliações, retorna 0
       }
