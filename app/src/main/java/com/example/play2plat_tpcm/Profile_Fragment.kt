@@ -91,19 +91,20 @@ class Profile_Fragment : Fragment() {
             requireActivity().onBackPressed()
         }
 
-        // Configurar ação do botão de logout
+        // Verifique se o estado do fragmento já foi salvo antes de realizar a transação
+        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+            val fragment = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
 
-
-
-        val fragment = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-
-        val fragment2 = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container2, fragment2)
-            .commit()
+            val fragment2 = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container2, fragment2)
+                .commit()
+        } else {
+            Log.d("Profile_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+        }
 
         ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -115,11 +116,10 @@ class Profile_Fragment : Fragment() {
 
                         val platforms = user.platforms
                         val canEditPlatforms = userId == currentUserId
-                        if(platforms != null){
+                        if (platforms != null && !childFragmentManager.isStateSaved()) {
                             val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId)
                             childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
                         }
-
                     } else {
                         Log.e("Profile_Fragment", "API response did not return user data.")
                     }
@@ -198,7 +198,6 @@ class Profile_Fragment : Fragment() {
         }
     }
 
-
     private fun verifyPassword(userId: Int, password: String, callback: PasswordVerificationCallback) {
         val inputPass = Password(password)
         ApiManager.apiService.verifyPassword(userId, inputPass).enqueue(object : Callback<Void> {
@@ -217,7 +216,6 @@ class Profile_Fragment : Fragment() {
             }
         })
     }
-
 
     private fun deleteAccount(userId: Int) {
         ApiManager.apiService.deleteAccount(userId).enqueue(object : Callback<Void> {
@@ -248,12 +246,10 @@ class Profile_Fragment : Fragment() {
         editor.apply()
     }
 
-
     interface PasswordVerificationCallback {
         fun onVerificationSuccess()
         fun onVerificationFailure()
     }
-
 
     private fun loadImage(avatarUrl: String?) {
         if (!avatarUrl.isNullOrEmpty()) {
@@ -313,10 +309,14 @@ class Profile_Fragment : Fragment() {
 
     private fun redirectToEditProfile() {
         val editProfileFragment = Edit_Profile_Fragment()
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, editProfileFragment)
-            .addToBackStack(null)
-            .commit()
+        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, editProfileFragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            Log.d("Profile_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+        }
     }
 
     override fun onCreateView(
@@ -336,3 +336,4 @@ class Profile_Fragment : Fragment() {
             }
     }
 }
+
