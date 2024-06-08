@@ -49,6 +49,8 @@ getGameById: async (req, res) => {
             }
         });
 
+        const averageStars = calculateAverageStars(avaliations);
+
         res.json({
             id: game.id,
             name: game.name,
@@ -62,6 +64,7 @@ getGameById: async (req, res) => {
             genres: genres,
             platforms: platforms,
             avaliations: avaliations
+            averageStars: averageStars
         });
     } catch (error) {
         console.error('Erro ao buscar jogo por ID:', error);
