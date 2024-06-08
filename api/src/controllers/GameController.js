@@ -299,9 +299,9 @@ getFilteredGames: async (req, res) => {
                      _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
-            case 'averageStars':
-                 filteredGames = filteredGames.filter(game => game.avaliations && game.avaliations.length > 0);
-                           filteredGames.sort((a, b) => {
+                        case 'averageStars':
+                            filteredGames = filteredGames.filter(game => game.avaliations && game.avaliations.length > 0);
+                            filteredGames.sort((a, b) => {
                                 const avgA = calculateAverageStars(a.avaliations);
                                 const avgB = calculateAverageStars(b.avaliations);
                                 return isAscending ? avgA - avgB : avgB - avgA;
