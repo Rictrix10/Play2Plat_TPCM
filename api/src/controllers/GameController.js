@@ -2,34 +2,6 @@ const GameModel = require('../models/GameModel');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-function calculateAverageStars(avaliations) {
-    if (avaliations && avaliations.length > 0) {
-        // Calcula a soma total das estrelas das avaliações
-        const totalStars = avaliations.reduce((sum, av) => sum + av.stars, 0);
-        // Calcula o número total de avaliações para o jogo
-        const totalAvaliations = avaliations.length;
-        // Calcula a média das estrelas
-        return totalStars / totalAvaliations;
-    } else {
-        return 0; // Se não houver avaliações, retorna 0
-    }
-}
-
-// Função para obter a média de estrelas de um jogo pelo ID
-const getAverageStarsById = async (gameId) => {
-    try {
-        const avaliations = await prisma.avaliation.findMany({
-            where: {
-                gameId: gameId
-            }
-        });
-        return calculateAverageStars(avaliations);
-    } catch (error) {
-        console.error('Erro ao calcular média de estrelas:', error);
-        throw new Error('Erro ao calcular média de estrelas');
-    }
-};
-
 const GameController = {
     createGame: async (req, res) => {
         try {
@@ -350,16 +322,9 @@ getFilteredGames: async (req, res) => {
                 };
                 break;
             case 'averageStars':
-                // Mapeie os jogos em filteredGames para incluir a média de estrelas
-                const gamesWithAverageStars = await Promise.all(filteredGames.map(async (game) => {
-                    const averageStars = await getAverageStarsById(game.id);
-                    return { ...game, averageStars }; // Retorna um novo objeto com averageStars adicionado
-                }));
-
-                // Agora você pode ordenar os jogos com base na média de estrelas
-                gamesWithAverageStars.sort((a, b) => {
-                    const avgA = a.averageStars;
-                    const avgB = b.averageStars;
+                filteredGames.sort((a, b) => {
+                    const avgA = calculateAverageStars(a.avaliations);
+                    const avgB = calculateAverageStars(b.avaliations);
                     return isAscending ? avgA - avgB : avgB - avgA;
                 });
                 break;
@@ -395,6 +360,21 @@ getFilteredGames: async (req, res) => {
 },
 
   };
+
+  function calculateAverageStars(avaliations) {
+      if (avaliations && avaliations.length > 0) {
+          // Calcula a soma total das estrelas das avaliações
+          const totalStars = avaliations.reduce((sum, av) => sum + av.stars, 0);
+
+          // Calcula o número total de avaliações para o jogo
+          const totalAvaliations = avaliations.length;
+
+          // Calcula a média das estrelas
+          return totalStars / totalAvaliations;
+      } else {
+          return 0; // Se não houver avaliações, retorna 0
+      }
+  }
 
 
 module.exports = {
