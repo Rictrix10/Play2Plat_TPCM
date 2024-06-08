@@ -295,20 +295,12 @@ getFilteredGames: async (req, res) => {
                      _count: isAscending ? 'asc' : 'desc',
                 };
                 break;
-            case 'averageStars':
-                    games = games(game => game.avaliations && game.avaliations.length > 0);
-                    games.sort((a, b) => {
-                        const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
-                        const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
-                        return isAscending ? avgA - avgB : avgB - avgA;
-                    });
-               break;
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
         }
 
-    const games = await prisma.game.findMany({
+    let games = await prisma.game.findMany({
         where: {
             sequenceId: filters.sequenceId,
             companyId: filters.companyId,
@@ -325,6 +317,14 @@ getFilteredGames: async (req, res) => {
         },
     });
 
+                if (orderType === 'averageStars') {
+                    games = games.filter(game => game.avaliations && game.avaliations.length > 0);
+                    games.sort((a, b) => {
+                        const avgA = a.avaliations.reduce((sum, av) => sum + av.stars, 0) / a.avaliations.length || 0;
+                        const avgB = b.avaliations.reduce((sum, av) => sum + av.stars, 0) / b.avaliations.length || 0;
+                        return isAscending ? avgA - avgB : avgB - avgA;
+                    });
+                }
 
         res.json(games);
     } catch (error) {
