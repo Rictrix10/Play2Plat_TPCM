@@ -51,6 +51,9 @@ const UserGameModel = {
         return await prisma.userGame.findMany({
             where: {
                 userId: userId,
+                game:{
+                    isDeleted: false
+                }
             },
         });
     },
@@ -83,7 +86,10 @@ getUserGamesByUserIdAndState: async (userId, state) => {
     return await prisma.userGame.findMany({
         where: {
             userId: userId,
-            state: state
+            state: state,
+            game:{
+                isDeleted: false
+            }
         },
         select: {
             state: true,
