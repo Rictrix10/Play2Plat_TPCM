@@ -341,7 +341,7 @@ getFilteredGames: async (req, res) => {
             companyId: filters.companyId,
             id: filters.genreGameIds,
             id: filters.platformGameIds,
-            isFree: free
+            isFree: filters.isFree
         },
         orderBy: orderBy,
         include: {
