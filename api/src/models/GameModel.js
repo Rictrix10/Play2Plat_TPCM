@@ -216,6 +216,9 @@ getPlatformByName: async (platformName) => {
 getGamesByDescendingId: async () => {
         try {
             const games = await prisma.game.findMany({
+               where: {
+                 isDeleted: false,
+               },
                 orderBy: {
                     id: 'desc',
                 },
