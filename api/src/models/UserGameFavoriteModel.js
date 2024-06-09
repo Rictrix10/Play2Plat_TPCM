@@ -35,24 +35,31 @@ const UserGameFavoriteModel = {
     },
 
 getFavoritesByUserId: async (userId) => {
-    return await prisma.userGameFavorite.findMany({
+    const userGameFavorites = await prisma.userGameFavorite.findMany({
         where: {
             userId: userId,
         },
         include: {
             game: {
-                where: {
-                    isDeleted: { not: true }
-                },
                 select: {
                     id: true,
                     name: true,
-                    coverImage: true
+                    coverImage: true,
+                    isDeleted: true, // Incluir isDeleted para filtrar depois
                 }
             }
         }
     });
+
+    // Filtrar jogos que não foram deletados
+    return userGameFavorites.filter(favorite => !favorite.game.isDeleted)
+                            .map(favorite => ({
+                                id: favorite.game.id,
+                                name: favorite.game.name,
+                                coverImage: favorite.game.coverImage
+                            }));
 },
+
 
 
     getFavoritesByGameId: async (gameId) => {
