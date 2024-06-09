@@ -61,20 +61,24 @@ const UserGameFavoriteController = {
         }
     },
 
-    getFavoritesByUserId: async (req, res) => {
-        try {
-            const userId = parseInt(req.params.userId);
-            if (isNaN(userId)) {
-                return res.status(400).json({ error: 'userId inválido' });
+    getFavoritesByUserId: async (userId) => {
+        return await prisma.userGameFavorite.findMany({
+            where: {
+                userId: userId,
+                game: {
+                    isDeleted: false
+                }
+            },
+            include: {
+                game: {
+                    select: {
+                        id: true,
+                        name: true,
+                        coverImage: true
+                    }
+                }
             }
-            // Retorna todas as relações de um usuário específico com jogos favoritos
-            const favorites = await UserGameFavoriteModel.getFavoritesByUserId(userId);
-
-            res.json(favorites);
-        } catch (error) {
-            console.error('Erro ao buscar favoritos por userId:', error);
-            res.status(500).json({ error: 'Erro ao buscar favoritos' });
-        }
+        });
     },
 
     getFavoritesByGameId: async (req, res) => {
