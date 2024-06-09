@@ -348,7 +348,8 @@ getFilteredGames: async (req, res) => {
             companyId: filters.companyId,
             id: filters.genreGameIds,
             id: filters.platformGameIds,
-            isFree: filters.isFree
+            isFree: filters.isFree,
+            isDeleted: filters.isDeleted
         },
         orderBy: orderBy,
         include: {
