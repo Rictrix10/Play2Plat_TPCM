@@ -307,6 +307,13 @@ getFilteredGames: async (req, res) => {
                     }
                 }
 
+                        if (free !== undefined) {
+                            if (free) {
+                                filters.isFree = true;
+                            }
+                            // No need for an else block since we want all games when free is false
+                        }
+
         const allGames = await prisma.game.findMany();
 
         let filteredGames = allGames;
@@ -327,13 +334,6 @@ getFilteredGames: async (req, res) => {
             case 'averageStars':
                     orderBy.averageStars = isAscending ? 'asc' : 'desc';
                     break;
-            /*
-            case 'averageStars':
-                orderBy: {
-                    averageStars: isAscending ? 'asc' : 'desc'
-                };
-                break;
-            */
             default:
                 orderBy.id = isAscending ? 'asc' : 'desc';
                 break;
