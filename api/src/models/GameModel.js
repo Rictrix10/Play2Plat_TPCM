@@ -277,20 +277,21 @@ getGamesByDescendingId: async () => {
                  throw new Error('Game not found');
              }
 
-             const games = await prisma.game.findMany({
-                 where: {
-                     sequenceId: game.sequenceId,
-                     sequenceId: { not: null },
-                     id: { not: gameId },
-                     isDeleted: false
-                 },
-                 select: {
-                     id: true,
-                     name: true,
-                     coverImage: true,
-                 },
-             });
-
+            const games = await prisma.game.findMany({
+                where: {
+                    sequenceId: {
+                        equals: game.sequenceId,
+                        not: null
+                    },
+                    id: { not: gameId },
+                    isDeleted: false
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    coverImage: true,
+                },
+            });
 
              return games;
          } catch (error) {
