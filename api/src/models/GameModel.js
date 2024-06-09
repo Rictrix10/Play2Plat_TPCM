@@ -280,7 +280,7 @@ getGamesByDescendingId: async () => {
              const games = await prisma.game.findMany({
                  where: {
                      sequenceId: game.sequenceId,
-                     sequenceId: { not: null},
+                     sequenceId: { not: null },
                      id: { not: gameId },
                      isDeleted: false
                  },
@@ -290,6 +290,7 @@ getGamesByDescendingId: async () => {
                      coverImage: true,
                  },
              });
+
 
              return games;
          } catch (error) {
