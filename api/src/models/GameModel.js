@@ -269,7 +269,9 @@ getGamesByDescendingId: async () => {
      getGamesBySameSequenceId: async (gameId) => {
          try {
              const game = await prisma.game.findUnique({
-                 where: { id: gameId },
+                 where: {
+                 id: gameId,
+                 },
              });
              if (!game) {
                  throw new Error('Game not found');
@@ -278,6 +280,7 @@ getGamesByDescendingId: async () => {
              const games = await prisma.game.findMany({
                  where: {
                      sequenceId: game.sequenceId,
+                     sequenceId: { not: null},
                      id: { not: gameId },
                      isDeleted: false
                  },
