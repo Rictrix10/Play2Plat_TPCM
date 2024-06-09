@@ -51,7 +51,6 @@ getFavoritesByUserId: async (userId) => {
     });
 },
 
-
     getFavoritesByGameId: async (gameId) => {
 
         return await prisma.userGameFavorite.findMany({
