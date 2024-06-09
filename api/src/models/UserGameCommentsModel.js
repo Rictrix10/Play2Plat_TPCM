@@ -185,11 +185,38 @@ const UserGameCommentsModel = {
              });
          },
 
+/*
         deleteUserGameCommentById: async (id) => {
                 return await prisma.userGameComment.delete({
                     where: { id: id }
                 });
             }
+        };
+        */
+    deleteUserGameCommentById: async (id) => {
+        // Função auxiliar para deletar em cascata
+        const deleteCascade = async (commentId) => {
+            // Encontre todos os comentários que têm este comentário como resposta
+            const replies = await prisma.userGameComment.findMany({
+                where: {
+                    isAnswer: commentId
+                }
+            });
+
+            // Recursivamente delete todas as respostas
+            for (const reply of replies) {
+                await deleteCascade(reply.id);
+            }
+
+            // Delete o comentário atual
+            await prisma.userGameComment.delete({
+                where: { id: commentId }
+            });
+        };
+
+        // Inicie a exclusão em cascata a partir do comentário original
+        return await deleteCascade(id);
+    }
         };
 
 module.exports = UserGameCommentsModel;

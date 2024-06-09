@@ -134,6 +134,7 @@ const UserGameCommentsController = {
              }
          },
 
+        /*
          deleteUserGameCommentById: async (req, res) => {
                 try {
                     const commentId = parseInt(req.params.id, 10);
@@ -149,6 +150,17 @@ const UserGameCommentsController = {
                     res.status(500).json({ error: 'Erro interno ao deletar comentário' });
                 }
             }
+            */
+    deleteUserGameCommentById: async (req, res) => {
+        try {
+            const commentId = parseInt(req.params.id, 10);
+            await UserGameCommentsModel.deleteUserGameCommentById(commentId);
+            res.status(204).send();  // No Content
+        } catch (error) {
+            console.error('Erro ao deletar comentário:', error);
+            res.status(500).json({ error: 'Erro interno ao deletar comentário' });
+        }
+    }
         };
 
 module.exports = UserGameCommentsController;
