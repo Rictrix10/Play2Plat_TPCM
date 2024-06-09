@@ -52,13 +52,6 @@ const UserGameModel = {
             where: {
                 userId: userId,
             },
-            include: {
-                game: {
-                    where: {
-                        isDeleted: { not: true }
-                    }
-                }
-            }
         });
     },
     getUserGamesByGameId: async (gameId) => {
@@ -95,9 +88,6 @@ getUserGamesByUserIdAndState: async (userId, state) => {
         select: {
             state: true,
             game: {
-                where: {
-                    isDeleted: { not: true }
-                    },
                 select: {
                     id: true,
                     name: true,
