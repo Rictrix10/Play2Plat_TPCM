@@ -257,7 +257,7 @@ getFilteredGames: async (req, res) => {
 
 
         const filters = {
-            isDeleted: { not: true },
+            isDeleted: false,
         };
 
 
@@ -313,10 +313,6 @@ getFilteredGames: async (req, res) => {
             filters.isFree = free;
         }
 
-        if (typeof deleted !== 'undefined') {
-            filters.isDeleted = deleted;
-        }
-
         const allGames = await prisma.game.findMany();
 
         let filteredGames = allGames;
@@ -349,7 +345,7 @@ getFilteredGames: async (req, res) => {
             id: filters.genreGameIds,
             id: filters.platformGameIds,
             isFree: filters.isFree,
-            isDeleted: filters.isDeleted
+            isDeleted: filters.isDeleted,
         },
         orderBy: orderBy,
         include: {
