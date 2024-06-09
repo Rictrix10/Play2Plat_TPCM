@@ -35,8 +35,7 @@ const UserGameFavoriteModel = {
     },
 
 getFavoritesByUserId: async (userId) => {
-    // Primeiro, obtemos todos os favoritos do usuário
-    const userGameFavorites = await prisma.userGameFavorite.findMany({
+    return await prisma.userGameFavorite.findMany({
         where: {
             userId: userId,
         },
@@ -45,24 +44,12 @@ getFavoritesByUserId: async (userId) => {
                 select: {
                     id: true,
                     name: true,
-                    coverImage: true,
-                    isDeleted: true, // Incluímos isDeleted para filtrar depois
+                    coverImage: true
                 }
             }
         }
     });
-
-    // Filtramos os jogos que não foram deletados
-    const filteredFavorites = userGameFavorites.filter(favorite => !favorite.game.isDeleted);
-
-    // Retornamos os jogos filtrados com apenas os campos necessários
-    return filteredFavorites.map(favorite => ({
-        id: favorite.game.id,
-        name: favorite.game.name,
-        coverImage: favorite.game.coverImage
-    }));
-};
-
+},
 
 
     getFavoritesByGameId: async (gameId) => {
