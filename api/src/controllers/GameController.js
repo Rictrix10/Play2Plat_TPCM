@@ -361,6 +361,18 @@ getFilteredGames: async (req, res) => {
     }
 },
 
+        softDeleteGame: async (req, res) => {
+            try {
+                const gameId = parseInt(req.params.id);
+                const game = await GameModel.softDeleteGame(gameId);
+
+                res.json(game);
+            } catch (error) {
+                console.error('Erro ao excluir jogo:', error);
+                res.status(500).json({ error: 'Erro ao excluir jogo' });
+            }
+        },
+
   };
 
   function calculateAverage(avaliations) {

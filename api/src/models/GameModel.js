@@ -293,6 +293,14 @@ getGamesByDescendingId: async () => {
                  },
              });
          },
+             softDeleteGame: async (id) => {
+                 return await prisma.game.update({
+                     where: { id },
+                     data: {
+                         isDeleted: true
+                     }
+                 });
+             },
 };
 
 module.exports = GameModel;

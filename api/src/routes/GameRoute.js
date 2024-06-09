@@ -15,6 +15,6 @@ router.get('/gamess/descending', GameController.getGamesByDescendingId);
 router.get('/games/same-company/:gameId', GameController.getGamesBySameCompanyId);
 router.get('/games/same-sequence/:gameId', GameController.getGamesBySameSequenceId);
 router.post('/games/filter', GameController.getFilteredGames);
-
+router.delete('/games/soft-delete/:id', GameController.softDeleteGame);
 module.exports = router;
 
