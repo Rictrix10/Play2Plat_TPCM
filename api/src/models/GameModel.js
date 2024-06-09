@@ -198,6 +198,7 @@ getPlatformByName: async (platformName) => {
                                     contains: partialName,
                                     mode: 'insensitive', // Faz a busca ser case-insensitive
                                 },
+                                isDeleted: false,
                             },
                             select: {
                                 id: true,
