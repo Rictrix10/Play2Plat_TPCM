@@ -307,6 +307,9 @@ getFilteredGames: async (req, res) => {
                     }
                 }
 
+        if (typeof free !== 'undefined') {
+            filters.isFree = free;
+        }
         const allGames = await prisma.game.findMany();
 
         let filteredGames = allGames;
