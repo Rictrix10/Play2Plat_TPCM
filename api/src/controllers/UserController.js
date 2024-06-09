@@ -5,7 +5,7 @@ const validator = require('validator');
 const UserController = {
     createUser: async (req, res) => {
         try {
-            const { email, password, username, avatar, userTypeId, isDeleted } = req.body;
+            const { email, password, username, avatar, userTypeId, isDeleted = false } = req.body;
 
             // Verificar se o email é válido
             if (!validator.isEmail(email)) {

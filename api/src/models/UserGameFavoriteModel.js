@@ -34,23 +34,26 @@ const UserGameFavoriteModel = {
         });
     },
 
-    getFavoritesByUserId: async (userId) => {
-
-        return await prisma.userGameFavorite.findMany({
-            where: {
-                userId: userId,
-            },
-            include: {
-                game: {
-                    select: {
-                        id: true,
-                        name: true,
-                        coverImage: true
-                        }
-                    }
+getFavoritesByUserId: async (userId) => {
+    return await prisma.userGameFavorite.findMany({
+        where: {
+            userId: userId,
+        },
+        include: {
+            game: {
+                where: {
+                    isDeleted: { not: true }
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    coverImage: true
                 }
-        });
-    },
+            }
+        }
+    });
+},
+
 
     getFavoritesByGameId: async (gameId) => {
 

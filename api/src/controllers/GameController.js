@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 const GameController = {
     createGame: async (req, res) => {
         try {
-            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars } = req.body;
-            const newGame = await GameModel.createGame(name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars );
+            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars = 0, isDeleted = false } = req.body;
+            const newGame = await GameModel.createGame(name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars, isDeleted );
             res.status(201).json(newGame);
         } catch (error) {
             console.error('Erro ao criar jogo:', error);
@@ -78,6 +78,7 @@ getGameById: async (req, res) => {
             sequence: sequenceName, // Usa sequenceName em vez de game.sequence.name
             company: game.company.name,
             averageStars: game.averageStars,
+            isDeleted: game.isDeleted,
             genres: genres,
             platforms: platforms,
             avaliations: avaliations,
@@ -92,7 +93,7 @@ getGameById: async (req, res) => {
     updateGame: async (req, res) => {
         try {
             const gameId = parseInt(req.params.id);
-            const { name, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars } = req.body;
+            const { name, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars, isDeleted } = req.body;
 
             const updatedGame = await GameModel.updateGame(gameId, {
                 name,
@@ -102,7 +103,8 @@ getGameById: async (req, res) => {
                 coverImage,
                 sequenceId,
                 companyId,
-                averageStars
+                averageStars,
+                isDeleted
             });
 
             res.json(updatedGame);
@@ -341,7 +343,8 @@ getFilteredGames: async (req, res) => {
             companyId: filters.companyId,
             id: filters.genreGameIds,
             id: filters.platformGameIds,
-            isFree: filters.isFree
+            isFree: filters.isFree,
+            isDeleted: { not: true }
         },
         orderBy: orderBy,
         include: {
