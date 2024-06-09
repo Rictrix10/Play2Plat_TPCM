@@ -307,13 +307,6 @@ getFilteredGames: async (req, res) => {
                     }
                 }
 
-                        if (free !== undefined) {
-                            if (free) {
-                                filters.isFree = true;
-                            }
-                            // No need for an else block since we want all games when free is false
-                        }
-
         const allGames = await prisma.game.findMany();
 
         let filteredGames = allGames;
@@ -345,7 +338,7 @@ getFilteredGames: async (req, res) => {
             companyId: filters.companyId,
             id: filters.genreGameIds,
             id: filters.platformGameIds,
-            isFree: filters.isFree
+            isFree: free
         },
         orderBy: orderBy,
         include: {
