@@ -39,7 +39,10 @@ const PlatformGameModel = {
         try {
             return await prisma.platformGame.findMany({
                 where: {
-                    platformId: platformId
+                    platformId: platformId.
+                    game: {
+                        isDeleted: false
+                    }
                 },
                 include: {
                     game: {
@@ -71,6 +74,9 @@ const PlatformGameModel = {
             where: {
                 platform: {
                     name: platformName
+                },
+                game: {
+                    isDeleted: false
                 }
             },
             select: {

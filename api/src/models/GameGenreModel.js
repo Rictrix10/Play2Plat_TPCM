@@ -50,7 +50,10 @@ const GameGenreModel = {
     getGamesByGenreId: async (genreId) => {
         return await prisma.gameGenre.findMany({
             where: {
-                genreId: genreId
+                genreId: genreId,
+                game: {
+                    isDeleted: false
+                }
             },
             include: {
                 game: {
@@ -69,6 +72,9 @@ const GameGenreModel = {
                 where: {
                     genre: {
                         name: genreName
+                    },
+                    game: {
+                        isDeleted: false
                     }
                 },
                 select: {

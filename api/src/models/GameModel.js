@@ -129,7 +129,9 @@ getPlatformByName: async (platformName) => {
 
             getGamesByCompany: async (companyId, companyName) => {
                 try {
-                    const whereClause = {};
+                    const whereClause = {
+                        isDeleted: false
+                    };
                     if (companyId) {
                         whereClause.companyId = companyId;
                     } else if (companyName) {
@@ -160,7 +162,9 @@ getPlatformByName: async (platformName) => {
 
                             getGamesBySequence: async (sequenceId, sequenceName) => {
                                 try {
-                                    const whereClause = {};
+                                    const whereClause = {
+                                        isDeleted: false
+                                    };
                                     if (sequenceId) {
                                         whereClause.sequenceId = sequenceId;
                                     } else if (sequenceName) {
@@ -234,7 +238,9 @@ getGamesByDescendingId: async () => {
      getGamesBySameCompanyId: async (gameId) => {
          try {
              const game = await prisma.game.findUnique({
-                 where: { id: gameId },
+                 where: {
+                 id: gameId,
+                 },
              });
              if (!game) {
                  throw new Error('Game not found');
@@ -244,6 +250,7 @@ getGamesByDescendingId: async () => {
                  where: {
                      companyId: game.companyId,
                      id: { not: gameId },
+                     isDeleted: false
                  },
                  select: {
                      id: true,
@@ -272,6 +279,7 @@ getGamesByDescendingId: async () => {
                  where: {
                      sequenceId: game.sequenceId,
                      id: { not: gameId },
+                     isDeleted: false
                  },
                  select: {
                      id: true,
