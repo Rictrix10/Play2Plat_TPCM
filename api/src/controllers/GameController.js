@@ -285,6 +285,7 @@ getFilteredGames: async (req, res) => {
                     filters.companyId = { in: companyIds };
                 }
 
+/*
                 if (genres && genres.length > 0) {
                     const genreGames = await prisma.gameGenre.findMany({
                         where: { genre: { name: { in: genres } } },
@@ -310,6 +311,24 @@ getFilteredGames: async (req, res) => {
                         filters.platformGameIds = { in: gameIdsByPlatform };
                     }
                 }
+                */
+        let genreGameIds = [];
+        if (genres && genres.length > 0) {
+            const genreGames = await prisma.gameGenre.findMany({
+                where: { genre: { name: { in: genres } } },
+                select: { gameId: true },
+            });
+            genreGameIds = genreGames.map(gg => gg.gameId);
+        }
+
+        let platformGameIds = [];
+        if (platforms && platforms.length > 0) {
+            const platformGames = await prisma.platformGame.findMany({
+                where: { platform: { name: { in: platforms } } },
+                select: { gameId: true },
+            });
+            platformGameIds = platformGames.map(pg => pg.gameId);
+        }
 
         if (typeof free !== 'undefined') {
             filters.isFree = free;
@@ -346,10 +365,10 @@ getFilteredGames: async (req, res) => {
             companyId: filters.companyId,
             isFree: filters.isFree,
             isDeleted: filters.isDeleted,
-                    AND: [
-                        { id: { in: filters.genreGameIds } },
-                        { id: { in: filters.platformGameIds } }
-                    ]
+                AND: [
+                    genreGameIds.length > 0 ? { id: { in: genreGameIds } } : undefined,
+                    platformGameIds.length > 0 ? { id: { in: platformGameIds } } : undefined,
+                ].filter(Boolean),
         },
         orderBy: orderBy,
         include: {
