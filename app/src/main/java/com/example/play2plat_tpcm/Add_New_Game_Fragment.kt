@@ -362,7 +362,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     companies = response.body() ?: emptyList()
                     if (companies.isNotEmpty()) {
-                        companyAdapter = CompanyAdapter(context, companies, companyTitle)
+                        companyAdapter = CompanyAdapter(context, companies, companyTitle, false)
                         companyList.adapter = companyAdapter
                         adjustListViewHeight(companyList)
                     }
@@ -383,7 +383,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     sequences = response.body() ?: emptyList()
                     if (sequences.isNotEmpty()) {
-                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle)
+                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle, false)
                         sequenceList.adapter = sequenceAdapter
                         adjustListViewHeight(sequenceList)
                     }

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
@@ -33,6 +34,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var fragmentContainer7: FrameLayout
     //private lateinit var searchView: SearchView
     private lateinit var searchButton: Button
+    private lateinit var filtersButton: ImageView
     private var GamesList: MutableList<Collections> = mutableListOf()
     private lateinit var sharedPreferences: SharedPreferences
     private var countValue: Int = 0
@@ -55,6 +57,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         fragmentContainer6 = view.findViewById(R.id.fragment_container6)
         fragmentContainer7 = view.findViewById(R.id.fragment_container7)
         searchButton = view.findViewById(R.id.search)
+        filtersButton = view.findViewById(R.id.black_square)
 
         if (!parentFragmentManager.isStateSaved()) {
             val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0)
@@ -68,6 +71,10 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         // Set up SearchView click listener
         searchButton.setOnClickListener {
             redirectToGamesSearched()
+        }
+
+        filtersButton.setOnClickListener {
+            redirectToFilters()
         }
 
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -303,6 +310,14 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         val gamesSearchedFragment = GamesSearched_Fragment()
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, gamesSearchedFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun redirectToFilters() {
+        val filtersFragment = Filters_Fragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, filtersFragment)
             .addToBackStack(null)
             .commit()
     }

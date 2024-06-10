@@ -10,10 +10,14 @@ import android.widget.TextView
 import com.example.play2plat_tpcm.R
 import com.example.play2plat_tpcm.api.Sequence
 
-class SequenceAdapter(context: Context, sequences: List<Sequence>, private val sequenceTitle: TextView) :
-    ArrayAdapter<Sequence>(context, 0, sequences) {
+class SequenceAdapter(
+    context: Context,
+    sequences: List<Sequence>,
+    private val sequenceTitle: TextView,
+    private val canSelectMultiple: Boolean = false
+) : ArrayAdapter<Sequence>(context, 0, sequences) {
 
-    private var selectedSequencePosition: Int = -1
+    private val selectedSequences: MutableList<Sequence> = mutableListOf()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var listItemView = convertView
@@ -31,26 +35,31 @@ class SequenceAdapter(context: Context, sequences: List<Sequence>, private val s
         sequenceNameTextView?.text = currentSequence?.name
 
         val sequenceCheckbox = listItemView?.findViewById<CheckBox>(R.id.sequence_checkbox)
-        sequenceCheckbox?.setOnCheckedChangeListener(null) // Remove listener before setting state
-        sequenceCheckbox?.isChecked = position == selectedSequencePosition
+
+        sequenceCheckbox?.isChecked = selectedSequences.contains(currentSequence)
+
         sequenceCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                selectedSequencePosition = position
-                notifyDataSetChanged() // Notify the adapter of the change to update the views
-                sequenceTitle.text = currentSequence?.name
+                if (!canSelectMultiple) {
+                    selectedSequences.clear()
+                }
+                selectedSequences.add(currentSequence!!)
             } else {
-                selectedSequencePosition = -1
-                notifyDataSetChanged() // Notify the adapter of the change to update the views
-                sequenceTitle.text = "Sequences"
+                selectedSequences.remove(currentSequence)
             }
+            updateSequenceTitle()
         }
 
-        if (selectedSequencePosition == -1) {
-            sequenceTitle.text = "Sequences"
-        }
+        updateSequenceTitle()
 
         return listItemView!!
     }
+
+    private fun updateSequenceTitle() {
+        sequenceTitle.text = if (selectedSequences.isNotEmpty()) {
+            selectedSequences.joinToString(", ") { it.name }
+        } else {
+            "Sequences"
+        }
+    }
 }
-
-
