@@ -87,6 +87,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             "Sequences"-> getGamesBySequence(paramater!!)
             "Platforms"-> getGamesByPlatform(paramater!!)
             "Companies"-> getGamesByCompany(paramater!!)
+            "SameSequence"->getGamesBySequence(paramater!!)
+            "SameCompany"-> getGamesByCompany(paramater!!)
             "Recent" -> getRecentGames()
             else -> getStateCollection("Playing")
         }

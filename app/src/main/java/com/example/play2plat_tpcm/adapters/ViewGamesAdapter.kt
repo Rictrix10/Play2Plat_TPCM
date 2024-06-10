@@ -7,13 +7,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class ViewGamePagerAdapter(
+class ViewGamesAdapter(
     fragmentActivity: FragmentActivity,
     private val gameId: Int,
     private val description: String,
     private val genres: List<String>,
     private val platforms: List<String>,
     private val gameName: String,
+    private val sequence: String?,
+    private val company: String,
     private var primaryColor: Int,
     private var secondaryColor: Int
 ) : FragmentStateAdapter(fragmentActivity) {
@@ -23,8 +25,9 @@ class ViewGamePagerAdapter(
     }
 
     override fun createFragment(position: Int): Fragment {
+        val safeSequence = sequence ?: "No"
         return when (position) {
-            0 -> AboutFragment.newInstance(gameId, description, genres, platforms)
+            0 -> AboutFragment.newInstance(gameId, description, genres, platforms, safeSequence, company)
             1 -> InteractFragment.newInstance(gameId, gameName, primaryColor, secondaryColor)
             else -> throw IllegalStateException("Unexpected position: $position")
         }

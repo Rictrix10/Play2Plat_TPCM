@@ -77,7 +77,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         recyclerView.adapter = gameCoverAdapter
         titleText = view.findViewById(R.id.text_view)
 
-        if (filterType == "Companies") {
+        if (filterType == "Companies" || filterType == "SameCompany") {
             titleText.text = "From $paramater"
         } else {
             titleText.text = "$paramater Games"
