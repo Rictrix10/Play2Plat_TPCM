@@ -286,18 +286,16 @@ getFilteredGames: async (req, res) => {
                 }
 
                 if (genres && genres.length > 0) {
-                    const genreRecords = await prisma.genre.findMany({
-                        where: { name: { in: genres } },
-                        select: { id: true },
-                    });
-                    const genreIds = genreRecords.map(genre => genre.id);
-
                     const genreGames = await prisma.gameGenre.findMany({
-                        where: { genreId: { in: genreIds } },
+                        where: { genre: { name: { in: genres } } },
                         select: { gameId: true },
                     });
                     const gameIdsByGenre = genreGames.map(gg => gg.gameId);
-                    filters.genreGameIds = { in: gameIdsByGenre };
+                    if (filters.id) {
+                        filters.id.in = filters.id.in.concat(gameIdsByGenre);
+                    } else {
+                        filters.genreGameIds = { in: gameIdsByGenre };
+                    }
                 }
 
                 if (platforms && platforms.length > 0) {
