@@ -23,4 +23,21 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
+router.delete('/deleteImage', async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    if (!url) {
+      return res.status(400).json({ error: 'Nenhum URL fornecido' });
+    }
+
+    const result = await del(url);
+
+    res.json({ message: 'Imagem deletada com sucesso', result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao deletar a imagem' });
+  }
+});
+
 module.exports = router;
