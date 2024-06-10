@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { put } = require('@vercel/blob');
+const { put, del } = require('@vercel/blob');
 
 const router = express.Router();
 const upload = multer();
