@@ -49,7 +49,7 @@ class AboutFragment : Fragment() {
 
         val canEditPlatforms = currentUserType == 1
         if(platforms != null){
-            val platformsFragment = Platforms_List_Fragment.newInstance(platformsList, canEditPlatforms, false, gameIdArg)
+            val platformsFragment = Platforms_List_Fragment.newInstance(platformsList, canEditPlatforms, false, gameIdArg, false)
             childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
         }
 

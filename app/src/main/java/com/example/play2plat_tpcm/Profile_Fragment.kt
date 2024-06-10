@@ -116,7 +116,7 @@ class Profile_Fragment : Fragment() {
                         val platforms = user.platforms
                         val canEditPlatforms = userId == currentUserId
                         if(platforms != null){
-                            val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId)
+                            val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId, false)
                             childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
                         }
 

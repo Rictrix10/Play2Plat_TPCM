@@ -9,12 +9,15 @@ import android.widget.CheckBox
 import android.widget.TextView
 import com.example.play2plat_tpcm.R
 import com.example.play2plat_tpcm.api.Company
-import android.widget.CompoundButton
 
-class CompanyAdapter(context: Context, companies: List<Company>, private val companyTitle: TextView) :
-    ArrayAdapter<Company>(context, 0, companies) {
+class CompanyAdapter(
+    context: Context,
+    companies: List<Company>,
+    private val companyTitle: TextView,
+    private val canSelectMultiple: Boolean = false
+) : ArrayAdapter<Company>(context, 0, companies) {
 
-    private var selectedCompanyPosition: Int = -1
+    private val selectedCompanies: MutableList<Company> = mutableListOf()
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var listItemView = convertView
@@ -32,26 +35,31 @@ class CompanyAdapter(context: Context, companies: List<Company>, private val com
         companyNameTextView?.text = currentCompany?.name
 
         val companyCheckbox = listItemView?.findViewById<CheckBox>(R.id.company_checkbox)
-        companyCheckbox?.setOnCheckedChangeListener(null) // Remove listener before setting state
-        companyCheckbox?.isChecked = position == selectedCompanyPosition
+
+        companyCheckbox?.isChecked = selectedCompanies.contains(currentCompany)
+
         companyCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                selectedCompanyPosition = position
-                notifyDataSetChanged() // Notify the adapter of the change to update the views
-                companyTitle.text = currentCompany?.name
+                if (!canSelectMultiple) {
+                    selectedCompanies.clear()
+                }
+                selectedCompanies.add(currentCompany!!)
             } else {
-                selectedCompanyPosition = -1
-                notifyDataSetChanged() // Notify the adapter of the change to update the views
-                companyTitle.text = "Company"
+                selectedCompanies.remove(currentCompany)
             }
+            updateCompanyTitle()
         }
 
-        if (selectedCompanyPosition == -1) {
-            companyTitle.text = "Company"
-        }
+        updateCompanyTitle()
 
         return listItemView!!
     }
+
+    private fun updateCompanyTitle() {
+        companyTitle.text = if (selectedCompanies.isNotEmpty()) {
+            selectedCompanies.joinToString(", ") { it.name }
+        } else {
+            "Company"
+        }
+    }
 }
-
-

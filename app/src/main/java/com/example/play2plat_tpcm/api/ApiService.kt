@@ -210,4 +210,7 @@ interface ApiService {
     @POST("users/verify-password/{userId}")
     fun verifyPassword(@Path("userId") userId: Int, @Body password: Password): Call<Void>
 
+    @POST("games/filter")
+    fun getFilteredGames(@Body filter: Filters): Call<Filters>
+
 }

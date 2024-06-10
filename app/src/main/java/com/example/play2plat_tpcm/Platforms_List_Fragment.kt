@@ -1,5 +1,6 @@
 package com.example.play2plat_tpcm
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +16,29 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class Platforms_List_Fragment : Fragment() {
+
     private var platforms: List<String>? = null
     private var canEditPlatforms: Boolean = false
     private var isUserPlatforms: Boolean = false
     private var userId: Int? = null
+    private var isForFilters: Boolean = false
+
+    private var listener: OnPlatformsSelectedListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = if (parentFragment is OnPlatformsSelectedListener) {
+            parentFragment as OnPlatformsSelectedListener
+        } else {
+            null // Não faz nada se a interface não estiver implementada
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +47,7 @@ class Platforms_List_Fragment : Fragment() {
         canEditPlatforms = arguments?.getBoolean("canEditPlatforms") ?: false
         isUserPlatforms = arguments?.getBoolean("isUserPlatforms") ?: false
         userId = arguments?.getInt("id")
+        isForFilters = arguments?.getBoolean("isForFilters") ?: false
     }
 
     override fun onCreateView(
@@ -58,54 +79,88 @@ class Platforms_List_Fragment : Fragment() {
             "Mac/IOS" to iosLayout
         )
 
-        if (!canEditPlatforms) {
-            // Mostrar apenas os layouts das plataformas presentes na lista platforms
+        if (isForFilters) {
             for (platform in platforms!!) {
                 platformLayouts[platform]?.visibility = View.VISIBLE
             }
 
-            // Remover completamente os layouts das plataformas que não estão presentes na lista platforms
-            for ((platform, layout) in platformLayouts) {
-                if (platform !in platforms!!) {
-                    val parent = layout.parent as ViewGroup?
-                    parent?.removeView(layout)
+            platformLayouts.values.forEach { it.alpha = 0.5f }
+
+            // Configurar cliques para alternar opacidade
+            platformLayouts.values.forEach { layout ->
+                layout.setOnClickListener {
+                    // Alternar opacidade
+                    if (layout.alpha == 1.0f) {
+                        layout.alpha = 0.5f
+                    } else {
+                        layout.alpha = 1.0f
+                    }
+
+                    // Obter a lista de plataformas selecionadas
+                    val selectedPlatforms = platformLayouts.filterValues { it.alpha == 1.0f }.keys.toList()
+                    // Enviar a lista de volta para o Filters_Fragment
+                    listener?.onPlatformsSelected(selectedPlatforms)
                 }
             }
-
-        } else {
-            // Mostra todos os layouts de plataformas
-            for ((platform, layout) in platformLayouts) {
-                layout.visibility = View.VISIBLE
-                if (!platforms!!.contains(platform)) {
-                    layout.alpha = 0.5f // Torna opaco
+        }else{
+            if (!canEditPlatforms) {
+                // Mostrar apenas os layouts das plataformas presentes na lista platforms
+                for (platform in platforms!!) {
+                    platformLayouts[platform]?.visibility = View.VISIBLE
                 }
-                // Configura o clique para alternar entre opaco e não opaco
-                layout.setOnClickListener {
-                    if (userId != null) {
-                        if (layout.alpha == 1.0f) {
-                            layout.alpha = 0.5f
-                            if (isUserPlatforms) {
-                                // Remove platform from user
-                                deletePlatformFromUser(userId!!.toInt(), platformToId(platform))
-                            }else{
-                                deletePlatformFromGame(userId!!.toInt(), platformToId(platform))
+
+                // Remover completamente os layouts das plataformas que não estão presentes na lista platforms
+                for ((platform, layout) in platformLayouts) {
+                    if (platform !in platforms!!) {
+                        val parent = layout.parent as ViewGroup?
+                        parent?.removeView(layout)
+                    }
+                }
+
+            } else {
+                // Mostra todos os layouts de plataformas
+                for ((platform, layout) in platformLayouts) {
+                    layout.visibility = View.VISIBLE
+                    if (!platforms!!.contains(platform)) {
+                        layout.alpha = 0.5f // Torna opaco
+                    }
+                    // Configura o clique para alternar entre opaco e não opaco
+                    layout.setOnClickListener {
+                        if (userId != null) {
+                            if (layout.alpha == 1.0f) {
+                                layout.alpha = 0.5f
+                                if (isUserPlatforms) {
+                                    // Remove platform from user
+                                    deletePlatformFromUser(userId!!.toInt(), platformToId(platform))
+                                }else{
+                                    deletePlatformFromGame(userId!!.toInt(), platformToId(platform))
+                                }
+                            } else {
+                                layout.alpha = 1.0f
+                                if (isUserPlatforms) {
+                                    // Add platform to user
+                                    addPlatformToUser(userId!!.toInt(), platformToId(platform))
+                                }
+                                else{
+                                    addPlatformToGame(userId!!.toInt(), platformToId(platform))
+                                }
                             }
                         } else {
-                            layout.alpha = 1.0f
-                            if (isUserPlatforms) {
-                                // Add platform to user
-                                addPlatformToUser(userId!!.toInt(), platformToId(platform))
-                            }
-                            else{
-                                addPlatformToGame(userId!!.toInt(), platformToId(platform))
-                            }
+                            Toast.makeText(context, "User ID is null", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Toast.makeText(context, "User ID is null", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
+    }
+
+    private fun sendSelectedPlatforms(platformLayouts: Map<String, LinearLayout>) {
+        val selectedPlatforms = platformLayouts.filter { it.value.alpha == 1.0f }.keys.toList()
+        listener?.onPlatformsSelected(selectedPlatforms)
+    }
+
+    interface OnPlatformsSelectedListener {
+        fun onPlatformsSelected(selectedPlatforms: List<String>)
     }
 
     private fun addPlatformToUser(userId: Int, platformId: Int) {
@@ -186,20 +241,24 @@ class Platforms_List_Fragment : Fragment() {
         }
     }
 
+
     companion object {
         @JvmStatic
         fun newInstance(
             platforms: List<String>,
             canEditPlatforms: Boolean,
             isUserPlatforms: Boolean,
-            id: Int
+            id: Int,
+            isForFilters: Boolean // Novo parâmetro
         ) = Platforms_List_Fragment().apply {
             arguments = Bundle().apply {
                 putStringArrayList("platforms", ArrayList(platforms))
                 putBoolean("canEditPlatforms", canEditPlatforms)
                 putBoolean("isUserPlatforms", isUserPlatforms)
                 putInt("id", id)
+                putBoolean("isForFilters", isForFilters) // Passando o novo parâmetro
             }
         }
     }
+
 }
