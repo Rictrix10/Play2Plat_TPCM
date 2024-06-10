@@ -344,10 +344,12 @@ getFilteredGames: async (req, res) => {
         where: {
             sequenceId: filters.sequenceId,
             companyId: filters.companyId,
-            id: filters.genreGameIds,
-            id: filters.platformGameIds,
             isFree: filters.isFree,
             isDeleted: filters.isDeleted,
+                    AND: [
+                        { id: { in: filters.genreGameIds } },
+                        { id: { in: filters.platformGameIds } }
+                    ]
         },
         orderBy: orderBy,
         include: {
