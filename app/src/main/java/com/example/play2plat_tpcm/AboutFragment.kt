@@ -38,7 +38,14 @@ class AboutFragment : Fragment() {
         val platformsArg = arguments?.getStringArrayList("platforms") ?: ArrayList()
         val platformsList = platformsArg.map { it ?: "" } // Converting Serializable to List<String>
         val genresArg = arguments?.getStringArrayList("genres")?.joinToString(" • ") ?: ""
+        val sequenceArg = arguments?.getString("sequence") ?: "No" // Valor padrão para sequence
+        val companyArg = arguments?.getString("company", "") ?: ""
 
+        if (sequenceArg.equals("No", ignoreCase = true)) {
+            fragmentSequence.visibility = View.GONE
+        } else {
+            fragmentSequence.visibility = View.VISIBLE
+        }
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
@@ -53,12 +60,12 @@ class AboutFragment : Fragment() {
             childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
         }
 
-        val fragmentSequence = Games_List_Horizontal_Fragment.newInstance("SameSequence", "", gameIdArg)
+        val fragmentSequence = Games_List_Horizontal_Fragment.newInstance("SameSequence", sequenceArg, gameIdArg)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_sequence, fragmentSequence)
             .commit()
 
-        val fragmentCompany = Games_List_Horizontal_Fragment.newInstance("SameCompany", "", gameIdArg)
+        val fragmentCompany = Games_List_Horizontal_Fragment.newInstance("SameCompany", companyArg, gameIdArg)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_company, fragmentCompany)
             .commit()
@@ -68,13 +75,15 @@ class AboutFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(gameId: Int, description: String, genres: List<String>, platforms: List<String>) =
+        fun newInstance(gameId: Int, description: String, genres: List<String>, platforms: List<String>, sequence: String, company: String) =
             AboutFragment().apply {
                 arguments = Bundle().apply {
                     putInt("gameId", gameId)
                     putString("description", description)
                     putStringArrayList("genres", ArrayList(genres))
                     putStringArrayList("platforms", ArrayList(platforms))
+                    putString("sequence", sequence)
+                    putString("company", company)
                 }
             }
     }

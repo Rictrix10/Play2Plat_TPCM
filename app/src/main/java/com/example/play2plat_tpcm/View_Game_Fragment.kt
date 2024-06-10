@@ -144,7 +144,7 @@ class View_Game_Fragment : Fragment() {
                                             val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                             containerLayout.background = gradientDrawable
                                             // Usar a cor mais escura no pagerAdapter
-                                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, dominantColor, darkerVibrantColor)
+                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, darkerVibrantColor)
                                             viewPager.adapter = pagerAdapter
                                         } else {
                                             // Se a diferença for suficiente, use as cores normalmente
@@ -152,7 +152,7 @@ class View_Game_Fragment : Fragment() {
                                             val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                             containerLayout.background = gradientDrawable
                                             // Usar a cor vibrante normal no pagerAdapter
-                                            val pagerAdapter = ViewGamePagerAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, dominantColor, vibrantColor)
+                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, vibrantColor)
                                             viewPager.adapter = pagerAdapter
                                         }
 
