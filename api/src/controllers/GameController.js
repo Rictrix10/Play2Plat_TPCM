@@ -253,7 +253,7 @@ getGameById: async (req, res) => {
 
 getFilteredGames: async (req, res) => {
     try {
-        const { genres, platforms, company, sequence, free, isAscending, orderType } = req.body;
+        const { genres, platforms, companies, sequence, free, isAscending, orderType } = req.body;
 
 
         const filters = {
