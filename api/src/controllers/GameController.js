@@ -253,7 +253,7 @@ getGameById: async (req, res) => {
 
 getFilteredGames: async (req, res) => {
     try {
-        const { genres, platforms, companies, sequence, free, isAscending, orderType } = req.body;
+        const { genres, platforms, companies, sequences, free, isAscending, orderType } = req.body;
 
 
         const filters = {
@@ -261,27 +261,18 @@ getFilteredGames: async (req, res) => {
         };
 
 
-        if (sequence) {
-            const sequenceRecord = await prisma.sequence.findUnique({
-                where: { name: sequence },
-            });
-            if (!sequenceRecord) {
-                return res.status(404).json({ error: 'Sequence not found' });
-            }
-            filters.sequenceId = sequenceRecord.id;
-        }
+                if (sequences && sequences.length > 0) {
+                    const sequencesRecords = await prisma.sequence.findMany({
+                        where: { name: { in: sequences } },
+                        select: { id: true },
+                    });
+                    if (sequencesRecords.length === 0) {
+                        return res.status(404).json({ error: 'Sequences not found' });
+                    }
+                    const sequenceIds = sequencesRecords.map(sequence => sequence.id);
+                    filters.sequenceId = { in: sequenceIds };
+                }
 
-        /*
-        if (company) {
-            const companyRecord = await prisma.company.findUnique({
-                  where: { name: company },
-            });
-            if (!companyRecord) {
-                return res.status(404).json({ error: 'Company not found' });
-            }
-                filters.companyId = companyRecord.id;
-        }
-        */
                 if (companies && companies.length > 0) {
                     const companiesRecords = await prisma.company.findMany({
                         where: { name: { in: companies } },
