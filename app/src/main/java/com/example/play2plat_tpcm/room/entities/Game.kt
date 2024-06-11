@@ -13,7 +13,7 @@ class Game(
     @ColumnInfo(name = "idGame") val idGame: Int,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "coverImage") val coverImage: String,
-    @ColumnInfo(name = "state") val state: String,
+    @ColumnInfo(name = "state") val state: String?,
     @ColumnInfo(name = "isFavorite") val isFavorite: Boolean,
-    @ColumnInfo(name = "idUser") val idUser: Int,
+    @ColumnInfo(name = "userId") val userId: Int,
 ) : Parcelable
