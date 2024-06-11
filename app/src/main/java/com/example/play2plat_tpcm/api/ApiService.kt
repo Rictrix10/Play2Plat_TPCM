@@ -1,5 +1,6 @@
 package com.example.play2plat_tpcm.api
 
+import com.example.play2plat_tpcm.UserRegisterResponse
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -50,7 +51,7 @@ interface ApiService {
     fun getGameById(@Path("id") id: Int): Call<GameInfo>
 
     @POST("users")
-    fun createUser(@Body user: UserRegister): Call<UserRegister>
+    fun createUser(@Body user: UserRegister): Call<UserRegisterResponse>
 
     @POST("users/login")
     fun loginUser(@Body userLogin: UserLogin): Call<UserLoginResponse>

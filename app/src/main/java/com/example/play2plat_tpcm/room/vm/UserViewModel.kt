@@ -41,4 +41,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun getUserByIdUser(idUser: Int): LiveData<User> {
         return repository.getUserByIdUser(idUser)
     }
+
+    fun getUserByEmailAndPassword(email: String, password: String): LiveData<User?> {
+        return repository.getUserByEmailAndPassword(email, password)
+    }
+
+    fun getAllUsers(): LiveData<List<User>> {
+        return repository.readAllUsers
+    }
 }

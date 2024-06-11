@@ -11,6 +11,11 @@ class UserRepository(private  val userDao: UserDao) {
         return userDao.getUserByIdUser(idUser)
     }
 
+    fun getUserByEmailAndPassword(email: String, password: String): LiveData<User?> {
+        return userDao.getUserByEmailAndPassword(email, password)
+    }
+
+
     suspend fun addUser(user: User){
         userDao.addUser(user)
     }

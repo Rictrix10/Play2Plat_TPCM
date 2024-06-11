@@ -8,11 +8,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.UserRegister
+import com.example.play2plat_tpcm.room.entities.User
+import com.example.play2plat_tpcm.room.vm.UserViewModel
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,6 +30,8 @@ class RegisterPage : AppCompatActivity() {
     private lateinit var ivToggleConfirmPasswordVisibility: ImageView
     private var isPasswordVisible: Boolean = false
     private var isConfirmPasswordVisible: Boolean = false
+
+    private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,13 +107,22 @@ class RegisterPage : AppCompatActivity() {
         }
 
         val user = UserRegister(username, email, password, userTypeId = 2)
-        ApiManager.apiService.createUser(user).enqueue(object : Callback<UserRegister> {
-            override fun onResponse(call: Call<UserRegister>, response: Response<UserRegister>) {
+        ApiManager.apiService.createUser(user).enqueue(object : Callback<UserRegisterResponse> {
+            override fun onResponse(call: Call<UserRegisterResponse>, response: Response<UserRegisterResponse>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(this@RegisterPage, R.string.user_registered_successfully, Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@RegisterPage, LoginPage::class.java)
-                    startActivity(intent)
-                    finish()
+                    // Save user data to Room database
+                    val newUser = User(0, response.body()!!.id, email, username, password, null, 2)
+                    userViewModel.addUser(newUser)
+
+                    // Observe to check if the user has been added
+                    userViewModel.getUserByEmailAndPassword(email, password).observe(this@RegisterPage, Observer { user ->
+                        if (user != null) {
+                            Toast.makeText(this@RegisterPage, R.string.user_registered_successfully, Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@RegisterPage, LoginPage::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                    })
                 } else {
                     val errorMessage = when (response.code()) {
                         440 -> getString(R.string.username_in_use)
@@ -119,10 +135,11 @@ class RegisterPage : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<UserRegister>, t: Throwable) {
+            override fun onFailure(call: Call<UserRegisterResponse>, t: Throwable) {
                 Toast.makeText(this@RegisterPage, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }}
+    }
+}
 
 

@@ -23,6 +23,11 @@ interface UserDao {
     @Query("SELECT * FROM users ORDER BY id DESC")
     fun readAllUsers() : LiveData<List<User>>
 
+    @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
+    fun getUserByEmailAndPassword(email: String, password: String): LiveData<User?>
+
+
+
     @Delete
     suspend fun deleteUser(user: User)
 }
