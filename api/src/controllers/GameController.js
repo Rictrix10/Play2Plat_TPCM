@@ -285,33 +285,6 @@ getFilteredGames: async (req, res) => {
                     filters.companyId = { in: companyIds };
                 }
 
-/*
-                if (genres && genres.length > 0) {
-                    const genreGames = await prisma.gameGenre.findMany({
-                        where: { genre: { name: { in: genres } } },
-                        select: { gameId: true },
-                    });
-                    const gameIdsByGenre = genreGames.map(gg => gg.gameId);
-                    if (filters.id) {
-                        filters.id.in = filters.id.in.concat(gameIdsByGenre);
-                    } else {
-                        filters.genreGameIds = { in: gameIdsByGenre };
-                    }
-                }
-
-                if (platforms && platforms.length > 0) {
-                    const platformGames = await prisma.platformGame.findMany({
-                        where: { platform: { name: { in: platforms } } },
-                        select: { gameId: true },
-                    });
-                    const gameIdsByPlatform = platformGames.map(pg => pg.gameId);
-                    if (filters.id) {
-                        filters.id.in = filters.id.in.concat(gameIdsByPlatform);
-                    } else {
-                        filters.platformGameIds = { in: gameIdsByPlatform };
-                    }
-                }
-                */
         let genreGameIds = [];
         if (genres && genres.length > 0) {
             const genreGames = await prisma.gameGenre.findMany({
@@ -330,7 +303,16 @@ getFilteredGames: async (req, res) => {
             platformGameIds = platformGames.map(pg => pg.gameId);
         }
 
+        /*
         if (typeof free !== 'undefined') {
+            filters.isFree = free;
+        }
+        */
+
+        if (free === null) {
+            // Se free for null, não aplicamos nenhum filtro isFree
+        } else {
+            // Se free não for null, aplicamos o filtro isFree
             filters.isFree = free;
         }
 
