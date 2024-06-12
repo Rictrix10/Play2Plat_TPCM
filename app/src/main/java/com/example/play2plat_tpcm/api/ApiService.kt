@@ -212,6 +212,6 @@ interface ApiService {
     fun verifyPassword(@Path("userId") userId: Int, @Body password: Password): Call<Void>
 
     @POST("games/filter")
-    fun getFilteredGames(@Body filter: Filters): Call<Filters>
+    fun getFilteredGames(@Body filter: Filters): Call<List<GameFiltered>>
 
 }

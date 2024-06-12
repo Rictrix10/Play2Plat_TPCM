@@ -48,7 +48,7 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
         fragmentContainer.layoutParams = layoutParams
 
         if (!childFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Grid_Fragment.newInstance("Favorite", "")
+            val fragment = Games_List_Grid_Fragment.newInstance("Favorite", "", null)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
