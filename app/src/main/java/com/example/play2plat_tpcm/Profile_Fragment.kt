@@ -32,6 +32,10 @@ import com.example.play2plat_tpcm.api.Password
 import com.example.play2plat_tpcm.api.User
 import com.example.play2plat_tpcm.room.vm.UserViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -115,35 +119,9 @@ class Profile_Fragment : Fragment() {
 
         if (isNetworkAvailable()) {
             Log.d("Profile_Fragment", "Vamos verificar se há atualizações pendentes...")
-            checkAndUpdateUser()
-
-            ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
-                override fun onResponse(call: Call<User>, response: Response<User>) {
-                    if (response.isSuccessful) {
-                        val user = response.body()
-                        if (user != null) {
-                            usernameTextView.text = user.username
-                            loadImage(user.avatar)
-
-                            val platforms = user.platforms
-                            val canEditPlatforms = userId == currentUserId
-                            if (platforms != null) {
-                                val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId, false)
-                                childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
-                            }
-                        } else {
-                            Log.e("Profile_Fragment", "API response did not return user data.")
-                        }
-                    } else {
-                        Log.e("Profile_Fragment", "API response error: ${response.code()}")
-                    }
-                }
-
-                override fun onFailure(call: Call<User>, t: Throwable) {
-                    Log.e("Profile_Fragment", "Request error: ${t.message}")
-                    loadUserDataFromRoom()
-                }
-            })
+            checkAndUpdateUser { updateSuccessful ->
+                    loadUserDataFromApi()
+            }
         } else {
             loadUserDataFromRoom()
         }
@@ -156,6 +134,143 @@ class Profile_Fragment : Fragment() {
             deleteAccountWithConfirmation()
         }
     }
+
+    private fun uploadAvatar(avatarFilePath: String, callback: (String?) -> Unit) {
+        val file = File(avatarFilePath)
+        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+        val imagePart = MultipartBody.Part.createFormData("avatar", file.name, requestFile)
+
+        ApiManager.apiService.uploadImage(imagePart)
+            .enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val imageUrl = response.body()?.string()
+                    imageUrl?.let {
+                        val pattern = Regex("\"url\":\"(\\S+)\"")
+                        val matchResult = pattern.find(it)
+
+                        matchResult?.let { result ->
+                            val avatarUrl = result.groupValues[1]
+                            //update
+                        }
+                    }
+                } else {
+                    Log.e("Profile_Fragment", "Failed to upload avatar: ${response.code()}")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("Profile_Fragment", "Avatar upload request failed: ${t.message}")
+                callback(null)
+            }
+        })
+    }
+
+    private fun checkAndUpdateUser(callback: (Boolean) -> Unit) {
+        Log.d("Profile_Fragment", "Vamos atualizar os dados pela api...")
+        val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+        val sharedPreferencesUserData = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userIdToUpdate = sharedPreferences.getInt("id", 0)
+        val userTypeId = sharedPreferencesUserData.getInt("user_type_id", 2)
+
+        if (userIdToUpdate == currentUserId) {
+            val email = sharedPreferences.getString("email", "")
+            val username = sharedPreferences.getString("username", "")
+            val password = sharedPreferences.getString("password", "")
+            var avatar = sharedPreferences.getString("avatar", "")
+            val platforms: List<String>? = null // Provide actual value if needed
+            val imageState = sharedPreferences.getString("imageState", "")
+            val netState = sharedPreferences.getString("netState", "")
+
+            // Função para obter o avatar atual do usuário
+            fun getCurrentUserAvatar(callback: (String?) -> Unit) {
+                ApiManager.apiService.getUserById(currentUserId).enqueue(object : retrofit2.Callback<User> {
+                    override fun onResponse(call: Call<User>, response: Response<User>) {
+                        if (response.isSuccessful) {
+                            val user = response.body()
+                            callback(user?.avatar)
+                        } else {
+                            Log.e("Profile_Fragment", "Erro ao obter o usuário: ${response.message()}")
+                            callback(null)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<User>, t: Throwable) {
+                        Log.e("Profile_Fragment", "Falha na requisição para obter o usuário: ${t.message}")
+                        callback(null)
+                    }
+                })
+            }
+
+            // Função para atualizar o usuário
+            fun updateUser(avatar: String?) {
+                val userUpdate = User(currentUserId, username ?: "", email ?: "", password ?: "", avatar ?: "", userTypeId, platforms)
+                ApiManager.apiService.updateUser(currentUserId, userUpdate).enqueue(object : retrofit2.Callback<User> {
+                    override fun onResponse(call: Call<User>, response: Response<User>) {
+                        if (response.isSuccessful) {
+                            // Clear update data from SharedPreferences after successful update
+                            clearUpdateUserData()
+                            callback(true)
+                        } else {
+                            Log.e("Profile_Fragment", "Failed to update user data via API: ${response.code()}")
+                            callback(false)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<User>, t: Throwable) {
+                        Log.e("Profile_Fragment", "API request failed: ${t.message}")
+                        callback(false)
+                    }
+                })
+
+
+            }
+
+            // Verifica os estados de imageState e netState
+            if (imageState == "NO" && netState == "NO") {
+                getCurrentUserAvatar { currentAvatar ->
+                    updateUser(currentAvatar)
+                }
+            } else {
+                updateUser(avatar)
+            }
+        } else {
+            callback(false)
+        }
+    }
+
+    private fun loadUserDataFromApi() {
+        ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful) {
+                    val user = response.body()
+                    if (user != null) {
+                        usernameTextView.text = user.username
+                        loadImage(user.avatar)
+
+                        val platforms = user.platforms
+                        val canEditPlatforms = userId == currentUserId
+                        if (platforms != null) {
+                            val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId, false)
+                            childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
+                        }
+                    } else {
+                        Log.e("Profile_Fragment", "API response did not return user data.")
+                    }
+                } else {
+                    Log.e("Profile_Fragment", "API response error: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                Log.e("Profile_Fragment", "Request error: ${t.message}")
+                loadUserDataFromRoom()
+            }
+        })
+    }
+
+
 
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -260,6 +375,14 @@ class Profile_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Conta eliminada com sucesso", Toast.LENGTH_SHORT).show()
                     // Redirecionar para a tela de login após deletar a conta
+                    userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { user ->
+                        if (user != null) {
+                            userViewModel.deleteUser(user)
+                        } else {
+                            Log.e("Profile_Fragment", "User not found in Room database")
+                        }
+                    }
+
                     clearSharedPreferences()
 
                     val intent = Intent(activity, LoginPage::class.java)
@@ -370,6 +493,76 @@ class Profile_Fragment : Fragment() {
         }
     }
 
+    /*
+    private fun checkAndUpdateUser() {
+        Log.d("Profile_Fragment", "Vamos atualizar os dados pela api...")
+        val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+        val sharedPreferencesUserData = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userIdToUpdate = sharedPreferences.getInt("id", 0)
+        val userTypeId = sharedPreferencesUserData.getInt("user_type_id", 2)
+
+        if (userIdToUpdate == currentUserId) {
+            val email = sharedPreferences.getString("email", "")
+            val username = sharedPreferences.getString("username", "")
+            val password = sharedPreferences.getString("password", "")
+            var avatar = sharedPreferences.getString("avatar", "")
+            val platforms: List<String>? = null // Provide actual value if needed
+            val imageState = sharedPreferences.getString("imageState", "")
+            val netState = sharedPreferences.getString("netState", "")
+            // Função para obter o avatar atual do usuário
+            fun getCurrentUserAvatar(callback: (String?) -> Unit) {
+                ApiManager.apiService.getUserById(currentUserId).enqueue(object : retrofit2.Callback<User> {
+                    override fun onResponse(call: Call<User>, response: Response<User>) {
+                        if (response.isSuccessful) {
+                            val user = response.body()
+                            callback(user?.avatar)
+                        } else {
+                            Log.e("Profile_Fragment", "Erro ao obter o usuário: ${response.message()}")
+                            callback(null)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<User>, t: Throwable) {
+                        Log.e("Profile_Fragment", "Falha na requisição para obter o usuário: ${t.message}")
+                        callback(null)
+                    }
+                })
+            }
+
+            // Função para atualizar o usuário
+            fun updateUser(avatar: String?) {
+                val userUpdate = User(currentUserId, username ?: "", email ?: "", password ?: "", avatar ?: "", userTypeId, platforms)
+                ApiManager.apiService.updateUser(currentUserId, userUpdate).enqueue(object : retrofit2.Callback<User> {
+                    override fun onResponse(call: Call<User>, response: Response<User>) {
+                        if (response.isSuccessful) {
+                            // Clear update data from SharedPreferences after successful update
+                            clearUpdateUserData()
+                        } else {
+                            Log.e("Profile_Fragment", "Failed to update user data via API: ${response.code()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<User>, t: Throwable) {
+                        Log.e("Profile_Fragment", "API request failed: ${t.message}")
+                    }
+                })
+            }
+
+            // Verifica os estados de imageState e netState
+            if (imageState == "NO" && netState == "NO") {
+                getCurrentUserAvatar { currentAvatar ->
+                    updateUser(currentAvatar)
+                }
+            } else {
+                updateUser(avatar)
+            }
+        }
+    }
+
+
+     */
+
+    /*
     private fun checkAndUpdateUser() {
         Log.d("Profile_Fragment", "Vamos atualizar os dados pela api...")
         val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
@@ -401,7 +594,7 @@ class Profile_Fragment : Fragment() {
             })
         }
     }
-
+    */
 
     private fun clearUpdateUserData() {
         val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
