@@ -8,14 +8,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Você realmente deseja eliminar a conta?"
+        android:text="@string/delete_account"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
         android:id="@+id/password_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Digite sua password"
+        android:hint="@string/digite_pass"
         android:inputType="textPassword"
         android:layout_marginTop="16dp"/>
 </LinearLayout>
