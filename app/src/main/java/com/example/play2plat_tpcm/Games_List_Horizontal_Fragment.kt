@@ -95,7 +95,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     }
 
     private fun redirectToViewMoreGames_Fragment(filterType: String?, paramater: String?) {
-        val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance(filterType ?: "", paramater ?: "")
+        val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance(filterType ?: "", paramater ?: "", null)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, viewMoreGamesFragment)
             .addToBackStack(null)

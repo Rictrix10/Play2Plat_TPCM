@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
+import com.example.play2plat_tpcm.api.Filters
 import com.example.play2plat_tpcm.api.ListFavoriteGames
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,17 +28,19 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
     private lateinit var backImageView: ImageView
     private var filterType: String? = null
     private var paramater: String? = null
+    private var filters: Filters? = null
 
     companion object {
-
         private const val ARG_FILTER_TYPE = "filter_type"
-        private const val ARG_PARAMATER = "paramater"
+        private const val ARG_PARAMETER = "parameter"
+        private const val ARG_FILTERS = "filters" // Novo argumento para Filters
 
-        fun newInstance(filterType: String, paramater: String): ViewMoreGames_Fragment {
+        fun newInstance(filterType: String, paramater: String, filters: Filters?): ViewMoreGames_Fragment {
             val fragment = ViewMoreGames_Fragment()
             val args = Bundle()
             args.putString(ARG_FILTER_TYPE, filterType)
-            args.putString(ARG_PARAMATER, paramater)
+            args.putString(ARG_PARAMETER, paramater)
+            args.putParcelable(ARG_FILTERS, filters) // Adiciona os Filters ao Bundle
             fragment.arguments = args
             return fragment
         }
@@ -47,7 +50,8 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
         super.onCreate(savedInstanceState)
         arguments?.let {
             filterType = it.getString(ARG_FILTER_TYPE)
-            paramater= it.getString(ARG_PARAMATER)
+            paramater = it.getString(ARG_PARAMETER)
+            filters = it.getParcelable(ARG_FILTERS) // Obtém os Filters do Bundle
         }
     }
 
@@ -87,8 +91,10 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
         layoutParams.height = availableHeight
         fragmentContainer.layoutParams = layoutParams
 
+        Log.d("Filters", "o seus filtros $filters")
 
-        val fragment = Games_List_Grid_Fragment.newInstance(filterType!!, paramater!!)
+
+        val fragment = Games_List_Grid_Fragment.newInstance(filterType!!, paramater!!, filters)
 
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)

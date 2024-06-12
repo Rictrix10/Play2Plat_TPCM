@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.adapters.Games_List_Grid_Adapter
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Collections
+import com.example.play2plat_tpcm.api.Filters
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.GameFavorite
+import com.example.play2plat_tpcm.api.GameFiltered
 import com.example.play2plat_tpcm.api.ListFavoriteGames
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,16 +29,20 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
     private var filterType: String? = null
     private var paramater: String? = null
     private var userId: Int = 0
+    private var filters: Filters? = null
+
 
     companion object {
         private const val ARG_FILTER_TYPE = "filter_type"
         private const val ARG_PARAMATER = "paramater"
+        private const val ARG_FILTERS = "filters"
 
-        fun newInstance(filterType: String, paramater: String): Games_List_Grid_Fragment {
+        fun newInstance(filterType: String, paramater: String, filters: Filters?): Games_List_Grid_Fragment {
             val fragment = Games_List_Grid_Fragment()
             val args = Bundle()
             args.putString(ARG_FILTER_TYPE, filterType)
             args.putString(ARG_PARAMATER, paramater)
+            args.putParcelable(ARG_FILTERS, filters)
             fragment.arguments = args
             return fragment
         }
@@ -47,6 +53,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         arguments?.let {
             filterType = it.getString(ARG_FILTER_TYPE)
             paramater= it.getString(ARG_PARAMATER)
+            filters = it.getParcelable(ARG_FILTERS)
         }
 
         // Retrieve userId from SharedPreferences
@@ -71,6 +78,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
         recyclerView.adapter = gameCoverAdapter
 
+        Log.d("Filters", "o seus filtros $filters")
+
         loadGames()
 
         return view
@@ -90,6 +99,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             "SameSequence"->getGamesBySequence(paramater!!)
             "SameCompany"-> getGamesByCompany(paramater!!)
             "Recent" -> getRecentGames()
+            "Filtered" -> getFilteredGames(filters!!)
             else -> getStateCollection("Playing")
         }
     }
@@ -202,6 +212,67 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         })
     }
 
+    private fun getFilteredGames(filtros: Filters) {
+        // Log the filters being passed to the request
+        Log.d("Games_List_Grid_Fragment", "Filters passed to request: $filtros")
+
+
+
+        ApiManager.apiService.getFilteredGames(filtros).enqueue(object : Callback<List<GameFiltered>> {
+            override fun onResponse(call: Call<List<GameFiltered>>, response: Response<List<GameFiltered>>) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { gameFiltered ->
+                        Game(
+                            id = gameFiltered.id,
+                            name = gameFiltered.name,
+                            description = gameFiltered.description,
+                            isFree = gameFiltered.isFree,
+                            releaseDate = gameFiltered.releaseDate,
+                            pegiInfo = gameFiltered.pegiInfo,
+                            coverImage = gameFiltered.coverImage,
+                            sequenceId = gameFiltered?.sequence?.id ?: null,
+                            companyId = gameFiltered.company.id,
+                        )
+                    } ?: emptyList()
+
+                    Log.d("Games_List_Grid_Fragment", "Games response from API: $games")
+                    gameCoverAdapter.updateGames(games)
+                } else {
+                    Log.e("ViewMoreGames_Fragment", "Error in response: ${response.errorBody()}")
+                    // Log the raw response body for debugging
+                    response.errorBody()?.let { Log.e("Games_List_Grid_Fragment", it.string()) }
+                }
+            }
+
+            override fun onFailure(call: Call<List<GameFiltered>>, t: Throwable) {
+                Log.e("ViewMoreGames_Fragment", "API call failed: ${t.message}")
+            }
+        })
+    }
+
+    private fun reconstructFilters(filtros: Filters): Filters {
+        val companies = filtros.companies ?: emptyList()
+        val sequences = filtros.sequences ?: emptyList()
+
+        // Reconstruct companies list
+        val reconstructedCompanies = if (companies.isEmpty()) {
+            null
+        } else {
+            companies
+        }
+
+        // Reconstruct sequences list
+        val reconstructedSequences = if (sequences.isEmpty()) {
+            null
+        } else {
+            sequences
+        }
+
+        return filtros.copy(companies = reconstructedCompanies, sequences = reconstructedSequences)
+    }
+
+
+
     private fun getGamesBySequence(sequenceName: String) {
         ApiManager.apiService.getGamesBySequence(sequenceName).enqueue(object : Callback<List<Collections>> {
             override fun onResponse(
@@ -306,4 +377,19 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             companyId = 0
         )
     }
+
+    fun GameFiltered.toGame(): Game {
+        return Game(
+            id = this.id,
+            name = this.name,
+            description = this.description,
+            isFree = this.isFree,
+            releaseDate = this.releaseDate,
+            pegiInfo = this.pegiInfo,
+            coverImage = this.coverImage,
+            companyId = this.company.id,
+            sequenceId = this.sequence?.id
+        )
+    }
+
 }

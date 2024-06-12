@@ -57,4 +57,9 @@ class GenresAdapter(context: Context, genres: List<Genre>, private val genreTitl
         }
     }
 
+    fun clearSelection() {
+        selectedGenrePositions.clear()
+        notifyDataSetChanged()
+    }
+
 }

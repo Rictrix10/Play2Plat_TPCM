@@ -94,7 +94,7 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         fragmentContainer.layoutParams = layoutParams
 
         if (!childFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Grid_Fragment.newInstance("Playing", "")
+            val fragment = Games_List_Grid_Fragment.newInstance("Playing", "", null)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
@@ -107,7 +107,7 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
     private fun showFilteredGames(filterType: String) {
         if (!childFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Grid_Fragment.newInstance(filterType, "")
+            val fragment = Games_List_Grid_Fragment.newInstance(filterType, "", null)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()

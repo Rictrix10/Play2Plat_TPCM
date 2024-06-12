@@ -36,23 +36,31 @@ class SequenceAdapter(
 
         val sequenceCheckbox = listItemView?.findViewById<CheckBox>(R.id.sequence_checkbox)
 
+        // Remove any existing listener before setting the checked state
+        sequenceCheckbox?.setOnCheckedChangeListener(null)
+
+        // Set the checkbox checked state
         sequenceCheckbox?.isChecked = selectedSequences.contains(currentSequence)
 
+        // Add the new listener
         sequenceCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 if (!canSelectMultiple) {
-                    selectedSequences.clear()
+                    clearAllSelections()
                 }
                 selectedSequences.add(currentSequence!!)
             } else {
                 selectedSequences.remove(currentSequence)
             }
             updateSequenceTitle()
+            notifyDataSetChanged() // Notify the adapter to refresh the list view
         }
 
-        updateSequenceTitle()
-
         return listItemView!!
+    }
+
+    private fun clearAllSelections() {
+        selectedSequences.clear()
     }
 
     private fun updateSequenceTitle() {
@@ -61,5 +69,14 @@ class SequenceAdapter(
         } else {
             "Sequences"
         }
+    }
+
+    fun getSelectedSequences(): List<Sequence> {
+        return selectedSequences
+    }
+
+    fun clearSelection() {
+        selectedSequences.clear()
+        notifyDataSetChanged()
     }
 }

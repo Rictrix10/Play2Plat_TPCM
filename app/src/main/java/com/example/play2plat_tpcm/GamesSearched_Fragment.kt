@@ -108,7 +108,7 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
     }
 
     private fun showSearchedGames(filterType: String, parameter: String) {
-        val fragment = Games_List_Grid_Fragment.newInstance(filterType, parameter)
+        val fragment = Games_List_Grid_Fragment.newInstance(filterType, parameter, null)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()

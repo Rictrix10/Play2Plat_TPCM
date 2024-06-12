@@ -36,23 +36,31 @@ class CompanyAdapter(
 
         val companyCheckbox = listItemView?.findViewById<CheckBox>(R.id.company_checkbox)
 
+        // Remove any existing listener before setting the checked state
+        companyCheckbox?.setOnCheckedChangeListener(null)
+
+        // Set the checkbox checked state
         companyCheckbox?.isChecked = selectedCompanies.contains(currentCompany)
 
+        // Add the new listener
         companyCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 if (!canSelectMultiple) {
-                    selectedCompanies.clear()
+                    clearAllSelections()
                 }
                 selectedCompanies.add(currentCompany!!)
             } else {
                 selectedCompanies.remove(currentCompany)
             }
             updateCompanyTitle()
+            notifyDataSetChanged() // Notify the adapter to refresh the list view
         }
 
-        updateCompanyTitle()
-
         return listItemView!!
+    }
+
+    private fun clearAllSelections() {
+        selectedCompanies.clear()
     }
 
     private fun updateCompanyTitle() {
@@ -61,5 +69,14 @@ class CompanyAdapter(
         } else {
             "Company"
         }
+    }
+
+    fun getSelectedCompanies(): List<Company> {
+        return selectedCompanies
+    }
+
+    fun clearSelection() {
+        selectedCompanies.clear()
+        notifyDataSetChanged()
     }
 }

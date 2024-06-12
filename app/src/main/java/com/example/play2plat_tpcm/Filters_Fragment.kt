@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.RadioButton
@@ -60,6 +61,7 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
     private var selectedOrderType: String = "Name"
     private var onlyFreeGames: Boolean = false
     private var orderPreference: String = "Ascending"
+    private lateinit var backImageView: ImageView
 
 
     override fun onCreateView(
@@ -85,6 +87,12 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
         ascending = view.findViewById(R.id.ascending)
         descending = view.findViewById(R.id.descending)
 
+        backImageView = view.findViewById(R.id.back_icon)
+
+        backImageView.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         companyAccordion.setOnClickListener {
             toggleListVisibility(companyList, companyTitle, R.drawable.icon_companies, "Company")
         }
@@ -102,15 +110,15 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
         loadGenres(view.context)
 
         apply_filter_button.setOnClickListener {
-            val genresText = genreTitle.text.toString().split(", ").joinToString(", ") { it.trim() }
-            val companiesText = companyTitle.text.toString().split(", ").joinToString(", ") { it.trim() }
-            val sequencesText = sequenceTitle.text.toString().split(", ").joinToString(", ") { it.trim() }
+            val genresText = genreTitle.text.toString().split(", ").joinToString(",") { it.trim() }
+            val companiesText = companyTitle.text.toString().split(", ").joinToString(",") { it.trim() }
+            val sequencesText = sequenceTitle.text.toString().split(", ").joinToString(",") { it.trim() }
 
             val orderTypeText = when {
-                alphaButton.alpha == 1.0f -> "Name"
-                recentButton.alpha == 1.0f -> "Recent"
-                rateAvgButton.alpha == 1.0f -> "Rating"
-                mostFavoritedButton.alpha == 1.0f -> "Favorites"
+                alphaButton.alpha == 1.0f -> "alphabetical"
+                recentButton.alpha == 1.0f -> "recent"
+                rateAvgButton.alpha == 1.0f -> "averageStars"
+                mostFavoritedButton.alpha == 1.0f -> "mostFavorited"
                 else -> "Unknown"
             }
 
@@ -118,24 +126,26 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
 
             val orderPreferenceText = ascending.isChecked
 
+            val selectedGenres = if (genresText == "Genres") emptyList<String>() else genresText.split(",")
+            val selectedCompanies = if (companiesText == "Companies") emptyList<String>() else companiesText.split(",")
+            val selectedSequences = if (sequencesText == "Sequences") emptyList<String>() else sequencesText.split(",")
+
             val filters = Filters(
-                genres = genresText.split(","),
-                companies = companiesText.split(","),
-                sequences = sequencesText.split(","),
-                free = onlyFreeGamesText,
+                genres = if (selectedGenres.isEmpty()) emptyList() else selectedGenres,
+                companies = if (selectedCompanies.isEmpty()) emptyList() else selectedCompanies,
+                platforms = this.selectedPlatforms,
+                sequences = if (selectedSequences.isEmpty()) emptyList()  else selectedSequences,
+                free = if (onlyFreeGamesText) true else null,
                 isAscending = orderPreferenceText,
                 orderType = orderTypeText
             )
 
-            val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance("Filtros", "Filtros")
+            val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance("Filtered", "", filters)
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, viewMoreGamesFragment)
                 .addToBackStack(null)
                 .commit()
         }
-
-
-
 
 
         return view
@@ -145,25 +155,62 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
         super.onViewCreated(view, savedInstanceState)
 
         // Criar uma instância do Platforms_List_Fragment
-        val platformsListFragment = Platforms_List_Fragment.newInstance(
-            platforms = listOf("PC", "XBox", "PlayStation", "Switch", "Android", "Mac/IOS"),
-            canEditPlatforms = true,
-            isUserPlatforms = true,
-            id = 123,
-            isForFilters = true // Defina como true para a lógica de filtros
-        )
+        fun createPlatformsListFragment(): Platforms_List_Fragment {
+            return Platforms_List_Fragment.newInstance(
+                platforms = listOf("PC", "XBox", "PlayStation", "Switch", "Android", "Mac/IOS"),
+                canEditPlatforms = true,
+                isUserPlatforms = true,
+                id = 123,
+                isForFilters = true // Defina como true para a lógica de filtros
+            )
+        }
 
-        // Iniciar uma transação com o FragmentManager
-        val transaction = childFragmentManager.beginTransaction()
+        // Função para substituir o Platforms_List_Fragment
+        fun resetPlatformsFragment() {
+            val newPlatformsListFragment = createPlatformsListFragment()
+            val transaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.platforms_fragment, newPlatformsListFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
 
-        // Substituir o conteúdo atual pelo Platforms_List_Fragment
-        transaction.replace(R.id.platforms_fragment, platformsListFragment)
+        resetPlatformsFragment()
 
-        // Adicionar a transação à pilha de retorno
-        transaction.addToBackStack(null)
+        val resetButton: Button = view.findViewById(R.id.black_square)
+        resetButton.setOnClickListener {
+            // Resetar variáveis de filtro
+            selectedPlatforms = emptyList()
+            selectedGenres = emptyList()
+            selectedCompanies = emptyList()
+            selectedSequences = emptyList()
+            selectedOrderType = "Name"
+            onlyFreeGames = false
+            orderPreference = "Ascending"
 
-        // Confirmar a transação
-        transaction.commit()
+            // Atualizar visualizações conforme necessário
+            companyTitle.text = getString(R.string.companies)
+            sequenceTitle.text = getString(R.string.sequencess)
+            genreTitle.text = getString(R.string.genres)
+            free_games_checkbox.isChecked = false
+            ascending.isChecked = true
+
+            // Também é possível limpar a seleção em ListView ou outras visualizações de filtro, se necessário
+            companyAdapter.clearSelection()
+            sequenceAdapter.clearSelection()
+            genreAdapter.clearSelection()
+
+            // Resetar o Platforms_List_Fragment
+            resetPlatformsFragment()
+
+            // Resetar estados visuais dos botões
+            alphaButton.alpha = 1.0f
+            recentButton.alpha = 0.5f
+            rateAvgButton.alpha = 0.5f
+            mostFavoritedButton.alpha = 0.5f
+
+            // Mostrar mensagem de confirmação
+            Toast.makeText(context, "Filters reset successfully", Toast.LENGTH_SHORT).show()
+        }
 
         alphaButton = view.findViewById(R.id.alpha_button)
         recentButton = view.findViewById(R.id.recent_button)
@@ -179,6 +226,8 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
         rateAvgButton.setOnClickListener { setButtonActive(rateAvgButton) }
         mostFavoritedButton.setOnClickListener { setButtonActive(mostFavoritedButton) }
     }
+
+
 
     override fun onPlatformsSelected(selectedPlatforms: List<String>) {
         // Tratar a lista de plataformas selecionadas
