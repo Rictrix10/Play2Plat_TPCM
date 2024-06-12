@@ -89,4 +89,7 @@
     <string name="error_response_from_server">Invalid response from server</string>
 
 
+    <string name="delete_account">Do you really want to delete the account?</string>
+    <string name="digite_pass">Enter your password</string>
+
 </resources>
