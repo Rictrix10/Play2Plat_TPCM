@@ -85,6 +85,9 @@
     <string name="please_fill_all_fields">Por favor, preencha todos os campos</string>
     <string name="error_response_from_server">Resposta inválida do servidor</string>
 
+    <string name="delete_account">Você realmente deseja eliminar a conta?</string>
+    <string name="digite_pass">Digite a sua password</string>
+
 
 
 

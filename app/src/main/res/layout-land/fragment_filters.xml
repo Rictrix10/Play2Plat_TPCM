@@ -1,0 +1,374 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Search_Fragment"
+    android:id="@+id/main"
+    android:background="@drawable/bg_border">
+
+    <!-- Container de pesquisa -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/back_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/icon_back"
+            />
+
+        <TextView
+            android:id="@+id/title"
+            android:text="Filters"
+            android:textSize="30sp"
+            android:textColor="@color/WHITE"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/back_icon"
+            app:layout_constraintEnd_toStartOf="@id/black_square"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="20dp"/>
+
+        <Button
+            android:id="@+id/black_square"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Reset"
+            android:textSize="20sp"
+            android:textColor="@color/WHITE"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/details_2"
+            android:scaleType="center"/>
+
+        <View
+            android:id="@+id/horizontal_line"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/details"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Adiciona uma ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/search_container"
+        app:layout_constraintBottom_toTopOf="@id/apply_filter_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Conteúdo dentro da ScrollView -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="50dp">
+
+            <TextView
+                android:id="@+id/platforms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/platforms"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/platforms_fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                app:layout_constraintTop_toBottomOf="@id/platforms"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <FrameLayout
+                    android:id="@+id/platforms_fragment"
+                    android:name="com.example.play2plat_tpcm.Platforms_List_Fragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/genres_accordion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/platforms_fragment_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@drawable/text_input"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/genres_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/icon_genres"
+                    android:drawableEnd="@drawable/icon_down"
+                    android:drawablePadding="8dp"
+                    android:text="@string/genres"
+                    android:textColor="#393657"
+                    android:padding="10dp"
+                    android:gravity="center_vertical"/>
+
+                <ListView
+                    android:id="@+id/genres_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:nestedScrollingEnabled="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/company_accordion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/genres_accordion"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@drawable/text_input"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/company_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/icon_companies"
+                    android:drawableEnd="@drawable/icon_down"
+                    android:drawablePadding="8dp"
+                    android:text="@string/companies"
+                    android:textColor="#393657"
+                    android:padding="10dp"
+                    android:gravity="center_vertical"/>
+
+                <ListView
+                    android:id="@+id/company_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:nestedScrollingEnabled="true"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sequence_accordion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/company_accordion"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@drawable/text_input"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/sequence_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/icon_sequence"
+                    android:drawableEnd="@drawable/icon_down"
+                    android:drawablePadding="8dp"
+                    android:text="@string/sequencess"
+                    android:textColor="#393657"
+                    android:padding="10dp"
+                    android:gravity="center_vertical"/>
+
+                <ListView
+                    android:id="@+id/sequence_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:nestedScrollingEnabled="true"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/order_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Order Type:"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toBottomOf="@id/sequence_accordion"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/order_type_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                app:layout_constraintTop_toBottomOf="@id/order_type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <GridLayout
+                    android:id="@+id/order_type_grid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:rowCount="2"
+                    android:padding="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_gravity="center_horizontal">
+
+                    <Button
+                        android:id="@+id/alpha_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name"
+                        android:background="@drawable/button_bd_3"
+                        android:textColor="@color/WHITE"
+                        android:layout_margin="4dp"
+                        android:paddingHorizontal="6dp"/>
+
+                    <Button
+                        android:id="@+id/recent_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recent"
+                        android:background="@drawable/button_bd_3"
+                        android:textColor="@color/WHITE"
+                        android:layout_margin="4dp"
+                        android:paddingHorizontal="6dp"/>
+
+                    <Button
+                        android:id="@+id/rate_avg_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rating"
+                        android:background="@drawable/button_bd_3"
+                        android:textColor="@color/WHITE"
+                        android:layout_margin="4dp"
+                        android:paddingHorizontal="6dp"/>
+
+                    <Button
+                        android:id="@+id/most_favorited_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Favorites"
+                        android:background="@drawable/button_bd_3"
+                        android:textColor="@color/WHITE"
+                        android:layout_margin="4dp"
+                        android:paddingHorizontal="6dp"/>
+                </GridLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/free_games"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Free Games:"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toBottomOf="@id/order_type_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/free_games_checkbox"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <CheckBox
+                android:id="@+id/free_games_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Only Free Games"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/order_type_container"
+                app:layout_constraintStart_toEndOf="@id/free_games"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:buttonTint="@color/checkbox_color" />
+
+            <TextView
+                android:id="@+id/order_preference"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Order Preference:"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toBottomOf="@id/free_games"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/order_preference_group"
+                app:layout_constraintVertical_bias="0.5"/>
+
+            <RadioGroup
+                android:id="@+id/order_preference_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/free_games"
+                app:layout_constraintStart_toEndOf="@id/order_preference"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <RadioButton
+                    android:id="@+id/ascending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ascending"
+                    android:textColor="#FFFFFF"
+                    android:checked="true"
+                    app:buttonTint="@color/checkbox_color" />
+
+                <RadioButton
+                    android:id="@+id/descending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Descending"
+                    android:textColor="#FFFFFF"
+                    app:buttonTint="@color/checkbox_color" />
+            </RadioGroup>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/apply_filter_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Submit Filter"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/details_2"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
