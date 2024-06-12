@@ -53,6 +53,15 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         userId = sharedPreferences.getInt("user_id", 0)
     }
+    private fun updateGridLayoutManager() {
+        val spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            5
+        } else {
+            3
+        }
+        recyclerView.layoutManager = GridLayoutManager(context, spanCount)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,12 +70,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         val view = inflater.inflate(R.layout.fragment_games_list_grid, container, false)
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
 
-        val layoutManager = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            GridLayoutManager(context, 5)
-        } else {
-            GridLayoutManager(context, 3)
-        }
-        recyclerView.layoutManager = layoutManager
+        updateGridLayoutManager()
 
         gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
         recyclerView.adapter = gameCoverAdapter
@@ -75,6 +79,12 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
 
         return view
     }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateGridLayoutManager()
+    }
+
 
 
 
