@@ -3,15 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/button_bd_3">
+    android:padding="16dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/delete_account"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/WHITE"/>
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
         android:id="@+id/password_edit_text"
@@ -19,7 +17,5 @@
         android:layout_height="wrap_content"
         android:hint="@string/digite_pass"
         android:inputType="textPassword"
-        android:layout_marginTop="16dp"
-        android:textColor="@color/WHITE"
-        android:textColorHint="@color/WHITE"/>
+        android:layout_marginTop="16dp"/>
 </LinearLayout>
