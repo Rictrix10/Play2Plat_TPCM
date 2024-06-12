@@ -1,8 +1,13 @@
 package com.example.play2plat_tpcm
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
@@ -14,17 +19,28 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.example.play2plat_tpcm.api.ApiManager
-import com.example.play2plat_tpcm.api.User
 import com.example.play2plat_tpcm.api.UserLogin
 import com.example.play2plat_tpcm.api.UserLoginResponse
+import com.example.play2plat_tpcm.room.entities.User
 import com.example.play2plat_tpcm.room.vm.UserViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import com.example.play2plat_tpcm.api.User as User1
 
 class LoginPage : AppCompatActivity() {
 
@@ -33,6 +49,10 @@ class LoginPage : AppCompatActivity() {
     private var isPasswordVisible: Boolean = false
 
     private val userViewModel: UserViewModel by viewModels()
+
+    companion object {
+        private const val REQUEST_WRITE_STORAGE = 112
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,9 +86,15 @@ class LoginPage : AppCompatActivity() {
 
         userViewModel.getAllUsers().observe(this, Observer { users ->
             for (user in users) {
-                Log.d("LoginPage", "User: ${user.id}, ${user.username}, ${user.email}")
+                Log.d("LoginPage", "User: ${user.id}, ${user.username}, ${user.email}, ${user.avatar}")
             }
         })
+
+        // Solicitar permissão de gravação
+        val hasPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (hasPermission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_WRITE_STORAGE)
+        }
     }
 
     private fun togglePasswordVisibility() {
@@ -100,10 +126,13 @@ class LoginPage : AppCompatActivity() {
                     if (userLoginResponse != null) {
                         val user = userLoginResponse.user
                         saveUserData(user)
-                        Toast.makeText(this@LoginPage, R.string.login_successful, Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this@LoginPage, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        if (user.avatar != null) {
+                            saveAvatarImage(user.avatar) { imagePath ->
+                                checkAndSaveUserToRoom(user, imagePath)
+                            }
+                        } else {
+                            checkAndSaveUserToRoom(user, null)
+                        }
                     } else {
                         Toast.makeText(this@LoginPage, R.string.error_response_from_server, Toast.LENGTH_SHORT).show()
                     }
@@ -123,13 +152,62 @@ class LoginPage : AppCompatActivity() {
         })
     }
 
-
-    private fun saveUserData(user: User) {
+    private fun saveUserData(user: User1) {
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putInt("user_id", user.id)
         editor.putInt("user_type_id", user.userTypeId)
         editor.apply()
     }
-}
 
+    private fun checkAndSaveUserToRoom(user: User1, avatarPath: String?) {
+        userViewModel.getUserByIdUser(user.id).observe(this, Observer { existingUser ->
+            if (existingUser == null) {
+                // Se o usuário não existe no Room, insere-o
+                val newUser = User(0, user.id, user.email, user.username, user.password, avatarPath, user.userTypeId)
+                userViewModel.addUser(newUser)
+            }
+            // Redireciona para a próxima atividade
+            Toast.makeText(this@LoginPage, R.string.login_successful, Toast.LENGTH_SHORT).show()
+            val intent = Intent(this@LoginPage, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        })
+    }
+
+    private fun saveAvatarImage(avatarUrl: String, callback: (String) -> Unit) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val url = URL(avatarUrl)
+                val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val inputStream: InputStream = connection.inputStream
+                val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
+                val imagePath = saveImageToExternalStorage(bitmap)
+                runOnUiThread {
+                    callback(imagePath)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun saveImageToExternalStorage(bitmap: Bitmap): String {
+        val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Play2Plat")
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+        val file = File(directory, "user_avatar.png")
+        try {
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return file.absolutePath
+    }
+}

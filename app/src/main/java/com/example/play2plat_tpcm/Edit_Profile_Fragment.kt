@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,10 +21,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
+import com.example.play2plat_tpcm.room.vm.UserViewModel
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
@@ -51,6 +55,8 @@ class Edit_Profile_Fragment : Fragment() {
     private lateinit var selectImageView: ImageView
     private lateinit var backImageView: ImageView
     private lateinit var containerLayout: View // Adicione esta linha
+
+    private val userViewModel: UserViewModel by viewModels()
 
     private var selectedImageUri: Uri? = null
 
@@ -137,16 +143,20 @@ class Edit_Profile_Fragment : Fragment() {
     }
 
     private suspend fun loadUserProfile(userId: Int) {
+        if (isNetworkAvailable()) {
         ApiManager.apiService.getUserById(userId).enqueue(object : retrofit2.Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
                     val user = response.body()
                     if (user != null) {
-                        usernameEditTextView.text = Editable.Factory.getInstance().newEditable(user.username)
-                        emailEditTextView.text = Editable.Factory.getInstance().newEditable(user.email)
+                        usernameEditTextView.text =
+                            Editable.Factory.getInstance().newEditable(user.username)
+                        emailEditTextView.text =
+                            Editable.Factory.getInstance().newEditable(user.email)
                         loadImage(user.avatar)
 
-                        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+                        val sharedPreferences =
+                            requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
                         with(sharedPreferences.edit()) {
                             putString("avatar_url", user.avatar)
                             apply()
@@ -163,8 +173,35 @@ class Edit_Profile_Fragment : Fragment() {
                 Log.e("EditProfile", "Request error: ${t.message}")
             }
         })
+    } else{
+            loadUserDataFromRoom(userId)
+        }
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun loadUserDataFromRoom(userId: Int) {
+        userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+            if (roomUser != null) {
+                usernameEditTextView.text = Editable.Factory.getInstance().newEditable(roomUser.username)
+                emailEditTextView.text = Editable.Factory.getInstance().newEditable(roomUser.email)
+                if (roomUser.avatar != null) {
+                    loadImage(roomUser.avatar)
+                } else {
+                    profileImageView.setImageResource(R.drawable.noimageuser)
+                }
+            } else {
+                Log.e("Profile_Fragment", "User not found in Room database")
+            }
+        }
+    }
+
+    /*
     private fun loadImage(avatarUrl: String?) {
         if (!avatarUrl.isNullOrEmpty()) {
             Picasso.get().load(avatarUrl).into(profileImageView, object : Callback {
@@ -177,6 +214,40 @@ class Edit_Profile_Fragment : Fragment() {
                     Log.e("EditProfile", "Error loading image: ${e?.message}")
                 }
             })
+        } else {
+            profileImageView.setImageResource(R.drawable.noimageuser)
+            val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+            applyGradientFromBitmap(bitmap)
+        }
+    }
+     */
+
+    private fun loadImage(avatarUrl: String?) {
+        if (!avatarUrl.isNullOrEmpty()) {
+            if (avatarUrl.startsWith("http") || avatarUrl.startsWith("https")) {
+                Picasso.get().load(avatarUrl).into(profileImageView, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+                        applyGradientFromBitmap(bitmap)
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Log.e("Profile_Fragment", "Error loading image: ${e?.message}")
+                    }
+                })
+            } else {
+                // Handling local file path
+                Picasso.get().load(File(avatarUrl)).into(profileImageView, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+                        applyGradientFromBitmap(bitmap)
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Log.e("Profile_Fragment", "Error loading image: ${e?.message}")
+                    }
+                })
+            }
         } else {
             profileImageView.setImageResource(R.drawable.noimageuser)
             val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap

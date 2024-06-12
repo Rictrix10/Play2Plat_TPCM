@@ -7,6 +7,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +22,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import com.squareup.picasso.Picasso
@@ -27,10 +30,12 @@ import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Paramater
 import com.example.play2plat_tpcm.api.Password
 import com.example.play2plat_tpcm.api.User
+import com.example.play2plat_tpcm.room.vm.UserViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import java.io.IOException
 
 private const val ARG_USER_ID = "user_id"
@@ -48,6 +53,8 @@ class Profile_Fragment : Fragment() {
     private var currentUserId: Int = 0
     private var user: User? = null
     private var userPassword: String = ""
+
+    private val userViewModel: UserViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,32 +113,37 @@ class Profile_Fragment : Fragment() {
             Log.d("Profile_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful) {
-                    val user = response.body()
-                    if (user != null) {
-                        usernameTextView.text = user.username
-                        loadImage(user.avatar)
+        if (isNetworkAvailable()) {
+            ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        val user = response.body()
+                        if (user != null) {
+                            usernameTextView.text = user.username
+                            loadImage(user.avatar)
 
-                        val platforms = user.platforms
-                        val canEditPlatforms = userId == currentUserId
-                        if(platforms != null){
-                            val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId, false)
-                            childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
+                            val platforms = user.platforms
+                            val canEditPlatforms = userId == currentUserId
+                            if (platforms != null) {
+                                val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId, false)
+                                childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
+                            }
+                        } else {
+                            Log.e("Profile_Fragment", "API response did not return user data.")
                         }
                     } else {
-                        Log.e("Profile_Fragment", "API response did not return user data.")
+                        Log.e("Profile_Fragment", "API response error: ${response.code()}")
                     }
-                } else {
-                    Log.e("Profile_Fragment", "API response error: ${response.code()}")
                 }
-            }
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Log.e("Profile_Fragment", "Request error: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Log.e("Profile_Fragment", "Request error: ${t.message}")
+                    loadUserDataFromRoom()
+                }
+            })
+        } else {
+            loadUserDataFromRoom()
+        }
 
         logoutButton.setOnClickListener {
             logout()
@@ -139,6 +151,28 @@ class Profile_Fragment : Fragment() {
 
         deleteButton.setOnClickListener {
             deleteAccountWithConfirmation()
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun loadUserDataFromRoom() {
+        userViewModel.getUserByIdUser(currentUserId).observe(viewLifecycleOwner) { roomUser ->
+            if (roomUser != null) {
+                usernameTextView.text = roomUser.username
+                if (roomUser.avatar != null) {
+                    loadImage(roomUser.avatar)
+                } else {
+                    profileImageView.setImageResource(R.drawable.noimageuser)
+                }
+            } else {
+                Log.e("Profile_Fragment", "User not found in Room database")
+            }
         }
     }
 
@@ -253,16 +287,30 @@ class Profile_Fragment : Fragment() {
 
     private fun loadImage(avatarUrl: String?) {
         if (!avatarUrl.isNullOrEmpty()) {
-            Picasso.get().load(avatarUrl).into(profileImageView, object : com.squareup.picasso.Callback {
-                override fun onSuccess() {
-                    val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
-                    applyGradientFromBitmap(bitmap)
-                }
+            if (avatarUrl.startsWith("http") || avatarUrl.startsWith("https")) {
+                Picasso.get().load(avatarUrl).into(profileImageView, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+                        applyGradientFromBitmap(bitmap)
+                    }
 
-                override fun onError(e: Exception?) {
-                    Log.e("Profile_Fragment", "Error loading image: ${e?.message}")
-                }
-            })
+                    override fun onError(e: Exception?) {
+                        Log.e("Profile_Fragment", "Error loading image: ${e?.message}")
+                    }
+                })
+            } else {
+                // Handling local file path
+                Picasso.get().load(File(avatarUrl)).into(profileImageView, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+                        applyGradientFromBitmap(bitmap)
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Log.e("Profile_Fragment", "Error loading image: ${e?.message}")
+                    }
+                })
+            }
         } else {
             profileImageView.setImageResource(R.drawable.noimageuser)
             val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
