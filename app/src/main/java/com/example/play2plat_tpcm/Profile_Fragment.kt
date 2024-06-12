@@ -114,6 +114,9 @@ class Profile_Fragment : Fragment() {
         }
 
         if (isNetworkAvailable()) {
+            Log.d("Profile_Fragment", "Vamos verificar se há atualizações pendentes...")
+            checkAndUpdateUser()
+
             ApiManager.apiService.getUserById(userId).enqueue(object : Callback<User> {
                 override fun onResponse(call: Call<User>, response: Response<User>) {
                     if (response.isSuccessful) {
@@ -365,6 +368,46 @@ class Profile_Fragment : Fragment() {
         } else {
             Log.d("Profile_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
+    }
+
+    private fun checkAndUpdateUser() {
+        Log.d("Profile_Fragment", "Vamos atualizar os dados pela api...")
+        val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+        val sharedPreferencesUserData = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userIdToUpdate = sharedPreferences.getInt("id", 0)
+        val userTypeId = sharedPreferencesUserData.getInt("user_type_id", 2)
+        if (userIdToUpdate == currentUserId) {
+            val email = sharedPreferences.getString("email", "")
+            val username = sharedPreferences.getString("username", "")
+            val password = sharedPreferences.getString("password", "")
+            val avatar = sharedPreferences.getString("avatar", "")
+            val platforms: List<String>? = null // Provide actual value if needed
+
+            // Handle nullable values and provide defaults if necessary
+            val userUpdate = User(currentUserId, username ?: "", email ?: "", password ?: "", avatar ?: "", userTypeId, platforms)
+            ApiManager.apiService.updateUser(currentUserId, userUpdate).enqueue(object : retrofit2.Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        // Clear update data from SharedPreferences after successful update
+                        clearUpdateUserData()
+                    } else {
+                        Log.e("Profile_Fragment", "Failed to update user data via API: ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Log.e("Profile_Fragment", "API request failed: ${t.message}")
+                }
+            })
+        }
+    }
+
+
+    private fun clearUpdateUserData() {
+        val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()
     }
 
     override fun onCreateView(

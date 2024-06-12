@@ -27,6 +27,7 @@ import androidx.palette.graphics.Palette
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
 import com.example.play2plat_tpcm.room.vm.UserViewModel
+import com.google.gson.Gson
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
@@ -72,6 +73,11 @@ class Edit_Profile_Fragment : Fragment() {
             Log.d("EditProfile", "No image URI received")
         }
     }
+
+    interface UserCallback {
+        fun onUserLoaded(roomUser: com.example.play2plat_tpcm.room.entities.User)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,8 +148,9 @@ class Edit_Profile_Fragment : Fragment() {
         confirmPasswordEditTextView.visibility = visibility
     }
 
+
     private suspend fun loadUserProfile(userId: Int) {
-        if (isNetworkAvailable()) {
+        if (isNetworkAvailable(requireContext())) {
         ApiManager.apiService.getUserById(userId).enqueue(object : retrofit2.Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
@@ -178,7 +185,7 @@ class Edit_Profile_Fragment : Fragment() {
         }
     }
 
-    private fun isNetworkAvailable(): Boolean {
+    private fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
@@ -221,6 +228,17 @@ class Edit_Profile_Fragment : Fragment() {
         }
     }
      */
+
+    private fun loadUserRoomData(userId: Int, callback: UserCallback) {
+        userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+            if (roomUser != null) {
+                callback.onUserLoaded(roomUser)
+            } else {
+                Log.e("Profile_Fragment", "User not found in Room database")
+            }
+        }
+    }
+
 
     private fun loadImage(avatarUrl: String?) {
         if (!avatarUrl.isNullOrEmpty()) {
@@ -346,6 +364,7 @@ class Edit_Profile_Fragment : Fragment() {
         }
     }
 
+    /*
     private fun updateUserProfile(avatarUrl: String?) {
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
@@ -385,6 +404,102 @@ class Edit_Profile_Fragment : Fragment() {
                 Log.e("EditProfile", "Request error: ${t.message}")
             }
         })
+    }
+
+     */
+
+    private fun updateUserProfile(avatarUrl: String?) {
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+        val userTypeId = sharedPreferences.getInt("user_type_id", 2)
+
+        val updatedUsername = usernameEditTextView.text.toString()
+        val updatedEmail = emailEditTextView.text.toString()
+        val newPassword = newPasswordEditTextView.text.toString()
+        val confirmPassword = confirmPasswordEditTextView.text.toString()
+
+        if (newPassword.isNotEmpty() && newPassword != confirmPassword) {
+            // Show an error message that passwords do not match
+            return
+        }
+
+        val updatedUser = User(
+            id = userId,
+            username = updatedUsername,
+            email = updatedEmail,
+            password = if (newPassword.isNotEmpty()) newPassword else "",
+            avatar = avatarUrl ?: "",
+            userTypeId = userTypeId,
+            platforms = null
+        )
+
+        val updatedUserRoom = com.example.play2plat_tpcm.room.entities.User(
+            id = userId,
+            idUser = userId,
+            username = updatedUsername,
+            email = updatedEmail,
+            password = if (newPassword.isNotEmpty()) newPassword else "",
+            avatar = avatarUrl ?: "",
+            userTypeId = userTypeId
+        )
+
+
+
+        if (isNetworkAvailable(requireContext())) {
+            ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : retrofit2.Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        Log.d("EditProfile", "User profile updated successfully")
+                        // Save to Room database
+                        saveUserToRoom(updatedUserRoom)
+                        redirectToProfile()
+                    } else {
+                        Log.e("EditProfile", "API response error: ${response.code()}")
+                        // Save to Room database
+                        saveUserToRoom(updatedUserRoom)
+                        // Save to local update queue
+                        //addToUpdateQueue(updatedUser)
+                    }
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Log.e("EditProfile", "Request error: ${t.message}")
+                    // Save to Room database
+                    saveUserToRoom(updatedUserRoom)
+                    // Save to local update queue
+                    //addToUpdateQueue(updatedUser)
+                }
+            })
+        } else {
+            // Save to Room database
+            saveUserToRoom(updatedUserRoom)
+            val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putInt("id", userId)
+                putString("username", updatedUsername)
+                putString("email", updatedEmail)
+                putString("password", if (newPassword.isNotEmpty()) newPassword else "")
+                putString("avatar", avatarUrl ?: "")
+                putInt("userTypeId", userTypeId)
+                apply()
+            }
+            //addToUpdateQueue(updatedUser)
+            // Save to local update queue
+            redirectToProfile()
+        }
+    }
+
+    private fun saveUserToRoom(user: com.example.play2plat_tpcm.room.entities.User) {
+        userViewModel.updateUser(user)
+
+    }
+
+    private fun addToUpdateQueue(user: User) {
+        // Save user to local update queue (e.g., using SharedPreferences or a local database)
+        val sharedPreferences = requireContext().getSharedPreferences("update_queue", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("pending_update_user", Gson().toJson(user))
+        editor.apply()
     }
 
     private fun bitmapToFile(context: Context, bitmap: Bitmap): File {

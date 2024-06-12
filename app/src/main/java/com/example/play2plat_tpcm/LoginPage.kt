@@ -86,7 +86,7 @@ class LoginPage : AppCompatActivity() {
 
         userViewModel.getAllUsers().observe(this, Observer { users ->
             for (user in users) {
-                Log.d("LoginPage", "User: ${user.id}, ${user.username}, ${user.email}, ${user.avatar}")
+                Log.d("LoginPage", "User: ${user.id}, ${user.username}, ${user.email}, ${user.password}, ${user.avatar}")
             }
         })
 
