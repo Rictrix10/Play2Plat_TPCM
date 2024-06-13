@@ -416,7 +416,7 @@ class Profile_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Conta eliminada com sucesso", Toast.LENGTH_SHORT).show()
                     // Redirecionar para a tela de login após deletar a conta
-                    /*
+
                     userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { user ->
                         if (user != null) {
                             userViewModel.deleteUser(user)
@@ -425,7 +425,6 @@ class Profile_Fragment : Fragment() {
                         }
                     }
 
-                     */
 
                     clearSharedPreferences()
 
