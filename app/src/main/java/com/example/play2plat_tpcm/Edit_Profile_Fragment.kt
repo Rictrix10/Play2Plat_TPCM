@@ -39,6 +39,9 @@ import retrofit2.Call
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -402,6 +405,7 @@ class Edit_Profile_Fragment : Fragment() {
         val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
         val file = bitmapToFile(requireContext(), bitmap)
 
+
         val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
         val imagePart = MultipartBody.Part.createFormData("file", "profile_image.jpg", requestFile)
 
@@ -458,6 +462,16 @@ class Edit_Profile_Fragment : Fragment() {
             return
         }
 
+
+        val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+        with(sharedPreferences2.edit()) {
+            putString("imageState", imageState)
+            putString("netState", netState)
+            apply()
+        }
+
+        /*
+
         if(imageState == "NO" && netState == "NO"){
             val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
             with(sharedPreferences.edit()) {
@@ -474,6 +488,8 @@ class Edit_Profile_Fragment : Fragment() {
                 apply()
             }
         }
+
+         */
 
 
         val updatedUser = User(
@@ -498,6 +514,8 @@ class Edit_Profile_Fragment : Fragment() {
                     avatar = avatarUrl ?: "",
                     userTypeId = userTypeId
                 )
+
+                Log.d("EditProfile", "Avatar recebido: ${updatedUserRoom.avatar}")
 
                 if (isNetworkAvailable(requireContext())) {
                     Log.d("EditProfile", "Com internet")
@@ -528,9 +546,8 @@ class Edit_Profile_Fragment : Fragment() {
                     // Save to Room database
                     Log.d("EditProfile", "Sem internet")
                     saveUserToRoom(updatedUserRoom)
-                    redirectToProfile()
-                    val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-                    with(sharedPreferences.edit()) {
+                    val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+                    with(sharedPreferences2.edit()) {
                         putInt("id", userId)
                         putString("username", updatedUsername)
                         putString("email", updatedEmail)
@@ -539,6 +556,7 @@ class Edit_Profile_Fragment : Fragment() {
                         putInt("userTypeId", userTypeId)
                         apply()
                     }
+                    redirectToProfile()
                     //addToUpdateQueue(updatedUser)
                     // Save to local update queue
                 }
@@ -568,7 +586,12 @@ class Edit_Profile_Fragment : Fragment() {
         if (!directory.exists()) {
             directory.mkdirs()  // Cria o diretório se não existir
         }
-        val imageFile = File(directory, "profile_image.jpg")
+
+        // Crie um nome de arquivo único usando um timestamp
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val imageFileName = "profile_image_$timestamp.jpg"
+
+        val imageFile = File(directory, imageFileName)
 
         val outputStream = FileOutputStream(imageFile)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
@@ -577,6 +600,7 @@ class Edit_Profile_Fragment : Fragment() {
 
         return imageFile
     }
+
 
 
     companion object {

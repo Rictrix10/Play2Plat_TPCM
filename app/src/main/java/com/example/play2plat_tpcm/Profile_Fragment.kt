@@ -232,9 +232,50 @@ class Profile_Fragment : Fragment() {
                 getCurrentUserAvatar { currentAvatar ->
                     updateUser(currentAvatar)
                 }
-            } else {
+            }
+            if (imageState == "YES" && netState == "YES"){updateUser(avatar)}
+            if (imageState == "NO" && netState == "YES"){updateUser(avatar)}
+            if (imageState == "YES" && netState == "NO"){
+                Log.d("Profile", "YES IMAGE NO INTERNET")
+                Log.d("", "${avatar}")
+                val file = File(avatar)
+                val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                val imagePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
+                Log.d("Profile_Fragment", "Uploading image...")
+                ApiManager.apiService.uploadImage(imagePart)
+                    .enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            if (response.isSuccessful) {
+                                val imageUrl = response.body()?.string()
+                                Log.d("", "URL: ${imageUrl}")
+                                imageUrl?.let {
+                                    val pattern = Regex("\"url\":\"(\\S+)\"")
+                                    val matchResult = pattern.find(it)
+
+                                    matchResult?.let { result ->
+                                        val avatarUrl = result.groupValues[1]
+                                        Log.d("", "URL: ${avatarUrl}")
+                                        updateUser(avatarUrl)
+                                    }
+                                }
+                            } else {
+                                Log.e("Profile_Fragment", "Failed to upload avatar: ${response.code()}")
+                                callback(false)
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Log.e("Profile_Fragment", "Avatar upload request failed: ${t.message}")
+                            callback(false)
+                        }
+                    })
+            }
+            /*
+            else {
                 updateUser(avatar)
             }
+
+             */
         } else {
             callback(false)
         }
@@ -375,6 +416,7 @@ class Profile_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Conta eliminada com sucesso", Toast.LENGTH_SHORT).show()
                     // Redirecionar para a tela de login após deletar a conta
+                    /*
                     userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { user ->
                         if (user != null) {
                             userViewModel.deleteUser(user)
@@ -382,6 +424,8 @@ class Profile_Fragment : Fragment() {
                             Log.e("Profile_Fragment", "User not found in Room database")
                         }
                     }
+
+                     */
 
                     clearSharedPreferences()
 
