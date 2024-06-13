@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,10 +21,13 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
+import com.example.play2plat_tpcm.room.vm.UserViewModel
+import com.google.gson.Gson
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
@@ -34,6 +39,9 @@ import retrofit2.Call
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -52,6 +60,8 @@ class Edit_Profile_Fragment : Fragment() {
     private lateinit var backImageView: ImageView
     private lateinit var containerLayout: View // Adicione esta linha
 
+    private val userViewModel: UserViewModel by viewModels()
+
     private var selectedImageUri: Uri? = null
 
     private val pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -66,6 +76,11 @@ class Edit_Profile_Fragment : Fragment() {
             Log.d("EditProfile", "No image URI received")
         }
     }
+
+    interface UserCallback {
+        fun onUserLoaded(roomUser: com.example.play2plat_tpcm.room.entities.User)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +127,7 @@ class Edit_Profile_Fragment : Fragment() {
 
         saveButton.setOnClickListener {
             uploadImageAndSaveProfile()
+
         }
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -136,21 +152,19 @@ class Edit_Profile_Fragment : Fragment() {
         confirmPasswordEditTextView.visibility = visibility
     }
 
+
     private suspend fun loadUserProfile(userId: Int) {
+        if (isNetworkAvailable(requireContext())) {
         ApiManager.apiService.getUserById(userId).enqueue(object : retrofit2.Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
                     val user = response.body()
                     if (user != null) {
-                        usernameEditTextView.text = Editable.Factory.getInstance().newEditable(user.username)
-                        emailEditTextView.text = Editable.Factory.getInstance().newEditable(user.email)
+                        usernameEditTextView.text =
+                            Editable.Factory.getInstance().newEditable(user.username)
+                        emailEditTextView.text =
+                            Editable.Factory.getInstance().newEditable(user.email)
                         loadImage(user.avatar)
-
-                        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-                        with(sharedPreferences.edit()) {
-                            putString("avatar_url", user.avatar)
-                            apply()
-                        }
                     } else {
                         Log.e("EditProfile", "API response did not return user data.")
                     }
@@ -163,8 +177,35 @@ class Edit_Profile_Fragment : Fragment() {
                 Log.e("EditProfile", "Request error: ${t.message}")
             }
         })
+    } else{
+            loadUserDataFromRoom(userId)
+        }
     }
 
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun loadUserDataFromRoom(userId: Int) {
+        userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+            if (roomUser != null) {
+                usernameEditTextView.text = Editable.Factory.getInstance().newEditable(roomUser.username)
+                emailEditTextView.text = Editable.Factory.getInstance().newEditable(roomUser.email)
+                if (roomUser.avatar != null) {
+                    loadImage(roomUser.avatar)
+                } else {
+                    profileImageView.setImageResource(R.drawable.noimageuser)
+                }
+            } else {
+                Log.e("Profile_Fragment", "User not found in Room database")
+            }
+        }
+    }
+
+    /*
     private fun loadImage(avatarUrl: String?) {
         if (!avatarUrl.isNullOrEmpty()) {
             Picasso.get().load(avatarUrl).into(profileImageView, object : Callback {
@@ -177,6 +218,51 @@ class Edit_Profile_Fragment : Fragment() {
                     Log.e("EditProfile", "Error loading image: ${e?.message}")
                 }
             })
+        } else {
+            profileImageView.setImageResource(R.drawable.noimageuser)
+            val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+            applyGradientFromBitmap(bitmap)
+        }
+    }
+     */
+
+    private fun loadUserRoomData(userId: Int, callback: UserCallback) {
+        userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+            if (roomUser != null) {
+                callback.onUserLoaded(roomUser)
+            } else {
+                Log.e("Profile_Fragment", "User not found in Room database")
+            }
+        }
+    }
+
+
+    private fun loadImage(avatarUrl: String?) {
+        if (!avatarUrl.isNullOrEmpty()) {
+            if (avatarUrl.startsWith("http") || avatarUrl.startsWith("https")) {
+                Picasso.get().load(avatarUrl).into(profileImageView, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+                        applyGradientFromBitmap(bitmap)
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Log.e("Profile_Fragment", "Error loading image: ${e?.message}")
+                    }
+                })
+            } else {
+                // Handling local file path
+                Picasso.get().load(File(avatarUrl)).into(profileImageView, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
+                        applyGradientFromBitmap(bitmap)
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Log.e("Profile_Fragment", "Error loading image: ${e?.message}")
+                    }
+                })
+            }
         } else {
             profileImageView.setImageResource(R.drawable.noimageuser)
             val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
@@ -235,21 +321,102 @@ class Edit_Profile_Fragment : Fragment() {
             .commit()
     }
 
+    private fun getCurrentUserAvatar(userId: Int, callback: (String?) -> Unit) {
+        if (isNetworkAvailable(requireContext())) {
+            ApiManager.apiService.getUserById(userId).enqueue(object : retrofit2.Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        val user = response.body()
+                        callback(user?.avatar)
+                    } else {
+                        Log.e("EditProfile", "Erro ao obter o usuário: ${response.message()}")
+                        callback(null)
+                    }
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Log.e("EditProfile", "Falha na requisição para obter o usuário: ${t.message}")
+                    callback(null)
+                }
+            })
+        } else {
+            userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+                if (roomUser != null) {
+                    callback(roomUser.avatar)
+                } else {
+                    Log.e("EditProfile", "User not found in Room database")
+                    callback(null)
+                }
+            }
+        }
+    }
+
 
     private fun uploadImageAndSaveProfile() {
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val currentAvatarUrl = sharedPreferences.getString("avatar_url", null)
-
         if (selectedImageUri != null) {
-            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
-            val file = bitmapToFile(requireContext(), bitmap)
+            // YES IMAGE
+            uploadImageAndSaveProfileWithNewAvatar()
+        } else {
+            // NO IMAGE
+            val sharedPreferences =
+                requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+            val userId = sharedPreferences.getInt("user_id", 0)
 
-            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-            val imagePart = MultipartBody.Part.createFormData("file", "profile_image.jpg", requestFile)
+            if (isNetworkAvailable(requireContext())) {
+                // NO IMAGE YES NET
+                ApiManager.apiService.getUserById(userId)
+                    .enqueue(object : retrofit2.Callback<User> {
+                        override fun onResponse(call: Call<User>, response: Response<User>) {
+                            if (response.isSuccessful) {
+                                val user = response.body()
+                                val currentAvatarUrl = user?.avatar
+
+                                updateUserProfile(currentAvatarUrl, "NO", "YES")
+                            } else {
+                                Log.e(
+                                    "EditProfile",
+                                    "Erro ao obter o usuário: ${response.message()}"
+                                )
+                            }
+                        }
+
+                        override fun onFailure(call: Call<User>, t: Throwable) {
+                            Log.e(
+                                "EditProfile",
+                                "Falha na requisição para obter o usuário: ${t.message}"
+                            )
+                        }
+                    })
+
+            }
+            else{
+                // NO IMAGE NO NET
+                Log.d("EditProfile", "SEM INTERNET E SEM IMAGEM")
+                userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+                    Log.d("EditProfile", "${roomUser.avatar}")
+                    updateUserProfile(roomUser.avatar, "NO", "NO")
+                }
+            }
+        }
+    }
+
+
+    private fun uploadImageAndSaveProfileWithNewAvatar() {
+        val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+        val file = bitmapToFile(requireContext(), bitmap)
+
+
+        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+        val imagePart = MultipartBody.Part.createFormData("file", "profile_image.jpg", requestFile)
+
+        if (isNetworkAvailable(requireContext())) {
 
             val call = ApiManager.apiService.uploadImage(imagePart)
             call.enqueue(object : retrofit2.Callback<ResponseBody> {
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
                     if (response.isSuccessful) {
                         val imageUrl = response.body()?.string()
                         imageUrl?.let {
@@ -258,7 +425,7 @@ class Edit_Profile_Fragment : Fragment() {
 
                             matchResult?.let { result ->
                                 val avatarUrl = result.groupValues[1]
-                                updateUserProfile(avatarUrl)
+                                updateUserProfile(avatarUrl, "YES", "YES")
                             }
                         }
                     } else {
@@ -270,12 +437,17 @@ class Edit_Profile_Fragment : Fragment() {
                     Log.e("EditProfile", "Falha na requisição: ${t.message}")
                 }
             })
-        } else {
-            updateUserProfile(currentAvatarUrl)
+
+        }
+        else{
+            val avatarUrl = file.absolutePath
+            updateUserProfile(avatarUrl, "YES", "NO")
         }
     }
 
-    private fun updateUserProfile(avatarUrl: String?) {
+
+
+    private fun updateUserProfile(avatarUrl: String?, imageState: String?, netState: String?) {
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
         val userTypeId = sharedPreferences.getInt("user_type_id", 2)
@@ -290,6 +462,36 @@ class Edit_Profile_Fragment : Fragment() {
             return
         }
 
+
+        val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+        with(sharedPreferences2.edit()) {
+            putString("imageState", imageState)
+            putString("netState", netState)
+            apply()
+        }
+
+        /*
+
+        if(imageState == "NO" && netState == "NO"){
+            val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putString("imageState", "NO")
+                putString("netState", "NO")
+                apply()
+            }
+        }
+        else{
+            val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putString("imageState", "")
+                putString("netState", "")
+                apply()
+            }
+        }
+
+         */
+
+
         val updatedUser = User(
             id = userId,
             username = updatedUsername,
@@ -300,25 +502,96 @@ class Edit_Profile_Fragment : Fragment() {
             platforms = null
         )
 
-        ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : retrofit2.Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful) {
-                    Log.d("EditProfile", "User profile updated successfully")
-                    redirectToProfile()
-                } else {
-                    Log.e("EditProfile", "API response error: ${response.code()}")
-                }
-            }
+        // First, fetch the Room User ID based on the userId
+        userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+            if (roomUser != null) {
+                val updatedUserRoom = com.example.play2plat_tpcm.room.entities.User(
+                    id = roomUser.id, // Use the correct Room User ID
+                    idUser = userId,
+                    username = updatedUsername,
+                    email = updatedEmail,
+                    password = if (newPassword.isNotEmpty()) newPassword else "",
+                    avatar = avatarUrl ?: "",
+                    userTypeId = userTypeId
+                )
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Log.e("EditProfile", "Request error: ${t.message}")
+                Log.d("EditProfile", "Avatar recebido: ${updatedUserRoom.avatar}")
+
+                if (isNetworkAvailable(requireContext())) {
+                    Log.d("EditProfile", "Com internet")
+                    ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : retrofit2.Callback<User> {
+                        override fun onResponse(call: Call<User>, response: Response<User>) {
+                            if (response.isSuccessful) {
+                                Log.d("EditProfile", "Updated User - API")
+                                // Save to Room database
+                                saveUserToRoom(updatedUserRoom)
+                                Log.d("EditProfile", "Updated User - Room")
+                                redirectToProfile()
+                            } else {
+                                Log.e("EditProfile", "API response error: ${response.code()}")
+                                // Save to Room database
+                                saveUserToRoom(updatedUserRoom)
+                                // Save to local update queue
+                                //addToUpdateQueue(updatedUser)
+                            }
+                        }
+
+                        override fun onFailure(call: Call<User>, t: Throwable) {
+                            Log.e("EditProfile", "Request error: ${t.message}")
+                            // Save to Room database
+                            saveUserToRoom(updatedUserRoom)
+                        }
+                    })
+                } else {
+                    // Save to Room database
+                    Log.d("EditProfile", "Sem internet")
+                    saveUserToRoom(updatedUserRoom)
+                    val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+                    with(sharedPreferences2.edit()) {
+                        putInt("id", userId)
+                        putString("username", updatedUsername)
+                        putString("email", updatedEmail)
+                        putString("password", if (newPassword.isNotEmpty()) newPassword else "")
+                        putString("avatar", avatarUrl ?: "")
+                        putInt("userTypeId", userTypeId)
+                        apply()
+                    }
+                    redirectToProfile()
+                    //addToUpdateQueue(updatedUser)
+                    // Save to local update queue
+                }
+            } else {
+                Log.e("EditProfile", "User not found in Room database")
             }
-        })
+        }
     }
 
+    private fun saveUserToRoom(user: com.example.play2plat_tpcm.room.entities.User) {
+        lifecycleScope.launch {
+            userViewModel.updateUser(user)
+            Log.d("EditProfile", "ROOM ATUALIZADO")
+        }
+    }
+    /*
+    private fun saveUserToRoom(user: com.example.play2plat_tpcm.room.entities.User) {
+        userViewModel.updateUser(user)
+        Log.d("EditProfile", "ROOM ATUALIZADO")
+    }
+
+     */
+
+
     private fun bitmapToFile(context: Context, bitmap: Bitmap): File {
-        val filesDir = context.filesDir
-        val imageFile = File(filesDir, "profile_image.jpg")
+        val directory = File(context.filesDir, "profile_images")
+        if (!directory.exists()) {
+            directory.mkdirs()  // Cria o diretório se não existir
+        }
+
+        // Crie um nome de arquivo único usando um timestamp
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val imageFileName = "profile_image_$timestamp.jpg"
+
+        val imageFile = File(directory, imageFileName)
 
         val outputStream = FileOutputStream(imageFile)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
@@ -327,6 +600,8 @@ class Edit_Profile_Fragment : Fragment() {
 
         return imageFile
     }
+
+
 
     companion object {
         @JvmStatic
