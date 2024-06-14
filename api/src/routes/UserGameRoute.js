@@ -11,4 +11,5 @@ router.get('/user-game/user/:userId', UserGameController.getUserGamesByUserId);
 router.delete('/user-game/user/:userId/game/:gameId', UserGameController.deleteUserGameByUserIdAndGameId);
 router.patch('/user-game/user/:userId/game/:gameId', UserGameController.updateUserGameByUserIdAndGameId);
 router.get('/user-game/user/:userId/state/:state', UserGameController.getUserGamesByUserIdAndState);
+router.get('/user-game/user/:userId/game/:gameId/state', UserGameController.getUserGameStateByUserIdAndGameId);
 module.exports = router;

@@ -143,6 +143,24 @@ getUserGamesByUserIdAndState: async (req, res) => {
     }
 },
 
+    getUserGameStateByUserIdAndGameId: async (req, res) => {
+        try {
+            const userId = parseInt(req.params.userId);
+            const gameId = parseInt(req.params.gameId);
+
+            const userGame = await UserGameModel.getUserGameByUserIdAndGameId(userId, gameId);
+
+            if (userGame) {
+                res.json({ state: userGame.state });
+            } else {
+                res.status(404).json({ error: 'Relação usuário-jogo não encontrada' });
+            }
+        } catch (error) {
+            console.error('Erro ao buscar estado do jogo para o usuário:', error);
+            res.status(500).json({ error: 'Erro ao buscar estado do jogo para o usuário' });
+        }
+    },
+
 
 };
 

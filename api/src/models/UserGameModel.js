@@ -105,6 +105,15 @@ getUserGamesByUserIdAndState: async (userId, state) => {
     });
 },
 
+    getUserGameByUserIdAndGameId: async (userId, gameId) => {
+        return await prisma.userGame.findUnique({
+            where: {
+                userId: userId,
+                gameId: gameId
+            }
+        });
+    },
+
 
 };
 
