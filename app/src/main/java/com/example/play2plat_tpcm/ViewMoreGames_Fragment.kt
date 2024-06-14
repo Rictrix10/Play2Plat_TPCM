@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +31,7 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
     private var filterType: String? = null
     private var paramater: String? = null
     private var filters: Filters? = null
+    private lateinit var TitleLayout: ConstraintLayout
 
     companion object {
         private const val ARG_FILTER_TYPE = "filter_type"
@@ -65,6 +68,7 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
         fragmentContainer = view.findViewById(R.id.fragment_container)
         titleTextView = view.findViewById(R.id.title)
         backImageView = view.findViewById(R.id.back_icon)
+        TitleLayout = view.findViewById(R.id.container)
 
         //loadFavoriteGames()
         backImageView.setOnClickListener {
@@ -77,19 +81,19 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
             titleTextView.text = "$paramater Games"
         }
 
-        val textViewHeight = 50.dpToPx()
-
-        // Obtém a altura da tela
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        // Calcula a altura disponível para o FrameLayout
-        val availableHeight = screenHeight - textViewHeight
-
-        // Define a altura do FrameLayout
-        val layoutParams = fragmentContainer.layoutParams
-        layoutParams.height = availableHeight
-        fragmentContainer.layoutParams = layoutParams
+//        val textViewHeight = TitleLayout.layoutParams.height
+//
+//        // Obtém a altura da tela
+//        val displayMetrics = resources.displayMetrics
+//        val screenHeight = displayMetrics.heightPixels
+//
+//        // Calcula a altura disponível para o FrameLayout
+//        val availableHeight = screenHeight - textViewHeight
+//
+//        // Define a altura do FrameLayout
+//        val layoutParams = fragmentContainer.layoutParams
+//        layoutParams.height = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) availableHeight - 200 else availableHeight
+//        fragmentContainer.layoutParams = layoutParams
 
         Log.d("Filters", "o seus filtros $filters")
 
@@ -111,6 +115,7 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
 
         return view
     }
+
 
     private fun redirectToViewGame(gameId: Int) {
         val platforms = arrayListOf<String>()

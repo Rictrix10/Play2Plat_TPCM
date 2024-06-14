@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader

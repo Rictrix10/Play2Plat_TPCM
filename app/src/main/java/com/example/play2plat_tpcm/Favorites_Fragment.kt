@@ -1,12 +1,14 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +23,7 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
     private lateinit var favoritesAdapter: FavoritesAdapter
     private var favoriteGamesList: MutableList<ListFavoriteGames> = mutableListOf()
     private lateinit var fragmentContainer: FrameLayout
+    private lateinit var TitleLayout: ConstraintLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,22 +33,9 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
 
         favoritesAdapter = FavoritesAdapter(favoriteGamesList, this)
         fragmentContainer = view.findViewById(R.id.fragment_container)
+        TitleLayout = view.findViewById(R.id.title_container)
 
         //loadFavoriteGames()
-
-        val textViewHeight = 50.dpToPx()
-
-        // Obtém a altura da tela
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        // Calcula a altura disponível para o FrameLayout
-        val availableHeight = screenHeight - textViewHeight
-
-        // Define a altura do FrameLayout
-        val layoutParams = fragmentContainer.layoutParams
-        layoutParams.height = availableHeight
-        fragmentContainer.layoutParams = layoutParams
 
         if (!childFragmentManager.isStateSaved()) {
             val fragment = Games_List_Grid_Fragment.newInstance("Favorite", "", null)
@@ -109,6 +99,11 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
     private fun Int.dpToPx(): Int {
         val scale = resources.displayMetrics.density
         return (this * scale + 0.5f).toInt()
+    }
+
+    private fun Int.pxToDp(): Int {
+        val scale = resources.displayMetrics.density
+        return ((this - 0.5f)/scale).toInt()
     }
 
     private fun getUserIdFromSession(): Int {

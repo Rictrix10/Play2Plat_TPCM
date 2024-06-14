@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,6 +39,7 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var collectionInfoValues: Array<String>
     private lateinit var collectionAdapter: Collections_2_Adapter
     private lateinit var fragmentContainer: FrameLayout
+    private lateinit var TitleLayout: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +57,7 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         collectionTitle = view.findViewById(R.id.collection_title)
         collectionList = view.findViewById(R.id.collection_list)
         fragmentContainer = view.findViewById(R.id.fragment_container)
+        TitleLayout = view.findViewById(R.id.title_container)
 
         loadCollections(view.context)
         showFilteredGames("Playing")
@@ -78,20 +81,6 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
                 // Não precisamos fazer nada aqui
             }
         })
-
-        val accordionHeight = 50.dpToPx()
-
-        // Obtém a altura da tela
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        // Calcula a altura disponível para o FrameLayout
-        val availableHeight = screenHeight - accordionHeight
-
-        // Define a altura do FrameLayout
-        val layoutParams = fragmentContainer.layoutParams
-        layoutParams.height = availableHeight
-        fragmentContainer.layoutParams = layoutParams
 
         if (!childFragmentManager.isStateSaved()) {
             val fragment = Games_List_Grid_Fragment.newInstance("Playing", "", null)
@@ -163,6 +152,11 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private fun Int.dpToPx(): Int {
         val scale = resources.displayMetrics.density
         return (this * scale + 0.5f).toInt()
+    }
+
+    private fun Int.pxToDp(): Int {
+        val scale = resources.displayMetrics.density
+        return ((this - 0.5f)/scale).toInt()
     }
 
     private fun redirectToViewGame(gameId: Int) {

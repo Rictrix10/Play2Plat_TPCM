@@ -6,55 +6,103 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Games_2_Fragment"
+    android:orientation="horizontal"
     android:background="@drawable/bg_border">
 
-    <LinearLayout
-        android:id="@+id/collection_accordion"
-        android:layout_width="0dp"
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/title_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="22dp"
-        android:orientation="vertical"
-        android:background="@drawable/button_bd_3"
-        android:clickable="true"
-        android:focusable="true"
-        android:elevation="15dp"
-        app:layout_constraintWidth_percent="0.75"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- New TextView for the title -->
         <TextView
-            android:id="@+id/collection_title"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:drawableEnd="@drawable/icon_spinner_down"
-            android:drawablePadding="8dp"
-            android:gravity="center_vertical"
-            android:padding="5dp"
-            android:paddingStart="10dp"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp" />
-
-        <ListView
-            android:id="@+id/collection_list"
-            android:layout_width="match_parent"
+            android:id="@+id/your_collections_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            android:nestedScrollingEnabled="true" />
+            android:text="Your Collections:"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/collection_accordion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="2dp"
+            android:orientation="vertical"
+            android:background="@drawable/button_bd_3"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="15dp"
+            app:layout_constraintWidth_percent="0.75"
+            app:layout_constraintTop_toBottomOf="@id/your_collections_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/collection_title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:drawableEnd="@drawable/icon_spinner_down"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:paddingStart="10dp"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp" />
+
+            <ListView
+                android:id="@+id/collection_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                android:nestedScrollingEnabled="true" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/horizontal_line"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/details"
+            app:layout_constraintTop_toBottomOf="@id/collection_accordion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/collection_accordion"
+        app:layout_constraintTop_toBottomOf="@id/title_container"
+        app:layout_constraintBottom_toTopOf="@+id/last_item_margin"
         android:layout_gravity="center_horizontal"/>
+
+    <View
+        android:id="@+id/last_item_margin"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 
 

@@ -65,20 +65,6 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
             requireActivity().onBackPressed()
         }
 
-        val searchbarHeight = 50.dpToPx()
-
-        // Obtém a altura da tela
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        // Calcula a altura disponível para o FrameLayout
-        val availableHeight = screenHeight - searchbarHeight
-
-        // Define a altura do FrameLayout
-        val layoutParams = fragmentContainer.layoutParams
-        layoutParams.height = availableHeight
-        fragmentContainer.layoutParams = layoutParams
-
         return view
     }
 
