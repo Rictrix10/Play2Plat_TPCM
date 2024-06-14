@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -56,6 +57,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private lateinit var commentEditTextView: EditText
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
+    private lateinit var seeMapButton: Button
     private lateinit var container_layout: ConstraintLayout
 
     private var gameId: Int = 0
@@ -108,6 +110,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         container_layout = view.findViewById(R.id.container)
         ReplyingTo = view.findViewById(R.id.replying_to_text)
         gameTextView.text = gameName
+        seeMapButton = view.findViewById(R.id.button_see_map)
 
         val colors = intArrayOf(primaryColor, secondaryColor)
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
@@ -130,6 +133,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
         sendImageView.setOnClickListener {
             getLocationAndPostComment(userId, gameId)
+        }
+
+        seeMapButton.setOnClickListener(){
+            redirectToMapsFragment()
         }
 
         return view
@@ -348,6 +355,18 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             .replace(R.id.layout, viewGameFragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun redirectToMapsFragment() {
+        val mapsFragment = MapsFragment.newInstance(gameId)
+        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, mapsFragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            Log.d("GamePostsFragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+        }
     }
 
     override fun onReplyClick(postId: Int, username: String) {
