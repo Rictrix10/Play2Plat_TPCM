@@ -55,20 +55,25 @@ const GenreModel = {
                             return filteredGenres[randomIndex].name;
                         },
 
-                getRandomGenreNames: async (count) => {
-                    const genres = await prisma.genre.findMany({
-                        select: {
-                            name: true
-                        }
-                    });
-
-                    if (genres.length === 0) {
-                        return [];
+        getRandomGenreNamesWithGames: async (count) => {
+            const genresWithGames = await prisma.genre.findMany({
+                where: {
+                    gameGenres: {
+                        some: {}
                     }
-
-                    const shuffledGenres = genres.sort(() => Math.random() - 0.5);
-                    return shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
                 },
+                select: {
+                    name: true
+                }
+            });
+
+            if (genresWithGames.length === 0) {
+                return [];
+            }
+
+            const shuffledGenres = genresWithGames.sort(() => Math.random() - 0.5);
+            return shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
+        },
 
 
 };
