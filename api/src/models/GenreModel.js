@@ -61,7 +61,7 @@ const GenreModel = {
                 name: true
             },
             where: {
-                gameGenre: {
+                gameGenres: {
                     some: {} // Only genres with at least one associated gameGenre
                 }
             }
