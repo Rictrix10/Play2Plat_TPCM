@@ -77,15 +77,14 @@ const GenreController = {
                     }
                 },
 
-            getRandomGenreNames: async (req, res) => {
-                const count = parseInt(req.query.count) || 10; // Pode ajustar o valor padrão se necessário
-                try {
-                    const genreNames = await GenreModel.getRandomGenreNamesWithGames(count);
-                    res.json(genreNames);
-                } catch (error) {
-                    res.status(500).json({ error: 'Erro ao obter nomes de gêneros' });
-                }
-            },
+                    getRandomGenreNames: async (req, res) => {
+                        try {
+                            const genreNames = await GenreModel.getRandomGenreNamesWithGames();
+                            res.json(genreNames);
+                        } catch (error) {
+                            res.status(500).json({ error: 'Erro ao obter nomes de gêneros' });
+                        }
+                    },
         };
 
 module.exports = GenreController;
