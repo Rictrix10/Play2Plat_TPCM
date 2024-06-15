@@ -11,7 +11,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
@@ -23,10 +22,10 @@ class Intro_Page : AppCompatActivity() {
 
         // Verifica se o usuário está guardado nas SharedPreferences
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val currentUserId = sharedPreferences.getInt("user_id", 0)
+        val rememberMe = sharedPreferences.getBoolean("remember_me", false)
 
-        if (currentUserId != null) {
-            // Redireciona diretamente para a MainActivity
+        if (rememberMe) {
+            // Redireciona diretamente para a MainActivity se "Remember Me" estiver ativo
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -68,3 +67,4 @@ class Intro_Page : AppCompatActivity() {
         tvDescription.text = spannable
     }
 }
+

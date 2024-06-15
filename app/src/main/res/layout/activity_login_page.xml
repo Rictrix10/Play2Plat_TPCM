@@ -72,6 +72,16 @@
                     android:src="@drawable/ic_eye_off" />
             </RelativeLayout>
 
+            <CheckBox
+                android:id="@+id/checkbox_remember_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="@string/remember_me"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/m_plus_rounded_1c_medium" />
+
             <Button
                 android:id="@+id/btn_sign_in"
                 android:layout_width="250dp"

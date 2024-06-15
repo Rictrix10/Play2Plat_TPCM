@@ -92,4 +92,6 @@
     <string name="delete_account">Do you really want to delete the account?</string>
     <string name="digite_pass">Enter your password</string>
 
+    <string name="remember_me">Remember Me</string>
+
 </resources>

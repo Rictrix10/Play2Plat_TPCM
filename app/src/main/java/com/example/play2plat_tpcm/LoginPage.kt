@@ -12,6 +12,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -46,12 +47,15 @@ class LoginPage : AppCompatActivity() {
 
     private lateinit var etPassword: EditText
     private lateinit var ivTogglePasswordVisibility: ImageView
+    private lateinit var checkBoxRememberMe: CheckBox
     private var isPasswordVisible: Boolean = false
 
     private val userViewModel: UserViewModel by viewModels()
 
     companion object {
         private const val REQUEST_WRITE_STORAGE = 112
+        private const val PREFS_NAME = "user_data"
+        private const val KEY_REMEMBER_ME = "remember_me"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +71,7 @@ class LoginPage : AppCompatActivity() {
 
         etPassword = findViewById(R.id.et_password)
         ivTogglePasswordVisibility = findViewById(R.id.iv_toggle_password_visibility)
+        checkBoxRememberMe = findViewById(R.id.checkbox_remember_me)
 
         ivTogglePasswordVisibility.setOnClickListener {
             togglePasswordVisibility()
@@ -95,6 +100,8 @@ class LoginPage : AppCompatActivity() {
         if (hasPermission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_WRITE_STORAGE)
         }
+
+        checkRememberMe()
     }
 
     private fun togglePasswordVisibility() {
@@ -133,6 +140,8 @@ class LoginPage : AppCompatActivity() {
                         } else {
                             checkAndSaveUserToRoom(user, null)
                         }
+                        // Salvar estado da CheckBox
+                        saveRememberMeState(checkBoxRememberMe.isChecked)
                     } else {
                         Toast.makeText(this@LoginPage, R.string.error_response_from_server, Toast.LENGTH_SHORT).show()
                     }
@@ -153,7 +162,7 @@ class LoginPage : AppCompatActivity() {
     }
 
     private fun saveUserData(user: User1) {
-        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putInt("user_id", user.id)
         editor.putInt("user_type_id", user.userTypeId)
@@ -210,4 +219,22 @@ class LoginPage : AppCompatActivity() {
         }
         return file.absolutePath
     }
+
+    private fun saveRememberMeState(isChecked: Boolean) {
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(KEY_REMEMBER_ME, isChecked)
+        editor.apply()
+    }
+
+    private fun checkRememberMe() {
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val rememberMe = sharedPreferences.getBoolean(KEY_REMEMBER_ME, false)
+        if (rememberMe) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
 }
+
