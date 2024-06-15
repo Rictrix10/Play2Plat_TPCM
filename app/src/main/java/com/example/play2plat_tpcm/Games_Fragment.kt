@@ -84,9 +84,7 @@ class Games_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
-        collectionAdapter = CollectionsAdapter(context, collectionInfoValues, collectionTitle) { selectedOption ->
-            //updateUserGameStateWithSelectedOption(selectedOption)
-        }
+        collectionAdapter = CollectionsAdapter(context, collectionInfoValues, collectionTitle, 1, 1)
         collectionList.adapter = collectionAdapter
     }
 

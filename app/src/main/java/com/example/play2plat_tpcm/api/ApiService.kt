@@ -214,4 +214,13 @@ interface ApiService {
     @POST("games/filter")
     fun getFilteredGames(@Body filter: Filters): Call<List<GameFiltered>>
 
+    @GET("user-game-comments/{gameId}")
+    fun getPostsByGame(@Path("gameId") gameId: Int): Call<List<GameCommentsResponse>>
+
+    @GET("user-game/user/{userId}/game/{gameId}/state")
+    fun getUserGameState(
+        @Path("userId") userId: Int,
+        @Path("gameId") gameId: Int
+    ): Call<UserGameStateResponse>
+
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import com.example.play2plat_tpcm.adapters.CollectionsAdapter
 import android.util.Log
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 
 import android.widget.Button
 import androidx.core.content.ContextCompat
@@ -32,6 +35,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.viewpager2.widget.ViewPager2
 import com.example.play2plat_tpcm.api.Avaliation
 import com.example.play2plat_tpcm.api.UserGame
+import com.example.play2plat_tpcm.api.UserGameStateResponse
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlin.math.pow
@@ -59,10 +63,15 @@ class View_Game_Fragment : Fragment() {
     private var gameId: Int = 0
     private var selectedOption: String? = null
     private var currentUserType: Int = 0
+    private var userId: Int = 0
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
     private var dominantColor: Int = 0
     private var vibrantColor: Int = 0
+    private var clickCount: Int = 0
+    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var mushroomImage: ImageView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +89,6 @@ class View_Game_Fragment : Fragment() {
         // Initialize views
         nameTextView = view.findViewById(R.id.name)
         companyTextView = view.findViewById(R.id.company)
-
         gameImageView = view.findViewById(R.id.game)
         pegiInfoImageView = view.findViewById(R.id.pegi_info)
         isFreeImageView = view.findViewById(R.id.isFree)
@@ -90,27 +98,22 @@ class View_Game_Fragment : Fragment() {
         collectionAccordion = view.findViewById(R.id.collection_accordion)
         collectionTitle = view.findViewById(R.id.collection_title)
         collectionList = view.findViewById(R.id.collection_list)
-
         viewPager = view.findViewById(R.id.view_pager)
         tabLayout = view.findViewById(R.id.tab_layout)
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
+        userId = sharedPreferences.getInt("user_id", 0)
 
         backButton.setOnClickListener {
             requireActivity().onBackPressed()
         }
 
         loadCollections(view.context)
+        loadUserGameState() // Chame a função para carregar o estado do jogo
 
         collectionAccordion.setOnClickListener {
             toggleListVisibility(collectionList, collectionTitle)
-            handleAccordionSelection()
-        }
-
-        collectionList.setOnItemClickListener { parent, view, position, id ->
-            val selectedOption = if (position >= 0 && position < collectionInfoValues.size) collectionInfoValues[position] else null
-            updateUserGameStateWithSelectedOption(selectedOption)
         }
 
         val gameId = arguments?.getInt("gameId") ?: 6
@@ -203,12 +206,15 @@ class View_Game_Fragment : Fragment() {
         return view
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Load favorite state
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
+
+
+        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.mario_1up) // Replace with your audio file
+        mushroomImage = view.findViewById(R.id.mushroom_image)
+        mushroomImage.visibility = View.GONE
 
         ApiManager.apiService.getUserGameFavorites(userId).enqueue(object : Callback<List<UserGameFavorite>> {
             override fun onResponse(call: Call<List<UserGameFavorite>>, response: Response<List<UserGameFavorite>>) {
@@ -227,10 +233,55 @@ class View_Game_Fragment : Fragment() {
         })
 
         favoriteIcon.setOnClickListener {
-            toggleFavoriteState(userId, gameId)
+            toggleFavoriteState(userId, gameId, mediaPlayer)
         }
 
-        handleAccordionSelection()
+        if (clickCount >= 20) {
+            startMushroomAnimation()
+        }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Liberar recursos do mediaPlayer ao destruir o fragment
+        mediaPlayer.release()
+    }
+
+
+    private fun loadUserGameState() {
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+
+        ApiManager.apiService.getUserGameState(userId, gameId).enqueue(object : Callback<UserGameStateResponse> {
+            override fun onResponse(call: Call<UserGameStateResponse>, response: Response<UserGameStateResponse>) {
+                if (response.isSuccessful) {
+                    val userGameStateResponse = response.body()
+                    if (userGameStateResponse?.error == null) {
+                        // Jogo encontrado, manipule o estado do jogo
+                        val gameState = userGameStateResponse?.state
+                        selectOptionInAccordion(gameState)
+                    } else {
+                        // Erro encontrado, manipule o erro
+                        selectOptionInAccordion(null)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<UserGameStateResponse>, t: Throwable) {
+                // Handle failure
+            }
+        })
+    }
+
+    private fun selectOptionInAccordion(gameState: String?) {
+        val selectedPosition = collectionInfoValues.indexOf(gameState)
+        if (selectedPosition != -1) {
+            collectionAdapter.updateSelectedPosition(selectedPosition)
+            collectionTitle.text = gameState
+        } else {
+            collectionTitle.text = "Collections"
+        }
     }
 
 
@@ -252,9 +303,7 @@ class View_Game_Fragment : Fragment() {
     }
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
-        collectionAdapter = CollectionsAdapter(context, collectionInfoValues, collectionTitle) { selectedOption ->
-            updateUserGameStateWithSelectedOption(selectedOption)
-        }
+        collectionAdapter = CollectionsAdapter(context, collectionInfoValues, collectionTitle, userId, gameId)
         collectionList.adapter = collectionAdapter
     }
 
@@ -266,13 +315,20 @@ class View_Game_Fragment : Fragment() {
         }
     }
 
-    private fun toggleFavoriteState(userId: Int, gameId: Int) {
+    private fun toggleFavoriteState(userId: Int, gameId: Int, mediaPlayer: MediaPlayer) {
         if (isFavorited) {
             // Remove from favorites
             ApiManager.apiService.deleteUserGameFavorite(gameId, userId).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
                         isFavorited = false
+                        clickCount++
+
+                        // Verificar se atingiu 20 cliques consecutivos
+                        if (clickCount >= 20) {
+                            // Reiniciar contador de cliques
+                            startMushroomAnimation()
+                        }
                         updateFavoriteIcon()
                     } else {
                         // Handle the error response
@@ -289,6 +345,13 @@ class View_Game_Fragment : Fragment() {
             ApiManager.apiService.addUserGameFavorite(userGameFavorite).enqueue(object : Callback<UserGameFavorite> {
                 override fun onResponse(call: Call<UserGameFavorite>, response: Response<UserGameFavorite>) {
                     if (response.isSuccessful) {
+                        clickCount++
+
+                        // Verificar se atingiu 20 cliques consecutivos
+                        if (clickCount >= 20) {
+                            // Reiniciar contador de cliques
+                            startMushroomAnimation()
+                        }
                         isFavorited = true
                         updateFavoriteIcon()
                     } else {
@@ -303,6 +366,34 @@ class View_Game_Fragment : Fragment() {
         }
     }
 
+    private fun startMushroomAnimation() {
+        clickCount = 0 // Reinicia o contador de cliques
+
+        // Exibe o cogumelo
+        mushroomImage.visibility = View.VISIBLE
+
+        // Configura a animação
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.mushroom_animation)
+        animation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                // Inicia o som do 1up do Mario quando a animação começa
+                mediaPlayer.start()
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                // Esconde o cogumelo quando a animação termina
+                mushroomImage.visibility = View.GONE
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {}
+        })
+
+        // Inicia a animação no cogumelo
+        mushroomImage.startAnimation(animation)
+    }
+
+
+
     private fun toggleListVisibility(listView: ListView, titleView: TextView) {
         // Obter a altura em pixels correspondente a 40dp
         val heightInPx = 40.dpToPx()
@@ -315,166 +406,13 @@ class View_Game_Fragment : Fragment() {
         } else {
             // Se a lista está oculta, exibe e ajusta a altura e as margens
             listView.visibility = View.VISIBLE
-            setListViewHeightBasedOnItems(listView)
-            collectionAccordion.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            setListViewHeightBasedOnItems(listView) // Chame a função para ajustar a altura do ListView
+            collectionAccordion.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT // Defina a altura para wrap_content
             titleView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_spinner_up, 0)
         }
         // Solicite uma nova medida do layout após alterar os parâmetros de layout
         collectionAccordion.requestLayout()
-
-        // Verifique se a lista está visível para evitar chamadas desnecessárias
-        if (listView.visibility == View.VISIBLE) {
-            handleAccordionSelection()
-        }
     }
-
-    private var userGameState: String? = null
-    private fun handleAccordionSelection() {
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
-
-        Log.d("View_Game_Fragment", "Fetching user games for userId: $userId")
-
-        ApiManager.apiService.getUserGame(userId).enqueue(object : Callback<List<UserGame>> {
-            override fun onResponse(call: Call<List<UserGame>>, response: Response<List<UserGame>>) {
-                if (response.isSuccessful) {
-                    val userGames = response.body()
-                    if (userGames != null) {
-                        val userGame = userGames.find { it.gameId == gameId }
-                        val newUserGameState = userGame?.state // Armazenar o estado do jogo do usuário
-
-                        // Verificar se o estado do jogo do usuário é diferente do estado selecionado atualmente
-                        if (newUserGameState != selectedOption) {
-                            userGameState = newUserGameState
-                            selectOptionInAccordion(userGameState ?: "")
-                        }
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<List<UserGame>>, t: Throwable) {
-                Log.e("View_Game_Fragment", "Failed to fetch user games", t)
-            }
-        })
-    }
-
-
-    private fun updateUserGameStateWithSelectedOption(option: String?) {
-        selectedOption = option
-        collectionTitle.text = option ?: "Collections"
-
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
-
-        ApiManager.apiService.getUserGame(userId).enqueue(object : Callback<List<UserGame>> {
-            override fun onResponse(call: Call<List<UserGame>>, response: Response<List<UserGame>>) {
-                if (response.isSuccessful) {
-                    val userGames = response.body()
-                    val existingUserGame = userGames?.find { it.gameId == gameId }
-                    if (existingUserGame == null) {
-                        // Não existe um UserGame, então adicionamos um novo
-                        if (option != null) {
-                            addUserGame(userId, gameId, option)
-                        }
-                    } else if (option == null) {
-                        Log.d("View_Game_Fragment", "DELETING....")
-                        deleteUserGame(userId, gameId)
-                    } else {
-                        Log.d("View_Game_Fragment", "UPDATING....")
-                        updateUserGameState(userId, gameId, option)
-                    }
-                } else {
-                    // Handle error response
-                }
-            }
-
-            override fun onFailure(call: Call<List<UserGame>>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
-
-
-    private fun addUserGame(userId: Int, gameId: Int, option: String) {
-        val userGame = UserGame(userId, gameId, option)
-        ApiManager.apiService.addUserGame(userGame).enqueue(object : Callback<UserGame> {
-            override fun onResponse(call: Call<UserGame>, response: Response<UserGame>) {
-                if (response.isSuccessful) {
-                    // UserGame adicionado com sucesso
-                    Log.d("View_Game_Fragment", "User game added successfully")
-                } else {
-                    // Handle error response
-                }
-            }
-
-            override fun onFailure(call: Call<UserGame>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
-
-    private fun deleteUserGame(userId: Int, gameId: Int) {
-        ApiManager.apiService.deleteUserGame(userId, gameId).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.isSuccessful) {
-                    // UserGame deletado com sucesso
-                    Log.d("View_Game_Fragment", "User game deleted successfully")
-                    collectionTitle.text = "Collections" // Atualize o título para "Collections"
-                    selectedOption = null
-                } else {
-                    // Handle error response
-                }
-            }
-
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
-
-
-
-    private fun selectOptionInAccordion(state: String) {
-        collectionTitle.text = state // Selecionar a opção no accordion
-        Log.d("View_Game_Fragment", "Selected state in accordion: $state")
-        Log.d("View_Game_Fragment", "OPCAO ATUAL: $selectedOption")
-        // Verificar se o estado do jogo do usuário foi alterado
-        if (state != selectedOption) {
-            // Atualizar o estado do jogo do usuário localmente
-            selectedOption = state
-            // Atualizar o estado do jogo do usuário no servidor
-            val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-            val userId = sharedPreferences.getInt("user_id", 0)
-
-            //val newstate = "Concluded"
-            updateUserGameState(userId, gameId, state)
-        }
-
-        // Logar o estado selecionado localmente
-        Log.d("View_Game_Fragment", "Selected option: $selectedOption")
-    }
-
-
-    private fun updateUserGameState(userId: Int, gameId: Int, state: String) {
-        val userGame = UserGame(userId, gameId, state)
-        ApiManager.apiService.updateUserGame(userId, gameId, userGame).enqueue(object : Callback<UserGame> {
-            override fun onResponse(call: Call<UserGame>, response: Response<UserGame>) {
-                if (response.isSuccessful) {
-                    // O patch foi bem-sucedido
-                    Log.d("View_Game_Fragment", "User game state updated successfully")
-                } else {
-                    // O patch falhou
-                    Log.e("View_Game_Fragment", "Failed to update user game state: ${response.code()}")
-                }
-            }
-
-            override fun onFailure(call: Call<UserGame>, t: Throwable) {
-                // Falha ao fazer o patch
-                Log.e("View_Game_Fragment", "Failed to update user game state", t)
-            }
-        })
-    }
-
 
     fun setListViewHeightBasedOnItems(listView: ListView) {
         val listAdapter = listView.adapter ?: return
@@ -498,80 +436,6 @@ class View_Game_Fragment : Fragment() {
         val scale = resources.displayMetrics.density
         return (this * scale + 0.5f).toInt()
     }
-
-    /*
-    private fun handleStarClick(rating: Int) {
-        if (rating == currentRating) {
-            // Reset stars if the same rating is clicked again
-            updateStarViews(0)
-            currentRating = 0
-        } else {
-            // Update stars to the new rating
-            updateStarViews(rating)
-            currentRating = rating
-        }
-    }
-     */
-
-
-
-
-
-
-
-
-    private fun addAvaliation(userId: Int, gameId: Int, stars: Int) {
-        val avaliation = Avaliation(userId, gameId, stars.toFloat())
-        ApiManager.apiService.addAvaliation(avaliation).enqueue(object : Callback<Avaliation> {
-            override fun onResponse(call: Call<Avaliation>, response: Response<Avaliation>) {
-                if (response.isSuccessful) {
-                    Log.d("View_Game_Fragment", "Avaliation added successfully")
-                } else {
-                    // Handle error response
-                }
-            }
-
-            override fun onFailure(call: Call<Avaliation>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
-
-    private fun updateAvaliation(userId: Int, gameId: Int, stars: Int) {
-        val avaliation = Avaliation(userId, gameId, stars.toFloat())
-        ApiManager.apiService.updateAvaliation(userId, gameId, avaliation).enqueue(object : Callback<Avaliation> {
-            override fun onResponse(call: Call<Avaliation>, response: Response<Avaliation>) {
-                if (response.isSuccessful) {
-                    Log.d("View_Game_Fragment", "Avaliation updated successfully")
-                } else {
-                    // Handle error response
-                }
-            }
-
-            override fun onFailure(call: Call<Avaliation>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
-
-    private fun deleteAvaliation(userId: Int, gameId: Int) {
-        ApiManager.apiService.deleteAvaliation(userId, gameId).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.isSuccessful) {
-                    Log.d("View_Game_Fragment", "Avaliation deleted successfully")
-                } else {
-                    // Handle error response
-                }
-            }
-
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                // Handle failure
-            }
-        })
-    }
-
-
-
     companion object {
         private const val ARG_GAME_ID = "gameId"
         @JvmStatic
@@ -584,7 +448,6 @@ class View_Game_Fragment : Fragment() {
                 }
             }
     }
-
 }
 
 

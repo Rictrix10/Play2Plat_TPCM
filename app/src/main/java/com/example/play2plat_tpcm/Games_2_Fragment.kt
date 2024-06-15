@@ -41,11 +41,6 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var TitleLayout: ConstraintLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    // No método onCreateView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,11 +55,10 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         TitleLayout = view.findViewById(R.id.title_container)
 
         loadCollections(view.context)
-        showFilteredGames("Playing")
+        showFilteredGames(collectionTitle.text.toString())
 
         collectionAccordion.setOnClickListener {
             toggleListVisibility(collectionList, collectionTitle)
-            // Aqui, além de alternar a visibilidade da lista, atualizamos os jogos com base na coleção selecionada
         }
 
         collectionTitle.addTextChangedListener(object : TextWatcher {
@@ -83,7 +77,7 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         })
 
         if (!childFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Grid_Fragment.newInstance("Playing", "", null)
+            val fragment = Games_List_Grid_Fragment.newInstance(collectionTitle.text.toString(), "", null)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
@@ -105,14 +99,15 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         }
     }
 
-
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
         collectionAdapter = Collections_2_Adapter(context, collectionInfoValues, collectionTitle)
         collectionList.adapter = collectionAdapter
 
-        // Define o título inicial como "Playing"
-        collectionTitle.text = "Playing"
+        // Define o título inicial como "Playing" (ou a última coleção visualizada)
+        collectionTitle.text = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+            .getString("last_collection", "Playing") ?: "Playing"
+
         setListViewHeightBasedOnItems(collectionList)
     }
 
@@ -154,11 +149,6 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         return (this * scale + 0.5f).toInt()
     }
 
-    private fun Int.pxToDp(): Int {
-        val scale = resources.displayMetrics.density
-        return ((this - 0.5f)/scale).toInt()
-    }
-
     private fun redirectToViewGame(gameId: Int) {
         val platforms = arrayListOf<String>()
 
@@ -173,3 +163,4 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         redirectToViewGame(gameId)
     }
 }
+
