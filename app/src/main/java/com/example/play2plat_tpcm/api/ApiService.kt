@@ -223,4 +223,7 @@ interface ApiService {
         @Path("gameId") gameId: Int
     ): Call<UserGameStateResponse>
 
+    @GET("genres/random-names")
+    fun getRandomNames(): Call<RandomGenresResponse>
+
 }
