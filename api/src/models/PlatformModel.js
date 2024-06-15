@@ -20,7 +20,7 @@ const PlatformModel = {
                     name: true
                 },
                 where: {
-                    platformGames: {
+                    platformGame: {
                         some: {} // Only platforms with at least one associated game in platformGames
                     }
                 }
