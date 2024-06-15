@@ -158,8 +158,8 @@ model userGameComment {
   userId        Int
   gameId        Int
   date          DateTime?
-  latitude      Float
-  longitude     Float
+  latitude      Float?
+  longitude     Float?
   location      String?
 
 }
