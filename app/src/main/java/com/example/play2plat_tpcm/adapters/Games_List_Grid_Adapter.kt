@@ -1,8 +1,10 @@
 package com.example.play2plat_tpcm.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.play2plat_tpcm.R
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.databinding.ItemGameGridBinding
 import com.squareup.picasso.Picasso
@@ -31,6 +33,8 @@ class Games_List_Grid_Adapter(
 
     override fun onBindViewHolder(holder: GameCoverViewHolder, position: Int) {
         holder.bind(games[position])
+
+
     }
 
     override fun getItemCount() = games.size

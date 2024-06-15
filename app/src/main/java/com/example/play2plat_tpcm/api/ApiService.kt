@@ -217,4 +217,10 @@ interface ApiService {
     @GET("user-game-location-comments/{gameId}")
     fun getPostsByGame(@Path("gameId") gameId: Int): Call<List<GameCommentsResponse>>
 
+    @GET("user-game/user/{userId}/game/{gameId}/state")
+    fun getUserGameState(
+        @Path("userId") userId: Int,
+        @Path("gameId") gameId: Int
+    ): Call<UserGameStateResponse>
+
 }

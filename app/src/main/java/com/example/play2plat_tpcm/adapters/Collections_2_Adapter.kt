@@ -15,7 +15,15 @@ class Collections_2_Adapter(
     private val collectionTitle: TextView
 ) : ArrayAdapter<String>(context, 0, values) {
 
-    private var selectedPosition: Int = values.indexOf("Playing") // Posição inicial é a do item "Playing"
+    private var selectedPosition: Int = -1
+
+    init {
+        // Carregar a última coleção visualizada do SharedPreferences
+        val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val lastCollection = sharedPreferences.getString("last_collection", "Playing")
+        selectedPosition = values.indexOf(lastCollection)
+        collectionTitle.text = lastCollection
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.collections_list_item, parent, false)
@@ -46,6 +54,10 @@ class Collections_2_Adapter(
                 selectedPosition = position
                 // Atualiza o título da coleção na tela principal
                 collectionTitle.text = "${values[position]}"
+
+                // Salvar a última coleção visualizada no SharedPreferences
+                val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString("last_collection", values[position]).apply()
             }
             // Notifica o adaptador sobre a alteração para atualizar a interface do usuário
             notifyDataSetChanged()
@@ -58,3 +70,4 @@ class Collections_2_Adapter(
         return selectedPosition
     }
 }
+
