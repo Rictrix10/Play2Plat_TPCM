@@ -25,7 +25,21 @@ const GenreModel = {
             }
             const randomIndex = Math.floor(Math.random() * genres.length);
             return genres[randomIndex].name;
-        }
+        },
+
+            getRandomGenreNameExcluding: async (excludeNames) => {
+                const genres = await prisma.genre.findMany({
+                    select: {
+                        name: true
+                    }
+                });
+                const filteredGenres = genres.filter(genre => !excludeNames.includes(genre.name));
+                if (filteredGenres.length === 0) {
+                    return null;
+                }
+                const randomIndex = Math.floor(Math.random() * filteredGenres.length);
+                return filteredGenres[randomIndex].name;
+            }
 };
 
 module.exports = GenreModel;

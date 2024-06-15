@@ -8,4 +8,6 @@ router.get('/genres', GenreController.getGenres);
 
 router.get('/genres/random-name', GenreController.getRandomGenreName);
 
+router.get('/genres/random-name-excluding', GenreController.getRandomGenreNameExcluding);
+
 module.exports = router;

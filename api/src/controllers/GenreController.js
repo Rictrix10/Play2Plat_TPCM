@@ -32,7 +32,23 @@ const GenreController = {
                     console.error('Erro ao buscar nome de género aleatório:', error);
                     res.status(500).json({ error: 'Erro ao buscar nome de género aleatório' });
                 }
-            }
+            },
+
+                getRandomGenreNameExcluding: async (req, res) => {
+                    try {
+                        const { excludeNames } = req.query;
+                        const excludeArray = excludeNames ? excludeNames.split(',') : [];
+                        const genreName = await GenreModel.getRandomGenreNameExcluding(excludeArray);
+                        if (!genreName) {
+                            res.status(404).json({ error: 'Nenhum género encontrado' });
+                        } else {
+                            res.json({ name: genreName });
+                        }
+                    } catch (error) {
+                        console.error('Erro ao buscar nome de género aleatório com exclusões:', error);
+                        res.status(500).json({ error: 'Erro ao buscar nome de género aleatório com exclusões' });
+                    }
+                }
 };
 
 module.exports = GenreController;
