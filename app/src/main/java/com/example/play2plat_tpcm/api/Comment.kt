@@ -6,7 +6,7 @@ data class Comment(
     val isAnswer: Int?,
     val userId: Int,
     val gameId: Int,
-    val latitude: Double,
-    val longitude: Double,
-    val location: String
+    val latitude: Double?,
+    val longitude: Double?,
+    val location: String?
 )
