@@ -21,6 +21,8 @@ router.patch('/user-game-comments/:id', UserGameCommentsController.updateUserGam
 
 router.delete('/user-game-comments/:id', UserGameCommentsController.deleteUserGameCommentById);
 
+router.get('/user-game-location-comments/:gameId', UserGameCommentsController.getLocationCommentsByGameId);
+
 module.exports = router;
 
 

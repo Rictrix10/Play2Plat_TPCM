@@ -216,8 +216,39 @@ const UserGameCommentsModel = {
 
         // Inicie a exclusão em cascata a partir do comentário original
         return await deleteCascade(id);
+    },
+
+    getLocationCommentsByGameId: async (gameId) => {
+        console.log('gameId:', gameId); // Adicione este log para verificar gameId
+        return await prisma.userGameComment.findMany({
+            where: {
+                gameId: gameId,
+                latitude: {
+                    not: null
+                },
+                longitude: {
+                    not: null
+                }
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                    }
+                },
+                game: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        });
     }
-        };
+
+    };
 
 module.exports = UserGameCommentsModel;
 

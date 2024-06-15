@@ -160,8 +160,22 @@ const UserGameCommentsController = {
             console.error('Erro ao deletar comentário:', error);
             res.status(500).json({ error: 'Erro interno ao deletar comentário' });
         }
-    }
-        };
+    },
+
+        getLocationCommentsByGameId: async (req, res) => {
+            try {
+                const gameId = parseInt(req.params.gameId, 10);
+                if (isNaN(gameId)) {
+                    return res.status(400).json({ error: 'gameId inválido' });
+                }
+                const comments = await UserGameCommentsModel.getLocationCommentsByGameId(gameId);
+                res.json(comments);
+            } catch (error) {
+                console.error('Erro ao buscar comentários por gameId:', error);
+                res.status(500).json({ error: 'Erro ao buscar comentários' });
+            }
+        },
+    };
 
 module.exports = UserGameCommentsController;
 
