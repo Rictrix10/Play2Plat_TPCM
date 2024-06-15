@@ -12,4 +12,5 @@ router.get('/genres/random-name-excluding', GenreController.getRandomGenreNameEx
 
 router.get('/genres/exclude-genres/:excludeName1/:excludeName2', GenreController.getRandomGenreNameExcludingUrl);
 
+router.get('/genres/random-names', GenreController.getRandomGenreNames);
 module.exports = router;
