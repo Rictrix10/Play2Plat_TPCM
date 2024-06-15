@@ -216,8 +216,44 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     }
                 }
             } else {
-                Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
+                postCommentWithNoLocation(userId, gameId)
             }
+        }
+    }
+
+    private fun postCommentWithNoLocation(userId: Int, gameId: Int) {
+        val comments = commentEditTextView.text.toString()
+        if (selectedImageUri != null) {
+            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+            val file = bitmapToFile(requireContext(), bitmap)
+            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+
+            val call = ApiManager.apiService.uploadImage(imagePart)
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if (response.isSuccessful) {
+                        val imageUrl = response.body()?.string()
+                        imageUrl?.let {
+                            val pattern = Regex("\"url\":\"(\\S+)\"")
+                            val matchResult = pattern.find(it)
+                            matchResult?.let { result ->
+                                val coverImageUrl = result.groupValues[1]
+                                postComment(comments, coverImageUrl, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
+                            }
+                        }
+                    } else {
+                        Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                }
+            })
+        } else {
+            postComment(comments, null, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
         }
     }
 
@@ -264,7 +300,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
 
 
-    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double, longitude: Double, locationInfo: LocationInfo) {
+    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double?, longitude: Double?, locationInfo: LocationInfo) {
         val locationName = "${locationInfo.countryName}, ${locationInfo.adminName2}"
         val newComment = Comment(
             comments = comments,

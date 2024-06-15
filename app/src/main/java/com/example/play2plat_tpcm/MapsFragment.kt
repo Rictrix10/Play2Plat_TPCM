@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.fragment.app.Fragment
@@ -99,11 +100,37 @@ class MapsFragment : Fragment() {
 
     private fun addMarkersToMap(comments: List<GameCommentsResponse>) {
         for (comment in comments) {
+            if (comment.latitude == null || comment.longitude == null) {
+                Log.w(
+                    "MapsFragment",
+                    "Skipping comment with null latitude or longitude: ${comment.comments}"
+                )
+                continue
+            }
             val location = LatLng(comment.latitude, comment.longitude)
             Log.d("MapsFragment", "Adding marker for comment: ${comment.comments} at $location")
 
+            // Verificar se o avatar é nulo e definir a imagem padrão se necessário
+            val avatarUrl = comment.user.avatar ?: ""
+
+            if (avatarUrl.isEmpty()) {
+                val drawableResId = R.drawable.noimageprofile
+                val bitmap = BitmapFactory.decodeResource(resources, drawableResId)
+                val resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false)
+                val roundedBitmap = getRoundedBitmap(resizedBitmap)
+                val markerOptions = MarkerOptions()
+                    .position(location)
+                    .title(comment.comments)  // Usando o comentário como title
+                    .snippet("${comment.user.username}")  // Usando o username como snippet
+                    .icon(BitmapDescriptorFactory.fromBitmap(roundedBitmap))
+                googleMap.addMarker(markerOptions)
+                Log.d(
+                    "MapsFragment",
+                    "Marker added for comment with default avatar: ${comment.comments}"
+                )
+
             // Carregar a imagem do avatar usando Picasso e arredondar
-            Picasso.get()
+            } else{ Picasso.get()
                 .load(comment.user.avatar)
                 .resize(50, 50)
                 .into(object : Target {
@@ -120,8 +147,14 @@ class MapsFragment : Fragment() {
                         }
                     }
 
-                    override fun onBitmapFailed(e: Exception?, errorDrawable: android.graphics.drawable.Drawable?) {
-                        Log.e("MapsFragment", "Failed to load avatar for comment: ${comment.comments}, error: ${e?.message}")
+                    override fun onBitmapFailed(
+                        e: Exception?,
+                        errorDrawable: android.graphics.drawable.Drawable?
+                    ) {
+                        Log.e(
+                            "MapsFragment",
+                            "Failed to load avatar for comment: ${comment.comments}, error: ${e?.message}"
+                        )
                     }
 
                     override fun onPrepareLoad(placeHolderDrawable: android.graphics.drawable.Drawable?) {
@@ -129,9 +162,10 @@ class MapsFragment : Fragment() {
                     }
                 })
         }
+    }
 
         // Movimentar a câmera para o primeiro marcador (opcional)
-        comments.firstOrNull()?.let {
+        comments.firstOrNull { it.latitude != null && it.longitude != null }?.let {
             val firstLocation = LatLng(it.latitude, it.longitude)
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLocation, 10f))
             Log.d("MapsFragment", "Camera moved to first comment location: $firstLocation")

@@ -89,6 +89,13 @@ class GamePostsAdapter(
             holder.imagePost.visibility = View.GONE
         }
 
+        if (post.location != "null, null") {
+            holder.location.text = post.location
+            holder.location.visibility = View.VISIBLE
+        } else {
+            holder.location.visibility = View.GONE
+        }
+
         // Carregar as respostas do post
         holder.responseList.layoutManager = LinearLayoutManager(holder.itemView.context)
         getPostsAnswers(post.id, holder.responseList)
