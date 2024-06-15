@@ -77,14 +77,25 @@ const GenreController = {
                     }
                 },
 
-                    getRandomGenreNames: async (req, res) => {
-                        try {
-                            const genreNames = await GenreModel.getRandomGenreNamesWithGames();
-                            res.json(genreNames);
-                        } catch (error) {
-                            res.status(500).json({ error: 'Erro ao obter nomes de gêneros' });
-                        }
-                    },
-        };
+    getRandomGenreNames: async (req, res) => {
+        try {
+            let { count } = req.query;
+            count = parseInt(count) || 3; // Padrão para retornar até 3 nomes
+
+            const genreNames = await GenreModel.getRandomGenreNames(count);
+
+            if (genreNames.length === 0) {
+                res.status(404).json({ error: 'Nenhum gênero encontrado' });
+            } else {
+                res.json({ names: genreNames });
+            }
+        } catch (error) {
+            console.error('Erro ao buscar nomes de gêneros aleatórios:', error);
+            res.status(500).json({ error: 'Erro ao buscar nomes de gêneros aleatórios' });
+        }
+    }
+
+
+            };
 
 module.exports = GenreController;
