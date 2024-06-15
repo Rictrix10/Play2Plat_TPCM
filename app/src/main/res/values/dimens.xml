@@ -1,0 +1,4 @@
+<!-- res/values/dimens.xml -->
+<resources>
+    <dimen name="margin_horizontal_first_item">8dp</dimen>
+</resources>

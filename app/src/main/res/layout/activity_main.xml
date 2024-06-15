@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <!-- Conteúdo principal (FrameLayout) -->
@@ -13,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tab_bar"
-        android:paddingBottom="60dp" />
+         />
 
     <!-- Barra de abas -->
     <include

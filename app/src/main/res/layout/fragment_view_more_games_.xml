@@ -60,13 +60,23 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/container"
+        app:layout_constraintBottom_toTopOf="@+id/last_item_margin"
         android:layout_gravity="center_horizontal"
         />
+
+    <View
+        android:id="@+id/last_item_margin"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

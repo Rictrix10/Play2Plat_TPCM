@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,12 +39,8 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var collectionInfoValues: Array<String>
     private lateinit var collectionAdapter: Collections_2_Adapter
     private lateinit var fragmentContainer: FrameLayout
+    private lateinit var TitleLayout: ConstraintLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    // No método onCreateView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,13 +52,13 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         collectionTitle = view.findViewById(R.id.collection_title)
         collectionList = view.findViewById(R.id.collection_list)
         fragmentContainer = view.findViewById(R.id.fragment_container)
+        TitleLayout = view.findViewById(R.id.title_container)
 
         loadCollections(view.context)
-        showFilteredGames("Playing")
+        showFilteredGames(collectionTitle.text.toString())
 
         collectionAccordion.setOnClickListener {
             toggleListVisibility(collectionList, collectionTitle)
-            // Aqui, além de alternar a visibilidade da lista, atualizamos os jogos com base na coleção selecionada
         }
 
         collectionTitle.addTextChangedListener(object : TextWatcher {
@@ -79,22 +76,8 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             }
         })
 
-        val accordionHeight = 50.dpToPx()
-
-        // Obtém a altura da tela
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-
-        // Calcula a altura disponível para o FrameLayout
-        val availableHeight = screenHeight - accordionHeight
-
-        // Define a altura do FrameLayout
-        val layoutParams = fragmentContainer.layoutParams
-        layoutParams.height = availableHeight
-        fragmentContainer.layoutParams = layoutParams
-
         if (!childFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Grid_Fragment.newInstance("Playing", "", null)
+            val fragment = Games_List_Grid_Fragment.newInstance(collectionTitle.text.toString(), "", null)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
@@ -116,14 +99,15 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         }
     }
 
-
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)
         collectionAdapter = Collections_2_Adapter(context, collectionInfoValues, collectionTitle)
         collectionList.adapter = collectionAdapter
 
-        // Define o título inicial como "Playing"
-        collectionTitle.text = "Playing"
+        // Define o título inicial como "Playing" (ou a última coleção visualizada)
+        collectionTitle.text = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+            .getString("last_collection", "Playing") ?: "Playing"
+
         setListViewHeightBasedOnItems(collectionList)
     }
 
@@ -179,3 +163,4 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         redirectToViewGame(gameId)
     }
 }
+
