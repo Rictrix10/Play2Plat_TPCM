@@ -226,4 +226,12 @@ interface ApiService {
     @GET("genres/random-names")
     fun getRandomNames(): Call<RandomGenresResponse>
 
+    @DELETE("user-game-comments/{id}")
+    fun deleteComment(@Path("id") id: Int): Call<Void>
+
+    @PATCH("user-game-comments/{id}")
+    fun updateComment(@Path("id") id: Int, @Body comment: Comment): Call<Comment>
+
+    @GET("user-game-comments/{id}")
+    fun getCommentById(@Path("id") id: Int): Call<List<GameCommentsResponse>>
 }
