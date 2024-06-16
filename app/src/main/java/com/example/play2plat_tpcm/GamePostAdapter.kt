@@ -22,6 +22,7 @@ import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -61,7 +62,11 @@ class GamePostsAdapter(
         val imagePost: ImageView = itemView.findViewById(R.id.image_post)
         val responseList: RecyclerView = itemView.findViewById(R.id.response_list)
         val replyIcon: ImageView = itemView.findViewById(R.id.reply_icon)
+        val moreOptions: ImageView = itemView.findViewById(R.id.more_options)
+
+
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GamePostViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_game_post, parent, false)
@@ -70,10 +75,12 @@ class GamePostsAdapter(
 
     override fun onBindViewHolder(holder: GamePostViewHolder, position: Int) {
         val post = posts[position]
+        val context = holder.itemView.context
         holder.username.text = post.user.username
         holder.location.text = post.location
         holder.textPost.text = post.comments
         Picasso.get().load(post.user.avatar).into(holder.profilePicture)
+
 
         holder.imagePost.setOnClickListener {
             val fragment = FullScreenImageFragment.newInstance(post.image)
@@ -106,6 +113,16 @@ class GamePostsAdapter(
 
         holder.replyIcon.setOnClickListener {
             onReplyClickListener.onReplyClick(post.id, post.user.username)
+        }
+
+        val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+
+        // Verificar se o userId do post corresponde ao userId do SharedPreferences
+        if (post.user.id == userId) {
+            holder.moreOptions.visibility = View.VISIBLE
+        } else {
+            holder.moreOptions.visibility = View.GONE
         }
 
         if (post.isAnswer == null) {
