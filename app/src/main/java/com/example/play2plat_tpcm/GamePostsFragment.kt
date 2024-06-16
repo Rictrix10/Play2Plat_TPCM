@@ -576,18 +576,22 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         editButton.setOnClickListener {
             if (clicked == 0) {
                 clicked = 1
-
+                getCommentDetails(postId)
                 sendImageView.setOnClickListener {
                     getLocationAndPatchComment(userId, gameId)
                 }
             } else {
                 clicked = 0
+                commentEditTextView.setText(null)
+                sendImageView.setOnClickListener {
+                    getLocationAndPostComment(userId, gameId)
+                }
             }
         }
 
     }
 
-    /*
+
     private fun getCommentDetails(postId: Int) {
         ApiManager.apiService.getCommentById(postId).enqueue(object : Callback<Comment> {
             override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
@@ -610,7 +614,6 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
 
-     */
 
     private fun deleteComment(postId: Int, userId: Int) {
         ApiManager.apiService.deleteComment(postId).enqueue(object : Callback<Void> {
