@@ -42,7 +42,8 @@ import java.io.FileOutputStream
 class GamePostsAdapter(
     private val posts: List<GameCommentsResponse>,
     private val onProfilePictureClickListener: OnProfilePictureClickListener,
-    private val onReplyClickListener: OnReplyClickListener
+    private val onReplyClickListener: OnReplyClickListener,
+    private val onOptionsClickListener: onMoreOptionsClickListener // Corrigir o nome da interface
 ) : RecyclerView.Adapter<GamePostsAdapter.GamePostViewHolder>() {
 
     interface OnProfilePictureClickListener {
@@ -51,6 +52,10 @@ class GamePostsAdapter(
 
     interface OnReplyClickListener {
         fun onReplyClick(postId: Int, username: String)
+    }
+
+    interface onMoreOptionsClickListener{
+        fun onOptionsClick(postId: Int)
     }
 
 
@@ -115,6 +120,10 @@ class GamePostsAdapter(
             onReplyClickListener.onReplyClick(post.id, post.user.username)
         }
 
+        holder.moreOptions.setOnClickListener{
+            onOptionsClickListener.onOptionsClick(post.id)
+        }
+
         val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
 
@@ -149,7 +158,7 @@ class GamePostsAdapter(
                             override fun onProfilePictureClick(userId: Int) {
                                 // Handle profile picture click for answers if needed
                             }
-                        }, onReplyClickListener)
+                        }, onReplyClickListener, onOptionsClickListener)
                     }
                 } else {
                     Log.e("GamePostsAdapter", "Erro na resposta: ${response.errorBody()}")
@@ -161,5 +170,6 @@ class GamePostsAdapter(
             }
         })
     }
+
     fun getPostAtPosition(position: Int): GameCommentsResponse = posts[position]
 }
