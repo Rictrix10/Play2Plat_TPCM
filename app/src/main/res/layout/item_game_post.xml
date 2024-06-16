@@ -137,6 +137,7 @@
             android:id="@+id/option_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableStart="@drawable/delete_icon"
             android:background="@drawable/button_bd_3"
             android:textColor="@color/WHITE"
             android:text="Apagar"
