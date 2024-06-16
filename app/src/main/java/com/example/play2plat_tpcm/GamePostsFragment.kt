@@ -116,6 +116,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
         container_layout.background = gradientDrawable
 
+        imageImageView.setImageResource(R.drawable.image)
+
         imageImageView.setOnClickListener {
             selectVisualMedia()
         }
@@ -203,7 +205,9 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                                         }
                                     }
                                 } else {
-                                    Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                                    //Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                                    Log.e("AddNewComment", "Erro no upload: $errorBody")
                                 }
                             }
 
@@ -319,6 +323,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     if (response.isSuccessful) {
                         val postComment = response.body()
                         Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
+                        commentEditTextView.text.clear()
+                        selectedImageUri = null
+                        imageImageView.setImageResource(R.drawable.image)
+
                         getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error posting comment: ${response.message()}")
