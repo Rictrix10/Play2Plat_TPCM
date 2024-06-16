@@ -110,40 +110,4 @@
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/more_options_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@id/post_container"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp">
-
-        <!-- Adicione suas opções aqui -->
-        <Button
-            android:id="@+id/option_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/edit"
-            android:background="@drawable/button_bd_3"
-            android:text="Editar"
-            android:textColor="@color/WHITE"
-            android:padding="8dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/option_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/delete_icon"
-            android:background="@drawable/button_bd_3"
-            android:textColor="@color/WHITE"
-            android:text="Apagar"
-            android:padding="8dp"
-            app:layout_constraintTop_toBottomOf="@id/option_edit"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
