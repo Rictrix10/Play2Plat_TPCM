@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Avaliation
+import com.example.play2plat_tpcm.api.AverageStars
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,12 +22,16 @@ class InteractFragment : Fragment() {
 
     private lateinit var starViews: List<ImageView>
     private lateinit var postsLayout: LinearLayout
+    private lateinit var circularProgress: CircularProgressIndicator
+    private lateinit var averageRatingText: TextView
+    private lateinit var starIcon: ImageView
     private var currentRating = 0
     private var gameId: Int = 0
     private var userId: Int = 0
     private var gameName: String? = null
     private var primaryColor: Int = 0
     private var secondaryColor: Int = 0
+    private var averageRating: Float = 0.0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +40,7 @@ class InteractFragment : Fragment() {
             gameName = it.getString(ARG_GAME_NAME)
             primaryColor = it.getInt(ARG_PRIMARY_COLOR)
             secondaryColor = it.getInt(ARG_SECONDARY_COLOR)
+            averageRating = it.getFloat(ARG_AVERAGE_STARS)
         }
     }
 
@@ -43,6 +51,10 @@ class InteractFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_interact, container, false)
         postsLayout = view.findViewById(R.id.posts_box)
+        circularProgress = view.findViewById(R.id.circular_progress)
+        averageRatingText = view.findViewById(R.id.average_rating_text)
+        starIcon = view.findViewById(R.id.star_icon)
+
         // Initialize star views
         starViews = listOf(
             view.findViewById(R.id.star1),
@@ -62,8 +74,14 @@ class InteractFragment : Fragment() {
 
         loadUserAvaliation(userId, gameId)
 
-        Log.d("Interact_Fragment", "Colors for Gradient: $primaryColor and $secondaryColor")
+        // Set average rating and circular progress
 
+        circularProgress.setProgressCompat((averageRating * 20).toInt(), true)
+
+
+        averageRatingText.text = String.format("%.1f", averageRating)
+
+        // Click listener for posts layout
         postsLayout.setOnClickListener {
             redirectToGamePosts(gameId)
         }
@@ -71,10 +89,9 @@ class InteractFragment : Fragment() {
         return view
     }
 
-    private fun handleStarClick(rating: Int) {
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
 
+
+    private fun handleStarClick(rating: Int) {
         if (rating == currentRating) {
             // Reset stars if the same rating is clicked again
             updateStarViews(0)
@@ -184,8 +201,7 @@ class InteractFragment : Fragment() {
     }
 
     private fun redirectToGamePosts(gameId: Int) {
-
-        val gamePostsFragment = GamePostsFragment.newInstance(gameId,gameName!!, primaryColor, secondaryColor)
+        val gamePostsFragment = GamePostsFragment.newInstance(gameId, gameName!!, primaryColor, secondaryColor)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, gamePostsFragment)
             .addToBackStack(null)
@@ -197,16 +213,21 @@ class InteractFragment : Fragment() {
         private const val ARG_GAME_NAME = "gameName"
         private const val ARG_PRIMARY_COLOR = "primaryColor"
         private const val ARG_SECONDARY_COLOR = "secondaryColor"
+        private const val ARG_AVERAGE_STARS = "averageStars"
 
         @JvmStatic
-        fun newInstance(gameId: Int, gameName: String, primaryColor: Int, secondaryColor: Int) =
+        fun newInstance(gameId: Int, gameName: String, primaryColor: Int, secondaryColor: Int, averageStars: Float) =
             InteractFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_GAME_ID, gameId)
                     putString(ARG_GAME_NAME, gameName)
                     putInt(ARG_PRIMARY_COLOR, primaryColor)
                     putInt(ARG_SECONDARY_COLOR, secondaryColor)
+                    putFloat(ARG_AVERAGE_STARS, averageStars)
                 }
             }
     }
 }
+
+
+

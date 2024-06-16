@@ -36,14 +36,15 @@
 
                 <ImageButton
                     android:id="@+id/back_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/icon_back"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/game"/>
 
                 <ImageView
                     android:id="@+id/game"
@@ -80,33 +81,47 @@
                     app:layout_constraintBottom_toTopOf="@id/pegi_info"
                     app:layout_constraintEnd_toEndOf="parent" />
 
+                <ImageView
+                    android:id="@+id/Edit_Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:padding="8dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/edit"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toTopOf="@id/game"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="140dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="33dp"
-                    android:layout_marginEnd="33dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_marginBottom="50dp"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@id/horizontal_line"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.712"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintEnd_toStartOf="@id/pegi_info"
+                    app:layout_constraintStart_toEndOf="@id/game"
+                    app:layout_constraintHorizontal_bias="0.712" />
 
                 <TextView
                     android:id="@+id/company"
-                    android:layout_width="100dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="33dp"
-                    android:layout_marginEnd="33dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
                     android:textColor="#FFFFFF"
                     app:layout_constraintBottom_toTopOf="@id/horizontal_line"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.595"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintEnd_toStartOf="@id/pegi_info"
+                    app:layout_constraintStart_toEndOf="@id/game"
+                    app:layout_constraintHorizontal_bias="0.712"  />
 
                 <View
                     android:id="@+id/horizontal_line"

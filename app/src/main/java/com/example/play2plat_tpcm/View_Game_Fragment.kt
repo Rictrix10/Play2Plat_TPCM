@@ -71,6 +71,7 @@ class View_Game_Fragment : Fragment() {
     private var clickCount: Int = 0
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var mushroomImage: ImageView
+    private lateinit var editIcon: ImageView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +101,7 @@ class View_Game_Fragment : Fragment() {
         collectionList = view.findViewById(R.id.collection_list)
         viewPager = view.findViewById(R.id.view_pager)
         tabLayout = view.findViewById(R.id.tab_layout)
+        editIcon = view.findViewById(R.id.Edit_Icon)
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
@@ -108,6 +110,8 @@ class View_Game_Fragment : Fragment() {
         backButton.setOnClickListener {
             requireActivity().onBackPressed()
         }
+
+
 
         loadCollections(view.context)
         loadUserGameState() // Chame a função para carregar o estado do jogo
@@ -123,6 +127,15 @@ class View_Game_Fragment : Fragment() {
                     if (response.isSuccessful) {
                         val game = response.body()
                         if (game != null) {
+
+                            editIcon.setOnClickListener {
+                                val editGameFragment = Edit_Game_Fragment.newInstance(game)
+                                requireActivity().supportFragmentManager.beginTransaction()
+                                    .replace(R.id.layout, editGameFragment)
+                                    .addToBackStack(null)
+                                    .commit()
+                            }
+
                             nameTextView.text = game.name
                             companyTextView.text = game.company
                             if(!game.isFree){
@@ -147,7 +160,7 @@ class View_Game_Fragment : Fragment() {
                                             val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                             containerLayout.background = gradientDrawable
                                             // Usar a cor mais escura no pagerAdapter
-                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, darkerVibrantColor)
+                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, darkerVibrantColor, game.averageStars)
                                             viewPager.adapter = pagerAdapter
                                         } else {
                                             // Se a diferença for suficiente, use as cores normalmente
@@ -155,18 +168,13 @@ class View_Game_Fragment : Fragment() {
                                             val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                             containerLayout.background = gradientDrawable
                                             // Usar a cor vibrante normal no pagerAdapter
-                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, vibrantColor)
+                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, vibrantColor, game.averageStars)
                                             viewPager.adapter = pagerAdapter
                                         }
-
 
                                         Log.d("View_Game_Fragment", "Calculated Colors for Gradient: $dominantColor and $vibrantColor")
 
                                         // Instancie o ViewPagerAdapter aqui com as cores calculadas
-
-
-
-
                                         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                                             tab.text = when (position) {
                                                 0 -> "About"
