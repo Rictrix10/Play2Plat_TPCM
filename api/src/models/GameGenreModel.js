@@ -97,6 +97,13 @@ const GameGenreModel = {
                 }
             });
         },
+
+        const deleteGameGenresByGameId = async (gameId) => {
+            return await prisma.gameGenre.deleteMany({
+                where: {
+                    gameId: gameId,
+                },
+            });
 };
 
 module.exports = GameGenreModel;

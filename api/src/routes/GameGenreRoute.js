@@ -11,5 +11,6 @@ router.get('/game-genre/genre/:genreId', GameGenreController.getGameGenresByGenr
 router.get('/game-genre/games-by-genre/:genreId', GameGenreController.getGamesByGenreId);
 router.get('/game-genre/name/:genreName', GameGenreController.getGamesByGenreName);
 router.delete('/game-genre/game/:gameId/genre/:genreId', GameGenreController.deleteGameGenreByGameIdAndGenreId);
+router.delete('/game-genre/game/:gameId', GameGenreController.deleteGameGenresByGameId);
 module.exports = router;
 

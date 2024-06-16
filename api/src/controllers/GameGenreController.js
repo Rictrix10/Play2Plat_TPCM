@@ -120,6 +120,20 @@ const GameGenreController = {
                 res.status(500).json({ error: 'Erro ao excluir relação genero-jogo' });
             }
         },
+
+        const deleteGameGenresByGameId = async (req, res) => {
+            try {
+                const gameId = parseInt(req.params.gameId);
+                const result = await GameGenreModel.deleteGameGenresByGameId(gameId);
+                if (result.count > 0) {
+                    res.status(204).end();
+                } else {
+                    res.status(404).json({ error: 'Nenhum registro encontrado para o gameId especificado' });
+                }
+            } catch (error) {
+                console.error('Erro ao excluir relações jogo-gênero por gameId:', error);
+                res.status(500).json({ error: 'Erro ao excluir relações jogo-gênero por gameId' });
+            }
 };
 
 module.exports = GameGenreController;
