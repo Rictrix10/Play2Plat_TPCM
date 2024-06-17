@@ -603,7 +603,6 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             if (clicked == 0) {
                 clicked = 1
                 getCommentDetails(postId)
-
                 sendImageView.setOnClickListener(null)
 
                     sendImageView.setOnClickListener {
