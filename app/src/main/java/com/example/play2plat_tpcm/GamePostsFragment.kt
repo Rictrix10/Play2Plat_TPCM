@@ -68,7 +68,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private var gameName: String? = null
     private var primaryColor: Int = 0
     private var secondaryColor: Int = 0
-    private var isAnswerPostId: Int = 0
+    private var isAnswerPostId: Int? = 0
+    //private var edited: Int = 0
 
     private var selectedImageUri: Uri? = null
 
@@ -391,9 +392,13 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     if (response.isSuccessful) {
                         val postComment = response.body()
                         Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
+                        more_options_layout.visibility = View.GONE
                         commentEditTextView.text.clear()
                         selectedImageUri = null
                         imageImageView.setImageResource(R.drawable.image)
+                        ReplyingTo.visibility = View.GONE
+                        ReplyingTo.text = null
+                        isAnswerPostId = null
 
                         getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
                     } else {
@@ -431,7 +436,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         commentEditTextView.text.clear()
                         selectedImageUri = null
                         imageImageView.setImageResource(R.drawable.image)
-
+                        isAnswerPostId = null
+                        //edited = 1
                         getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error updating comment: ${response.message()}")
@@ -558,13 +564,23 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
     override fun onReplyClick(postId: Int, username: String) {
-        isAnswerPostId = postId
-        ReplyingTo.visibility = View.VISIBLE
-        ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(username)
+        if(ReplyingTo.visibility == View.GONE){
+            ReplyingTo.visibility = View.VISIBLE
+
+            more_options_layout.visibility = View.GONE
+            isAnswerPostId = postId
+            ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(username)
+        }
+        else{
+            ReplyingTo.visibility = View.GONE
+            ReplyingTo.text = null
+            isAnswerPostId = null
+        }
     }
 
     override fun onOptionsClick(postId: Int) {
         var clicked = 0
+        Log.d("Clicked: ", "${clicked}")
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
         selectedPostId = postId
@@ -572,22 +588,40 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             more_options_layout.visibility = View.GONE
         } else {
             more_options_layout.visibility = View.VISIBLE
+
+            ReplyingTo.visibility = View.GONE
+            ReplyingTo.text = null
+            isAnswerPostId = null
         }
         editButton.setOnClickListener {
             if (clicked == 0) {
+                // Se ainda não foi clicado, vamos configurar para editar o comentário existente
                 clicked = 1
                 getCommentDetails(postId)
+
+                // Remover o listener anterior, se houver
+                sendImageView.setOnClickListener(null)
+
+                // Configurar o listener para editar o comentário existente
                 sendImageView.setOnClickListener {
                     getLocationAndPatchComment(userId, gameId)
+                    clicked = 1
                 }
             } else {
+                // Se já foi clicado, estamos editando, portanto, vamos configurar para postar um novo comentário
                 clicked = 0
                 commentEditTextView.setText(null)
+
+                // Remover o listener anterior, se houver
+                sendImageView.setOnClickListener(null)
+
+                // Configurar o listener para postar um novo comentário
                 sendImageView.setOnClickListener {
                     getLocationAndPostComment(userId, gameId)
                 }
             }
         }
+
 
     }
 

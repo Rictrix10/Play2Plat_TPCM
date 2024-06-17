@@ -84,7 +84,14 @@ class GamePostsAdapter(
         holder.username.text = post.user.username
         holder.location.text = post.location
         holder.textPost.text = post.comments
-        Picasso.get().load(post.user.avatar).into(holder.profilePicture)
+        if(post.user.avatar != null && post.user.avatar != ""){
+            Picasso.get().load(post.user.avatar).into(holder.profilePicture)
+        }
+        else{
+            Picasso.get().load(R.drawable.noimageuser).into(holder.profilePicture)
+            //profileImageView.setImageResource(R.drawable.noimageuser)
+        }
+
 
 
         holder.imagePost.setOnClickListener {
