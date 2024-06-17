@@ -99,8 +99,6 @@ interface ApiService {
      */
 
     // User Game Comments
-    @GET("user-game-comments/{id}")
-    fun getCommentByGame(@Path("id") id: Int): Call<List<GameCommentsResponse>>
 
     @POST("user-game-comment")
     fun addComment(@Body comment: Comment): Call<Comment>
@@ -232,6 +230,6 @@ interface ApiService {
     @PATCH("user-game-comments/{id}")
     fun updateComment(@Path("id") id: Int, @Body comment: Comment): Call<Comment>
 
-    @GET("user-game-comments/{id}")
-    fun getCommentById(@Path("id") id: Int): Call<List<GameCommentsResponse>>
+    @GET("user-game-comment/{id}")
+    fun getCommentById(@Path("id") id: Int): Call<Comment>
 }
