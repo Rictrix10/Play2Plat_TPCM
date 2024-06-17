@@ -59,6 +59,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         searchButton = view.findViewById(R.id.search)
         filtersButton = view.findViewById(R.id.black_square)
 
+        // Verificação `isStateSaved` para fragmentos
         if (!parentFragmentManager.isStateSaved()) {
             val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0)
             parentFragmentManager.beginTransaction()
@@ -87,6 +88,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         val genreValue3 = sharedPreferences.getString("genre3", null)
         val sequenceValue = sharedPreferences.getString("sequence", null)
 
+        // Verificação `isStateSaved` para fragmentos adicionais
         if (!parentFragmentManager.isStateSaved()) {
             val fragment2 = if (genreValue != null) {
                 Games_List_Horizontal_Fragment.newInstance("Genres", genreValue, 0)
@@ -167,6 +169,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         return view
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -291,11 +294,16 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         val platforms = arrayListOf<String>()
 
         val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, viewGameFragment)
-            .addToBackStack(null)
-            .commit()
+        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, viewGameFragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+        }
     }
+
 
     private fun Int.dpToPx(): Int {
         val scale = resources.displayMetrics.density
@@ -308,19 +316,29 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
     private fun redirectToGamesSearched() {
         val gamesSearchedFragment = GamesSearched_Fragment()
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, gamesSearchedFragment)
-            .addToBackStack(null)
-            .commit()
+        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, gamesSearchedFragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+        }
     }
+
 
     private fun redirectToFilters() {
         val filtersFragment = Filters_Fragment()
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, filtersFragment)
-            .addToBackStack(null)
-            .commit()
+        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, filtersFragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+        }
     }
+
 
     private fun hideKeyboard() {
         val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
