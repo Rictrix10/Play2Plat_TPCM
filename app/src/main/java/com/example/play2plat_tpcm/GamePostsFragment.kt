@@ -580,6 +580,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     override fun onOptionsClick(postId: Int) {
         var clicked = 0
+        val sharedPreferencesEdits = requireActivity().getSharedPreferences("Editions", Context.MODE_PRIVATE)
+        val editor = sharedPreferencesEdits.edit()
+        editor.putInt("edited", 0)
+        editor.apply()
+
+
         Log.d("Clicked: ", "${clicked}")
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
@@ -595,27 +601,32 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
         editButton.setOnClickListener {
             if (clicked == 0) {
-                // Se ainda não foi clicado, vamos configurar para editar o comentário existente
                 clicked = 1
                 getCommentDetails(postId)
 
-                // Remover o listener anterior, se houver
                 sendImageView.setOnClickListener(null)
 
-                // Configurar o listener para editar o comentário existente
-                sendImageView.setOnClickListener {
-                    getLocationAndPatchComment(userId, gameId)
-                    clicked = 1
-                }
+                    sendImageView.setOnClickListener {
+                        if(sharedPreferencesEdits.getInt("edited", 0) == 0){
+                            getLocationAndPatchComment(userId, gameId)
+                            clicked = 1
+
+                            val editor = sharedPreferencesEdits.edit()
+                            editor.putInt("edited", 1)
+                            editor.apply()
+                        }
+                        else{
+                            getLocationAndPostComment(userId, gameId)
+                        }
+
+                    }
             } else {
-                // Se já foi clicado, estamos editando, portanto, vamos configurar para postar um novo comentário
                 clicked = 0
                 commentEditTextView.setText(null)
 
-                // Remover o listener anterior, se houver
+
                 sendImageView.setOnClickListener(null)
 
-                // Configurar o listener para postar um novo comentário
                 sendImageView.setOnClickListener {
                     getLocationAndPostComment(userId, gameId)
                 }
