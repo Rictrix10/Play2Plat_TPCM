@@ -17,7 +17,8 @@ class ViewGamesAdapter(
     private val sequence: String?,
     private val company: String,
     private var primaryColor: Int,
-    private var secondaryColor: Int
+    private var secondaryColor: Int,
+    private var averageStars: Float
 ) : FragmentStateAdapter(fragmentActivity) {
 
     override fun getItemCount(): Int {
@@ -28,7 +29,7 @@ class ViewGamesAdapter(
         val safeSequence = sequence ?: "No"
         return when (position) {
             0 -> AboutFragment.newInstance(gameId, description, genres, platforms, safeSequence, company)
-            1 -> InteractFragment.newInstance(gameId, gameName, primaryColor, secondaryColor)
+            1 -> InteractFragment.newInstance(gameId, gameName, primaryColor, secondaryColor, averageStars)
             else -> throw IllegalStateException("Unexpected position: $position")
         }
     }

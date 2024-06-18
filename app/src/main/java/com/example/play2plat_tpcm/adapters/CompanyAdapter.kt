@@ -14,10 +14,19 @@ class CompanyAdapter(
     context: Context,
     companies: List<Company>,
     private val companyTitle: TextView,
-    private val canSelectMultiple: Boolean = false
+    private val canSelectMultiple: Boolean = false,
+    private val selectedCompanyName: String?
 ) : ArrayAdapter<Company>(context, 0, companies) {
 
     private val selectedCompanies: MutableList<Company> = mutableListOf()
+
+    init {
+        // Encontrar a empresa selecionada inicialmente
+        companies.find { it.name == selectedCompanyName }?.let {
+            selectedCompanies.add(it)
+        }
+        updateCompanyTitle()
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var listItemView = convertView
@@ -80,3 +89,4 @@ class CompanyAdapter(
         notifyDataSetChanged()
     }
 }
+

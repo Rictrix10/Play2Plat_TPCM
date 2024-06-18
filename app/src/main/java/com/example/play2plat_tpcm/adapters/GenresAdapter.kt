@@ -10,10 +10,24 @@ import android.widget.TextView
 import com.example.play2plat_tpcm.R
 import com.example.play2plat_tpcm.api.Genre
 
-class GenresAdapter(context: Context, genres: List<Genre>, private val genreTitle: TextView) :
-    ArrayAdapter<Genre>(context, 0, genres) {
+class GenresAdapter(
+    context: Context,
+    genres: List<Genre>,
+    private val genreTitle: TextView,
+    private val selectedGenres: List<String> = emptyList() // Lista opcional de nomes de gêneros selecionados
+) : ArrayAdapter<Genre>(context, 0, genres) {
 
     private val selectedGenrePositions = mutableSetOf<Int>()
+
+    init {
+        // Marcar as posições dos gêneros que já estão selecionados
+        selectedGenres.forEachIndexed { index, genreName ->
+            genres.indexOfFirst { it.name == genreName }.takeIf { it != -1 }?.let {
+                selectedGenrePositions.add(it)
+            }
+        }
+        updateGenreTitle()
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var listItemView = convertView
@@ -31,7 +45,7 @@ class GenresAdapter(context: Context, genres: List<Genre>, private val genreTitl
         genreNameTextView?.text = currentGenre?.name
 
         val genreCheckbox = listItemView?.findViewById<CheckBox>(R.id.genre_checkbox)
-        genreCheckbox?.setOnCheckedChangeListener(null) // Remove listener before setting state
+        genreCheckbox?.setOnCheckedChangeListener(null) // Remover o listener antes de definir o estado
         genreCheckbox?.isChecked = selectedGenrePositions.contains(position)
         genreCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -39,7 +53,7 @@ class GenresAdapter(context: Context, genres: List<Genre>, private val genreTitl
             } else {
                 selectedGenrePositions.remove(position)
             }
-            notifyDataSetChanged() // Notify the adapter to update the views
+            notifyDataSetChanged()
             updateGenreTitle()
         }
 
@@ -47,13 +61,13 @@ class GenresAdapter(context: Context, genres: List<Genre>, private val genreTitl
     }
 
     private fun updateGenreTitle() {
-        val selectedGenres = selectedGenrePositions.mapNotNull { position ->
+        val selectedGenresNames = selectedGenrePositions.mapNotNull { position ->
             getItem(position)?.name
         }
-        if (selectedGenres.isEmpty()) {
+        if (selectedGenresNames.isEmpty()) {
             genreTitle.text = "Genres"
         } else {
-            genreTitle.text = selectedGenres.joinToString(", ")
+            genreTitle.text = selectedGenresNames.joinToString(", ")
         }
     }
 
@@ -63,3 +77,5 @@ class GenresAdapter(context: Context, genres: List<Genre>, private val genreTitl
     }
 
 }
+
+
