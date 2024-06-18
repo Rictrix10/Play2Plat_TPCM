@@ -78,7 +78,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             redirectToFilters()
         }
 
-        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        sharedPreferences = requireActivity().getSharedPreferences("RandomLists", Context.MODE_PRIVATE)
         countValue = sharedPreferences.getInt("countValue", 0)
         Log.d("Search_Fragment", "Valor de countValue no onCreateView: $countValue")
         val genreValue = sharedPreferences.getString("genre", null)
@@ -105,7 +105,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             val fragment3 = if (companyValue != null) {
                 Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Companies", "Sony", 0)
+                Games_List_Horizontal_Fragment.newInstance("Companies", "Nintendo", 0)
             }
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container3, fragment3)

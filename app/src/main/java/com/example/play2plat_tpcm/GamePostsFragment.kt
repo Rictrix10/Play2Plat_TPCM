@@ -59,6 +59,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
     private lateinit var seeMapButton: Button
+    private lateinit var iconCrossView: ImageView
     private lateinit var editButton: Button
     private lateinit var deleteButton: Button
     private lateinit var container_layout: ConstraintLayout
@@ -120,6 +121,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         seeMapButton = view.findViewById(R.id.button_see_map)
         editButton = view.findViewById(R.id.option_edit)
         deleteButton = view.findViewById(R.id.option_delete)
+        iconCrossView = view.findViewById(R.id.icon_cross)
 
         val colors = intArrayOf(primaryColor, secondaryColor)
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
@@ -566,6 +568,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     override fun onReplyClick(postId: Int, username: String) {
         if(ReplyingTo.visibility == View.GONE){
             ReplyingTo.visibility = View.VISIBLE
+            iconCrossView.visibility = View.VISIBLE
 
             more_options_layout.visibility = View.GONE
             isAnswerPostId = postId
@@ -573,6 +576,14 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
         else{
             ReplyingTo.visibility = View.GONE
+            iconCrossView.visibility = View.GONE
+            ReplyingTo.text = null
+            isAnswerPostId = null
+        }
+
+        iconCrossView.setOnClickListener{
+            ReplyingTo.visibility = View.GONE
+            iconCrossView.visibility = View.GONE
             ReplyingTo.text = null
             isAnswerPostId = null
         }
@@ -596,12 +607,17 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             more_options_layout.visibility = View.VISIBLE
 
             ReplyingTo.visibility = View.GONE
+            iconCrossView.visibility = View.GONE
             ReplyingTo.text = null
             isAnswerPostId = null
         }
         editButton.setOnClickListener {
             if (clicked == 0) {
                 clicked = 1
+                more_options_layout.visibility = View.GONE
+                ReplyingTo.visibility = View.VISIBLE
+                iconCrossView.visibility = View.VISIBLE
+                ReplyingTo.text = SpannableStringBuilder().append("Editing ")
                 getCommentDetails(postId)
                 sendImageView.setOnClickListener(null)
 
@@ -623,12 +639,22 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 clicked = 0
                 commentEditTextView.setText(null)
 
-
                 sendImageView.setOnClickListener(null)
 
                 sendImageView.setOnClickListener {
                     getLocationAndPostComment(userId, gameId)
                 }
+            }
+
+            iconCrossView.setOnClickListener{
+                val editor = sharedPreferencesEdits.edit()
+                editor.putInt("edited", 1)
+                editor.apply()
+                ReplyingTo.visibility = View.GONE
+                iconCrossView.visibility = View.GONE
+                commentEditTextView.setText(null)
+                ReplyingTo.text = null
+                isAnswerPostId = null
             }
         }
 

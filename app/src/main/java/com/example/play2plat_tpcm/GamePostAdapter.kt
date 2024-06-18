@@ -161,11 +161,7 @@ class GamePostsAdapter(
                 if (response.isSuccessful) {
                     val answers = response.body()
                     if (answers != null) {
-                        recyclerView.adapter = GamePostsAdapter(answers, object : OnProfilePictureClickListener {
-                            override fun onProfilePictureClick(userId: Int) {
-                                // Handle profile picture click for answers if needed
-                            }
-                        }, onReplyClickListener, onOptionsClickListener)
+                        recyclerView.adapter = GamePostsAdapter(answers, onProfilePictureClickListener, onReplyClickListener, onOptionsClickListener)
                     }
                 } else {
                     Log.e("GamePostsAdapter", "Erro na resposta: ${response.errorBody()}")
