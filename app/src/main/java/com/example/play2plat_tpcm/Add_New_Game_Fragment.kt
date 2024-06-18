@@ -362,7 +362,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     companies = response.body() ?: emptyList()
                     if (companies.isNotEmpty()) {
-                        companyAdapter = CompanyAdapter(context, companies, companyTitle, false)
+                        companyAdapter = CompanyAdapter(context, companies, companyTitle, false, null)
                         companyList.adapter = companyAdapter
                         adjustListViewHeight(companyList)
                     }
@@ -383,7 +383,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     sequences = response.body() ?: emptyList()
                     if (sequences.isNotEmpty()) {
-                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle, false)
+                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle, false, null)
                         sequenceList.adapter = sequenceAdapter
                         adjustListViewHeight(sequenceList)
                     }
@@ -404,7 +404,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     genres = response.body() ?: emptyList()
                     if (genres.isNotEmpty()) {
-                        genreAdapter = GenresAdapter(context, genres, genreTitle)
+                        genreAdapter = GenresAdapter(context, genres, genreTitle, emptyList())
                         genreList.adapter = genreAdapter
                         adjustListViewHeight(genreList)
                     }
@@ -442,7 +442,7 @@ class Add_New_Game_Fragment : Fragment() {
 
     private fun loadPegiInfo(context: Context) {
         pegiInfoValues = context.resources.getStringArray(R.array.pegi_info_values)
-        pegiAdapter = PegyAdapter(context, pegiInfoValues, pegiTitle)
+        pegiAdapter = PegyAdapter(context, pegiInfoValues, pegiTitle, null)
         pegiList.adapter = pegiAdapter
         adjustListViewHeight(pegiList)
     }

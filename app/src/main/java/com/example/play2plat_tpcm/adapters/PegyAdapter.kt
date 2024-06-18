@@ -9,13 +9,29 @@ import android.widget.CheckBox
 import android.widget.TextView
 import com.example.play2plat_tpcm.R
 
-class PegyAdapter(context: Context, private val values: Array<String>, private val pegiTitle: TextView) :
-    ArrayAdapter<String>(context, 0, values) {
+class PegyAdapter(
+    context: Context,
+    private val values: Array<String>,
+    private val pegiTitle: TextView,
+    private val selectedPegi: Int?
+) : ArrayAdapter<String>(context, 0, values) {
 
     private var selectedPosition: Int = -1
 
+    init {
+        // Verificar se há um PEGI selecionado inicialmente e definir selectedPosition
+        selectedPegi?.let { pegi ->
+            selectedPosition = values.indexOf(pegi.toString())
+            updatePegiTitle()
+        }
+    }
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.pegy_list_item, parent, false)
+        val view = convertView ?: LayoutInflater.from(context).inflate(
+            R.layout.pegy_list_item,
+            parent,
+            false
+        )
         val textView = view.findViewById<TextView>(R.id.pegy_name)
         val checkBox = view.findViewById<CheckBox>(R.id.pegy_checkbox)
 
@@ -27,7 +43,7 @@ class PegyAdapter(context: Context, private val values: Array<String>, private v
             if (checkBox.isChecked) {
                 // Quando a checkbox é marcada, atualize o título do Pegi
                 selectedPosition = position
-                pegiTitle.text = "Pegi: ${values[position]}"
+                updatePegiTitle()
                 notifyDataSetChanged()
             } else {
                 // Quando a checkbox é desmarcada, redefina o título do Pegi Info
@@ -40,8 +56,13 @@ class PegyAdapter(context: Context, private val values: Array<String>, private v
         return view
     }
 
+    private fun updatePegiTitle() {
+        pegiTitle.text = "Pegi: ${values[selectedPosition]}"
+    }
+
     fun getSelectedPosition(): Int {
         return selectedPosition
     }
 }
+
 

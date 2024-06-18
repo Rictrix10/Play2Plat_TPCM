@@ -24,6 +24,12 @@ interface ApiService {
     @POST("games")
     fun createGame(@Body game: Game): Call<Game>
 
+    @PATCH("games/{id}")
+    fun editGame(@Body game: Game, @Path("id") id: Int): Call<Game>
+
+    @DELETE("game-genre/game/{id}")
+    fun deleteGameGenres(@Path("id") id: Int): Call<Void>
+
     /*
     @POST("upload")
     fun uploadImage(@Body imageName: String)

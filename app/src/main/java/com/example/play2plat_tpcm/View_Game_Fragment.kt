@@ -107,14 +107,19 @@ class View_Game_Fragment : Fragment() {
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
         userId = sharedPreferences.getInt("user_id", 0)
 
+        // Show or hide edit icon based on user type
+        if (currentUserType == 1) {
+            editIcon.visibility = View.VISIBLE
+        } else {
+            editIcon.visibility = View.GONE
+        }
+
         backButton.setOnClickListener {
             requireActivity().onBackPressed()
         }
 
-
-
         loadCollections(view.context)
-        loadUserGameState() // Chame a função para carregar o estado do jogo
+        loadUserGameState()
 
         collectionAccordion.setOnClickListener {
             toggleListVisibility(collectionList, collectionTitle)
@@ -127,7 +132,6 @@ class View_Game_Fragment : Fragment() {
                     if (response.isSuccessful) {
                         val game = response.body()
                         if (game != null) {
-
                             editIcon.setOnClickListener {
                                 val editGameFragment = Edit_Game_Fragment.newInstance(game)
                                 requireActivity().supportFragmentManager.beginTransaction()
@@ -190,8 +194,6 @@ class View_Game_Fragment : Fragment() {
                                 }
                             })
 
-
-
                             val pegiImageResId = when (game.pegiInfo) {
                                 3 -> R.drawable.pegi3
                                 7 -> R.drawable.pegi7
@@ -200,7 +202,7 @@ class View_Game_Fragment : Fragment() {
                                 18 -> R.drawable.pegi18
                                 else -> 0
                             }
-                            if (pegiImageResId!= 0) {
+                            if (pegiImageResId != 0) {
                                 Picasso.get().load(pegiImageResId).into(pegiInfoImageView)
                             }
                         }
@@ -213,7 +215,6 @@ class View_Game_Fragment : Fragment() {
 
         return view
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

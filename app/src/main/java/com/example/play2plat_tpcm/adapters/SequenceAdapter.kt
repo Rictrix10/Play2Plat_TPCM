@@ -14,10 +14,19 @@ class SequenceAdapter(
     context: Context,
     sequences: List<Sequence>,
     private val sequenceTitle: TextView,
-    private val canSelectMultiple: Boolean = false
+    private val canSelectMultiple: Boolean = false,
+    private val selectedSequenceName: String?
 ) : ArrayAdapter<Sequence>(context, 0, sequences) {
 
     private val selectedSequences: MutableList<Sequence> = mutableListOf()
+
+    init {
+        // Encontrar a sequência selecionada inicialmente
+        sequences.find { it.name == selectedSequenceName }?.let {
+            selectedSequences.add(it)
+        }
+        updateSequenceTitle()
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var listItemView = convertView
@@ -80,3 +89,4 @@ class SequenceAdapter(
         notifyDataSetChanged()
     }
 }
+
