@@ -31,7 +31,7 @@
             android:layout_marginTop="-1dp"
             android:fontFamily="@font/m_plus_rounded_1c_medium"
             android:textAlignment="center"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:layout_centerHorizontal="true"/>
 
