@@ -22,7 +22,12 @@ const SequenceModel = {
             where: {
                 games: {
                     some: {} // Only sequences with at least one associated game
-                }
+                },
+                    _count: {
+                        games: {
+                           gte: 7
+                        }
+                    }
             }
         });
         if (sequences.length === 0) {

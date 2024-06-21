@@ -63,6 +63,11 @@ const GenreModel = {
             where: {
                 gameGenres: {
                     some: {} // Only genres with at least one associated gameGenre
+                },
+                _count: {
+                    games: {
+                       gte: 7
+                       }
                 }
             }
         });

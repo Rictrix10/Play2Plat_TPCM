@@ -22,6 +22,11 @@ const PlatformModel = {
                 where: {
                     platformGame: {
                         some: {} // Only platforms with at least one associated game in platformGames
+                    },
+                    _count: {
+                       games: {
+                            gte: 7
+                            }
                     }
                 }
             });
