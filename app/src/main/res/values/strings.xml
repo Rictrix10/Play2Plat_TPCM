@@ -106,5 +106,26 @@
     <string name="password_incorrect">Incorrect password</string>
     <string name="password_empty">Password cannot be empty</string>
 
+    <string name="your_collections_title">Your Collections:</string>
+
+    <string name="search_games_title">Search Games</string>
+
+
+
+    <string name="reset">Reset</string>
+    <string name="filters">Filters</string>
+    <string name="order_type">Order Type:</string>
+    <string name="free_game">Free Games:</string>
+    <string name="only_free_games">Only Free Games</string>
+    <string name="order_preference">Order Preference:</string>
+    <string name="submit_filter">Submit Filter</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string name="name">Name</string>
+    <string name="recent">Recent</string>
+    <string name="rating">Rating</string>
+
+
+
 
 </resources>

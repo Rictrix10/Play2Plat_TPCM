@@ -26,7 +26,7 @@
             android:id="@+id/your_collections_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Collections:"
+            android:text="@string/your_collections_title"
             android:textSize="14sp"
             android:textColor="@color/white"
             app:layout_constraintTop_toTopOf="parent"

@@ -103,5 +103,24 @@
     <string name="password_empty">A senha não pode estar vazia</string>
 
 
+    <string name="your_collections_title">Suas Coleções:</string>
+
+    <string name="search_games_title">Pesquisar Jogos</string>
+
+    <string name="reset">Recomeçar</string>
+    <string name="filters">Filtros</string>
+    <string name="order_type">Tipo de Ordem:</string>
+    <string name="free_game">Jogos Grátis:</string>
+    <string name="only_free_games">Só Jogos Grátis</string>
+    <string name="order_preference">Preferência de Ordem:</string>
+    <string name="submit_filter">Aplicar Filtro</string>
+    <string name="ascending">Ascendente</string>
+    <string name="descending">Descendente</string>
+    <string name="name">Nome</string>
+    <string name="recent">Recente</string>
+    <string name="rating">Avaliação</string>
+
+
+
 
 </resources>

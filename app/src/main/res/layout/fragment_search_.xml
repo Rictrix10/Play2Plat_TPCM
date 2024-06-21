@@ -72,7 +72,7 @@
                         android:id="@+id/search"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Search Games"
+                        android:text="@string/search_games_title"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:background="@android:color/transparent"
