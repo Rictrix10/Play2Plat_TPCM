@@ -94,8 +94,6 @@ const GenreController = {
             res.status(500).json({ error: 'Erro ao buscar nomes de gêneros aleatórios' });
         }
     }
-
-
-            };
+};
 
 module.exports = GenreController;

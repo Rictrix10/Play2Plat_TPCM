@@ -55,43 +55,40 @@ const GenreModel = {
                             return filteredGenres[randomIndex].name;
                         },
 
-            const getRandomGenreNames = async (count) => {
-                try {
-                    // Primeiro, obtenha todos os gêneros que têm pelo menos 7 jogos associados
-                    const genresWithCounts = await prisma.genre.findMany({
-                        where: {
-                            gameGenres: {
-                                some: {}
-                            }
-                        },
-                        select: {
-                            name: true,
-                            _count: {
-                                select: { games: true }
-                            }
-                        }
-                    });
-
-                    // Filtre os gêneros que têm pelo menos 7 jogos associados
-                    const validGenres = genresWithCounts.filter(genre => genre._count.games >= 7);
-
-                    if (validGenres.length === 0) {
-                        return [];
+    getRandomGenreNames: async (count) => {
+        try {
+            // Primeiro, obtenha todos os gêneros que têm pelo menos 7 jogos associados
+            const genresWithCounts = await prisma.genre.findMany({
+                where: {
+                    gameGenres: {
+                        some: {}
                     }
-
-                    // Embaralhe os gêneros e selecione o número desejado
-                    const shuffledGenres = validGenres.sort(() => Math.random() - 0.5);
-                    const selectedGenres = shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
-
-                    return selectedGenres;
-                } catch (error) {
-                    console.error('Erro ao buscar nomes de gêneros aleatórios:', error);
-                    throw error;
+                },
+                select: {
+                    name: true,
+                    _count: {
+                        select: { games: true }
+                    }
                 }
-            };
+            });
 
+            // Filtre os gêneros que têm pelo menos 7 jogos associados
+            const validGenres = genresWithCounts.filter(genre => genre._count.games >= 7);
 
+            if (validGenres.length === 0) {
+                return [];
+            }
 
+            // Embaralhe os gêneros e selecione o número desejado
+            const shuffledGenres = validGenres.sort(() => Math.random() - 0.5);
+            const selectedGenres = shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
+
+            return selectedGenres;
+        } catch (error) {
+            console.error('Erro ao buscar nomes de gêneros aleatórios:', error);
+            throw error;
+        }
+    }
 };
 
 module.exports = GenreModel;
