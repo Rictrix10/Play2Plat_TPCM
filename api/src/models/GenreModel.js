@@ -55,56 +55,27 @@ const GenreModel = {
                             return filteredGenres[randomIndex].name;
                         },
 
-    getRandomGenreNames: async (count, genreName) => {
-        try {
-            // Encontre o gênero pelo nome
-            const genre = await prisma.genre.findUnique({
-                where: {
-                    name: genreName
-                },
-                select: {
-                    id: true
+    getRandomGenreNames: async (count) => {
+        const genres = await prisma.genre.findMany({
+            select: {
+                name: true
+            },
+            where: {
+                gameGenres: {
+                    some: {} // Only genres with at least one associated gameGenre
                 }
-            });
-
-            if (!genre) {
-                return [];
             }
+        });
 
-            // Obtenha todos os gêneros que têm pelo menos 3 jogos associados e onde genreId corresponde ao id encontrado
-            const genresWithCounts = await prisma.genre.findMany({
-                where: {
-                    gameGenres: {
-                        some: {
-                            genreId: genre.id
-                        }
-                    }
-                },
-                select: {
-                    name: true,
-                    _count: {
-                        select: { gameGenres: true }
-                    }
-                }
-            });
-
-            // Filtre os gêneros que têm pelo menos 3 jogos associados
-            const validGenres = genresWithCounts.filter(genre => genre._count.gameGenres >= 3);
-
-            if (validGenres.length === 0) {
-                return [];
-            }
-
-            // Embaralhe os gêneros e selecione o número desejado
-            const shuffledGenres = validGenres.sort(() => Math.random() - 0.5);
-            const selectedGenres = shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
-
-            return selectedGenres;
-        } catch (error) {
-            console.error('Erro ao buscar nomes de gêneros aleatórios:', error);
-            throw error;
+        if (genres.length === 0) {
+            return [];
         }
+
+        const shuffledGenres = genres.sort(() => Math.random() - 0.5);
+        return shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
     }
+
+
 };
 
 module.exports = GenreModel;
