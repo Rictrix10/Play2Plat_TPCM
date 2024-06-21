@@ -203,7 +203,6 @@ class Profile_Fragment : Fragment() {
                 })
             }
 
-            // Função para atualizar o usuário
             fun updateUser(avatar: String?) {
                 val userUpdate = User(currentUserId, username ?: "", email ?: "", password ?: "", avatar ?: "", userTypeId, platforms)
                 ApiManager.apiService.updateUser(currentUserId, userUpdate).enqueue(object : retrofit2.Callback<User> {

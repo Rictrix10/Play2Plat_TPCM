@@ -1,6 +1,8 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +24,7 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
     private var searchQuery: String? = null
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var imageBackView: ImageView
+    private lateinit var imageFilterView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,7 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
         // Initialize searchView
         searchView = view.findViewById(R.id.search_view)
         imageBackView = view.findViewById(R.id.back_icon)
+        imageFilterView = view.findViewById(R.id.black_square)
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -63,6 +67,10 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
 
         imageBackView.setOnClickListener {
             requireActivity().onBackPressed()
+        }
+
+        imageFilterView.setOnClickListener {
+            redirectToFilters()
         }
 
         return view
@@ -111,12 +119,45 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
     }
 
     override fun onGamePictureClick(gameId: Int) {
-        redirectToViewGame(gameId)
+        if (isNetworkAvailable()) {
+            redirectToViewGame(gameId)
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
     }
 
     private fun showKeyboard() {
         val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    }
+
+    private fun redirectToFilters() {
+        if (isNetworkAvailable()){
+            val filtersFragment = Filters_Fragment()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, filtersFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
 

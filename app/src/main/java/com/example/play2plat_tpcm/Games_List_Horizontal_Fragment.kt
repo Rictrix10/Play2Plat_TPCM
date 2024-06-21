@@ -1,6 +1,8 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +37,15 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     private var paramater: String? = null
     private var paramaterInt: Int? = 0
     private var userId: Int = 0
+
+    interface OnEmptyListListener {
+        fun onListEmpty()
+    }
+
+    interface OnNotEmptyListListener {
+        fun onListNotEmpty()
+    }
+
 
     companion object {
         private const val ARG_FILTER_TYPE = "filter_type"
@@ -87,7 +99,12 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
 
 
         arrowRight.setOnClickListener {
-            redirectToViewMoreGames_Fragment(filterType, paramater)
+            if (isNetworkAvailable()) {
+                redirectToViewMoreGames_Fragment(filterType, paramater)
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
 
         }
 
@@ -102,6 +119,12 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
             .commit()
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 
     private fun loadGames() {
         when (filterType) {
@@ -288,6 +311,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         })
     }
 
+
     private fun getGamesSameCompany(gameId: Int) {
         ApiManager.apiService.getGamesSameCompany(gameId).enqueue(object : Callback<List<Collections>> {
             override fun onResponse(
@@ -298,27 +322,60 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
                     gameCoverAdapter.updateGames(games)
+                    if (games.isEmpty()) {
+                        Log.d("empty", "empty")
+                        emptyListListener?.onListEmpty()
+                    } else {
+                        Log.d("not empty", "not empty")
+                        notEmptyListListener?.onListNotEmpty()
+                    }
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                    emptyListListener?.onListEmpty()
                 }
             }
 
             override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
                 Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+                emptyListListener?.onListEmpty()
             }
         })
+    }
+
+    private var emptyListListener: OnEmptyListListener? = null
+    private var notEmptyListListener: OnNotEmptyListListener? = null
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEmptyListListener) {
+            emptyListListener = context
+        }
+        if (context is OnNotEmptyListListener) {
+            notEmptyListListener = context
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        emptyListListener = null
+        notEmptyListListener = null
     }
 
 
 
     // Handle game click event
     override fun onGameClick(gameId: Int) {
-        val platforms = arrayListOf<String>()
-        val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, viewGameFragment)
-            .addToBackStack(null)
-            .commit()
+        if (isNetworkAvailable()) {
+            val platforms = arrayListOf<String>()
+            val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, viewGameFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
+
     }
 
     // Inner class for the fragment
@@ -350,10 +407,10 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         )
     }
 
-    private fun redirectToViewMoreGames() {
-        val viewMoreGamesFragment= ViewMoreGames_Fragment()
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, viewMoreGamesFragment)
+            .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)
             .commit()
     }

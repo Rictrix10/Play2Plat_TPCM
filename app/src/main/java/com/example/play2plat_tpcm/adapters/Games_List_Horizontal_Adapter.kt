@@ -54,7 +54,7 @@ class Games_List_Horizontal_Adapter(
         holder.itemView.layoutParams = layoutParams
     }
 
-    override fun getItemCount() = if (games.size > 7) 7 else games.size
+    override fun getItemCount() = if (games.size > 12) 12 else games.size
 
     fun updateGames(newGames: List<Game>) {
         games = newGames
