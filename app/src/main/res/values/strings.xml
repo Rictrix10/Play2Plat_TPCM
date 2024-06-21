@@ -94,4 +94,17 @@
 
     <string name="remember_me">Remember Me</string>
 
+
+    <string name="confirm_title">Confirmation</string>
+    <string name="confirm_message">Do you really want to log out?</string>
+    <string name="confirm_yes">Yes</string>
+    <string name="confirm_no">No</string>
+
+
+
+    <string name="confirm_delete_message">Are you sure you want to delete your account?</string>
+    <string name="password_incorrect">Incorrect password</string>
+    <string name="password_empty">Password cannot be empty</string>
+
+
 </resources>

@@ -335,11 +335,16 @@ class Profile_Fragment : Fragment() {
     }
 
     private fun logout() {
+        val title = getString(R.string.confirm_title)
+        val message = getString(R.string.confirm_message)
+        val yesText = getString(R.string.confirm_yes)
+        val noText = getString(R.string.confirm_no)
+
         // Cria o alerta de confirmação
         AlertDialog.Builder(requireContext()).apply {
-            setTitle("Confirmação")
-            setMessage("Você realmente deseja fazer logout?")
-            setPositiveButton("Sim") { dialog, which ->
+            setTitle(title)
+            setMessage(message)
+            setPositiveButton(yesText) { dialog, which ->
                 // Eliminar dados guardados no SharedPreferences
                 clearSharedPreferences()
 
@@ -348,7 +353,7 @@ class Profile_Fragment : Fragment() {
                 startActivity(intent)
                 activity?.finish()
             }
-            setNegativeButton("Não") { dialog, which ->
+            setNegativeButton(noText) { dialog, which ->
                 // Fecha o diálogo sem fazer logout
                 dialog.dismiss()
             }
@@ -357,15 +362,23 @@ class Profile_Fragment : Fragment() {
         }
     }
 
+
     private fun deleteAccountWithConfirmation() {
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.dialog_confirm_delete, null)
         val passwordEditText = view.findViewById<EditText>(R.id.password_edit_text)
 
+        val title = getString(R.string.confirm_title)
+        val message = getString(R.string.confirm_delete_message)
+        val yesText = getString(R.string.confirm_yes)
+        val noText = getString(R.string.confirm_no)
+        val passwordIncorrect = getString(R.string.password_incorrect)
+        val passwordEmpty = getString(R.string.password_empty)
+
         AlertDialog.Builder(requireContext()).apply {
-            setTitle("Confirmação")
+            setTitle(title)
             setView(view)
-            setPositiveButton("Sim") { dialog, which ->
+            setPositiveButton(yesText) { dialog, which ->
                 val password = passwordEditText.text.toString()
 
                 if (password.isNotEmpty()) {
@@ -375,20 +388,21 @@ class Profile_Fragment : Fragment() {
                         }
 
                         override fun onVerificationFailure() {
-                            Toast.makeText(context, "Password incorreta", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, passwordIncorrect, Toast.LENGTH_SHORT).show()
                         }
                     })
                 } else {
-                    Toast.makeText(context, "Password não pode estar vazia", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, passwordEmpty, Toast.LENGTH_SHORT).show()
                 }
             }
-            setNegativeButton("Não") { dialog, which ->
+            setNegativeButton(noText) { dialog, which ->
                 dialog.dismiss()
             }
             create()
             show()
         }
     }
+
 
     private fun verifyPassword(userId: Int, password: String, callback: PasswordVerificationCallback) {
         val inputPass = Password(password)
