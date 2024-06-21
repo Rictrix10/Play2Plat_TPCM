@@ -116,7 +116,7 @@ class MapsFragment : Fragment() {
             // Verificar se o avatar é nulo e definir a imagem padrão se necessário
             val avatarUrl = comment.user.avatar ?: ""
 
-            if (avatarUrl.isEmpty()) {
+            if (avatarUrl.isEmpty() || avatarUrl == "" || avatarUrl == "eliminated" || comment.user.isDeleted == true) {
                 val drawableResId = R.drawable.noimageprofile
                 val bitmap = BitmapFactory.decodeResource(resources, drawableResId)
 
@@ -131,12 +131,18 @@ class MapsFragment : Fragment() {
                 // Desenhar o bitmap redimensionado no canvas com fundo branco
                 canvas.drawBitmap(resizedBitmap, 0f, 0f, null)
 
+                val usernameVal = if (avatarUrl == "eliminated") {
+                    "Deleted User"
+                } else {
+                    comment.user.username
+                }
+
                 // Arredondar o bitmap com fundo branco
                 val roundedBitmap = getRoundedBitmap(backgroundBitmap)
                 val markerOptions = MarkerOptions()
                     .position(location)
                     .title(comment.comments)  // Usando o comentário como title
-                    .snippet("${comment.user.username}")  // Usando o username como snippet
+                    .snippet(usernameVal)  // Usando o username como snippet
                     .icon(BitmapDescriptorFactory.fromBitmap(roundedBitmap))
                 googleMap.addMarker(markerOptions)
                 Log.d(
@@ -153,7 +159,8 @@ class MapsFragment : Fragment() {
                             val markerOptions = MarkerOptions()
                                 .position(location)
                                 .title(comment.comments)  // Usando o comentário como title
-                                .snippet("${comment.user.username}")  // Usando o username como snippet
+                                //.snippet("${comment.user.username}")  // Usando o username como snippet
+                                .snippet(if (comment.user.avatar == "eliminated") "Deleted User" else comment.user.username)  // Usando o username como snippet
                                 .icon(BitmapDescriptorFactory.fromBitmap(roundedBitmap))
                             googleMap.addMarker(markerOptions)
                             Log.d("MapsFragment", "Marker added for comment: ${comment.comments}")
