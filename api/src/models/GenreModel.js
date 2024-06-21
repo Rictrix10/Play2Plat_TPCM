@@ -73,7 +73,7 @@ const GenreModel = {
             });
 
             // Filtre os gêneros que têm pelo menos 7 jogos associados
-            const validGenres = genresWithCounts.filter(genre => genre._count.games >= 3);
+            const validGenres = genresWithCounts.filter(genre => genre._count.games >= 2);
 
             if (validGenres.length === 0) {
                 return [];
