@@ -55,6 +55,26 @@ const GenreModel = {
                             return filteredGenres[randomIndex].name;
                         },
 
+    getRandomGenreNames: async (count) => {
+        const genres = await prisma.genre.findMany({
+            select: {
+                name: true
+            },
+            where: {
+                gameGenres: {
+                    some: {} // Only genres with at least one associated gameGenre
+                }
+            }
+        });
+
+        if (genres.length === 0) {
+            return [];
+        }
+
+        const shuffledGenres = genres.sort(() => Math.random() - 0.5);
+        return shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
+    }
+
 
 };
 

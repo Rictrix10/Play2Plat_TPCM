@@ -22,6 +22,7 @@ import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +42,8 @@ import java.io.FileOutputStream
 class GamePostsAdapter(
     private val posts: List<GameCommentsResponse>,
     private val onProfilePictureClickListener: OnProfilePictureClickListener,
-    private val onReplyClickListener: OnReplyClickListener
+    private val onReplyClickListener: OnReplyClickListener,
+    private val onOptionsClickListener: onMoreOptionsClickListener // Corrigir o nome da interface
 ) : RecyclerView.Adapter<GamePostsAdapter.GamePostViewHolder>() {
 
     interface OnProfilePictureClickListener {
@@ -50,6 +52,10 @@ class GamePostsAdapter(
 
     interface OnReplyClickListener {
         fun onReplyClick(postId: Int, username: String)
+    }
+
+    interface onMoreOptionsClickListener{
+        fun onOptionsClick(postId: Int)
     }
 
 
@@ -61,7 +67,11 @@ class GamePostsAdapter(
         val imagePost: ImageView = itemView.findViewById(R.id.image_post)
         val responseList: RecyclerView = itemView.findViewById(R.id.response_list)
         val replyIcon: ImageView = itemView.findViewById(R.id.reply_icon)
+        val moreOptions: ImageView = itemView.findViewById(R.id.more_options)
+
+
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GamePostViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_game_post, parent, false)
@@ -70,10 +80,19 @@ class GamePostsAdapter(
 
     override fun onBindViewHolder(holder: GamePostViewHolder, position: Int) {
         val post = posts[position]
+        val context = holder.itemView.context
         holder.username.text = post.user.username
         holder.location.text = post.location
         holder.textPost.text = post.comments
-        Picasso.get().load(post.user.avatar).into(holder.profilePicture)
+        if(post.user.avatar != null && post.user.avatar != ""){
+            Picasso.get().load(post.user.avatar).into(holder.profilePicture)
+        }
+        else{
+            Picasso.get().load(R.drawable.noimageuser).into(holder.profilePicture)
+            //profileImageView.setImageResource(R.drawable.noimageuser)
+        }
+
+
 
         holder.imagePost.setOnClickListener {
             val fragment = FullScreenImageFragment.newInstance(post.image)
@@ -108,6 +127,20 @@ class GamePostsAdapter(
             onReplyClickListener.onReplyClick(post.id, post.user.username)
         }
 
+        holder.moreOptions.setOnClickListener{
+            onOptionsClickListener.onOptionsClick(post.id)
+        }
+
+        val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+
+        // Verificar se o userId do post corresponde ao userId do SharedPreferences
+        if (post.user.id == userId) {
+            holder.moreOptions.visibility = View.VISIBLE
+        } else {
+            holder.moreOptions.visibility = View.GONE
+        }
+
         if (post.isAnswer == null) {
             // Se for nulo, definir o background para button_bd_3
             holder.itemView.setBackgroundResource(R.drawable.button_bd_3)
@@ -128,11 +161,7 @@ class GamePostsAdapter(
                 if (response.isSuccessful) {
                     val answers = response.body()
                     if (answers != null) {
-                        recyclerView.adapter = GamePostsAdapter(answers, object : OnProfilePictureClickListener {
-                            override fun onProfilePictureClick(userId: Int) {
-                                // Handle profile picture click for answers if needed
-                            }
-                        }, onReplyClickListener)
+                        recyclerView.adapter = GamePostsAdapter(answers, onProfilePictureClickListener, onReplyClickListener, onOptionsClickListener)
                     }
                 } else {
                     Log.e("GamePostsAdapter", "Erro na resposta: ${response.errorBody()}")
@@ -144,5 +173,6 @@ class GamePostsAdapter(
             }
         })
     }
+
     fun getPostAtPosition(position: Int): GameCommentsResponse = posts[position]
 }

@@ -24,6 +24,12 @@ interface ApiService {
     @POST("games")
     fun createGame(@Body game: Game): Call<Game>
 
+    @PATCH("games/{id}")
+    fun editGame(@Body game: Game, @Path("id") id: Int): Call<Game>
+
+    @DELETE("game-genre/game/{id}")
+    fun deleteGameGenres(@Path("id") id: Int): Call<Void>
+
     /*
     @POST("upload")
     fun uploadImage(@Body imageName: String)
@@ -99,8 +105,6 @@ interface ApiService {
      */
 
     // User Game Comments
-    @GET("user-game-comments/{id}")
-    fun getCommentByGame(@Path("id") id: Int): Call<List<GameCommentsResponse>>
 
     @POST("user-game-comment")
     fun addComment(@Body comment: Comment): Call<Comment>
@@ -223,4 +227,15 @@ interface ApiService {
         @Path("gameId") gameId: Int
     ): Call<UserGameStateResponse>
 
+    @GET("genres/random-names")
+    fun getRandomNames(): Call<RandomGenresResponse>
+
+    @DELETE("user-game-comments/{id}")
+    fun deleteComment(@Path("id") id: Int): Call<Void>
+
+    @PATCH("user-game-comments/{id}")
+    fun updateComment(@Path("id") id: Int, @Body comment: Comment): Call<Comment>
+
+    @GET("user-game-comment/{id}")
+    fun getCommentById(@Path("id") id: Int): Call<Comment>
 }

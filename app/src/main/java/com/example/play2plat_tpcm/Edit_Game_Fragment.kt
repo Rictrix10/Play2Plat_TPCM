@@ -20,7 +20,6 @@ import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
 import com.example.play2plat_tpcm.api.Sequence
 import com.example.play2plat_tpcm.api.Genre
-import com.example.play2plat_tpcm.api.Platforms
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,10 +30,10 @@ import java.io.OutputStream
 import com.example.play2plat_tpcm.adapters.CompanyAdapter
 import com.example.play2plat_tpcm.adapters.SequenceAdapter
 import com.example.play2plat_tpcm.adapters.GenresAdapter
-import com.example.play2plat_tpcm.adapters.PlatformsAdapter
 import com.example.play2plat_tpcm.adapters.PegyAdapter
 import com.example.play2plat_tpcm.api.GameGenre
-import com.example.play2plat_tpcm.api.GamePlatform
+import com.example.play2plat_tpcm.api.GameInfo
+import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -45,8 +44,9 @@ import kotlin.math.min
 /**
  * A simple [Fragment] subclass.
  */
-class Add_New_Game_Fragment : Fragment() {
+class Edit_Game_Fragment : Fragment() {
 
+    private var gameInfo: GameInfo? = null
     private var selectedImageUri: Uri? = null
 
     private val pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -80,20 +80,23 @@ class Add_New_Game_Fragment : Fragment() {
     private lateinit var genreTitle: TextView
     private lateinit var genreList: ListView
     private lateinit var genres: List<Genre>
-    private lateinit var platformAdapter: PlatformsAdapter
-    private lateinit var platformAccordion: LinearLayout
-    private lateinit var platformTitle: TextView
-    private lateinit var platformList: ListView
-    private lateinit var platforms: List<Platforms>
     private lateinit var pegiAccordion: LinearLayout
     private lateinit var pegiTitle: TextView
     private lateinit var pegiList: ListView
     private lateinit var pegiInfoValues: Array<String>
     private lateinit var pegiAdapter: PegyAdapter
+    private lateinit var backButton: ImageView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            gameInfo = it.getParcelable(ARG_GAME)
+        }
+    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_add_new_game, container, false)
+        val view = inflater.inflate(R.layout.fragment_edit_game, container, false)
 
         imageView = view.findViewById(R.id.image_view)
 
@@ -107,6 +110,7 @@ class Add_New_Game_Fragment : Fragment() {
         descriptionEditText = view.findViewById(R.id.description)
         saveButton = view.findViewById(R.id.save)
         isFreeCheckBox = view.findViewById(R.id.is_free_checkbox)
+        backButton = view.findViewById(R.id.back_icon)
 
         companyAccordion = view.findViewById(R.id.company_accordion)
         companyTitle = view.findViewById(R.id.company_title)
@@ -120,18 +124,23 @@ class Add_New_Game_Fragment : Fragment() {
         genreTitle = view.findViewById(R.id.genres_title)
         genreList = view.findViewById(R.id.genres_list)
 
-        platformAccordion = view.findViewById(R.id.platform_accordion)
-        platformTitle = view.findViewById(R.id.platform_title)
-        platformList = view.findViewById(R.id.platform_list)
-
         pegiAccordion = view.findViewById(R.id.pegi_accordion)
         pegiTitle = view.findViewById(R.id.pegi_title)
         pegiList = view.findViewById(R.id.pegi_list)
 
+        Log.d("EditGameFragment", "GameInfo received: $gameInfo")
+        if(gameInfo != null){
+            populateFields()
+        }
+
+        backButton.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+
+
         var selectedCompanyPosition: Int = -1
         var selectedSequencePosition: Int = -1
         var selectedGenrePosition: Int = -1
-        var selectedPlatformPosition: Int = -1
 
         companyAccordion.setOnClickListener {
             toggleListVisibility(companyList, companyTitle, R.drawable.icon_companies)
@@ -145,10 +154,6 @@ class Add_New_Game_Fragment : Fragment() {
             toggleListVisibility(genreList, genreTitle, R.drawable.icon_genres)
         }
 
-        platformAccordion.setOnClickListener {
-            toggleListVisibility(platformList, platformTitle, R.drawable.icon_platforms)
-        }
-
         pegiAccordion.setOnClickListener {
             toggleListVisibility(pegiList, pegiTitle, R.drawable.icon_age)
         }
@@ -156,8 +161,9 @@ class Add_New_Game_Fragment : Fragment() {
         loadCompanies(view.context)
         loadSequences(view.context)
         loadGenres(view.context)
-        loadPlatforms(view.context)
         loadPegiInfo(view.context)
+
+
 
         saveButton.setOnClickListener {
             val gameTitle = gameTitleEditText.text.toString()
@@ -165,7 +171,6 @@ class Add_New_Game_Fragment : Fragment() {
             val selectedCompanyText = companyTitle.text.toString()
             val selectedSequenceText = sequenceTitle.text.toString()
             val selectedGenreTexts = genreTitle.text.toString().split(", ")
-            val selectedPlatformTexts = platformTitle.text.toString().split(", ")
             val selectedPegiInfo = pegiAdapter.getSelectedPosition().takeIf { it != -1 }?.let {
                 val pegiInfo = pegiInfoValues[it]
                 val pegiValue = pegiInfo.substringAfter(":").trim()
@@ -175,7 +180,6 @@ class Add_New_Game_Fragment : Fragment() {
             var selectedCompanyId: Int? = null
             var selectedSequenceId: Int? = null
             val selectedGenreIds = mutableListOf<Int>()
-            val selectedPlatformIds = mutableListOf<Int>()
 
             for (company in companies) {
                 if (company.name == selectedCompanyText) {
@@ -197,13 +201,6 @@ class Add_New_Game_Fragment : Fragment() {
                 }
             }
 
-            for (platform in platforms) {
-                if (selectedPlatformTexts.contains(platform.name)) {
-                    selectedPlatformIds.add(platform.id)
-                }
-            }
-
-            
             if (gameTitle.isEmpty()) {
                 Toast.makeText(requireContext(), "Por favor, insira um nome para o jogo.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -224,137 +221,166 @@ class Add_New_Game_Fragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if (selectedPlatformIds.isEmpty()) {
-                Toast.makeText(requireContext(), "Por favor, selecione pelo menos uma plataforma.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (selectedImageUri == null) {
-                Toast.makeText(requireContext(), "Por favor, selecione uma imagem.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             val context = requireContext()
 
-            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
-            val file = bitmapToFile(context, bitmap)
+            // Verifica se uma nova imagem foi selecionada
+            if (selectedImageUri == null) {
+                // Se não houve seleção de nova imagem, utilizar a imagem existente (gameInfo.coverImage)
+                editGame(gameInfo!!.coverImage!!, gameTitle, description, isFree, selectedPegiInfo, selectedSequenceId, selectedCompanyId, selectedGenreIds)
+            } else {
+                // Se houve seleção de nova imagem, fazer upload da nova imagem
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
+                val file = bitmapToFile(context, bitmap)
 
-            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+                val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-            val call = ApiManager.apiService.uploadImage(imagePart)
-            call.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                    if (response.isSuccessful) {
-                        val imageUrl = response.body()?.string()
-                        imageUrl?.let {
-                            val pattern = Regex("\"url\":\"(\\S+)\"")
-                            val matchResult = pattern.find(it)
+                val call = ApiManager.apiService.uploadImage(imagePart)
+                call.enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        if (response.isSuccessful) {
+                            val imageUrl = response.body()?.string()
+                            imageUrl?.let {
+                                val pattern = Regex("\"url\":\"(\\S+)\"")
+                                val matchResult = pattern.find(it)
 
-                            matchResult?.let { result ->
-                                val coverImageUrl = result.groupValues[1]
+                                matchResult?.let { result ->
+                                    val coverImageUrl = result.groupValues[1]
 
-                                val newGame = Game(
-                                    id = null,
-                                    name = gameTitle,
-                                    description = description,
-                                    isFree = isFree,
-                                    releaseDate = "2024-04-24T00:00:00Z",
-                                    pegiInfo = selectedPegiInfo,
-                                    coverImage = coverImageUrl,
-                                    sequenceId = selectedSequenceId,
-                                    companyId = selectedCompanyId,
-                                )
-
-                                ApiManager.apiService.createGame(newGame)
-                                    .enqueue(object : Callback<Game> {
-                                        override fun onResponse(call: Call<Game>, response: Response<Game>) {
-                                            if (response.isSuccessful) {
-                                                val createdGame = response.body()
-                                                createdGame?.let { game ->
-                                                    Log.d("AddNewGame", "Jogo criado com sucesso: $game")
-
-                                                    // Associação de gêneros
-                                                    for (genreId in selectedGenreIds) {
-                                                        val gameToGenreAssociation = GameGenre(gameId = game.id, genreId = genreId)
-                                                        ApiManager.apiService.addGenresToGame(gameToGenreAssociation)
-                                                            .enqueue(object : Callback<GameGenre> {
-                                                                override fun onResponse(call: Call<GameGenre>, response: Response<GameGenre>) {
-                                                                    if (response.isSuccessful) {
-                                                                        Log.d("AddNewGame", "Gênero associado com sucesso: $gameToGenreAssociation")
-                                                                    } else {
-                                                                        Log.e("AddNewGame", "Erro ao associar gênero: ${response.message()}")
-                                                                    }
-                                                                }
-
-                                                                override fun onFailure(call: Call<GameGenre>, t: Throwable) {
-                                                                    Log.e("AddNewGame", "Falha na requisição de associação de gênero: ${t.message}")
-                                                                }
-                                                            })
-                                                    }
-
-                                                    // Associação de plataformas
-                                                    for (platformId in selectedPlatformIds) {
-                                                        val gameToPlatformAssociation = GamePlatform(gameId = game.id, platformId = platformId)
-                                                        ApiManager.apiService.addPlatformsToGame(gameToPlatformAssociation)
-                                                            .enqueue(object : Callback<GamePlatform> {
-                                                                override fun onResponse(call: Call<GamePlatform>, response: Response<GamePlatform>) {
-                                                                    if (response.isSuccessful) {
-                                                                        Log.d("AddNewGame", "Plataforma associada com sucesso: $gameToPlatformAssociation")
-                                                                    } else {
-                                                                        Log.e("AddNewGame", "Erro ao associar plataforma: ${response.message()}")
-                                                                    }
-                                                                }
-
-                                                                override fun onFailure(call: Call<GamePlatform>, t: Throwable) {
-                                                                    Log.e("AddNewGame", "Falha na requisição de associação de plataforma: ${t.message}")
-                                                                }
-                                                            })
-                                                    }
-
-                                                    // Verifica se o estado não foi salvo antes de realizar a transação
-                                                    if (!requireActivity().supportFragmentManager.isStateSaved) {
-                                                        // Redirecionar para View_Game_Fragment
-                                                        val platforms = arrayListOf<String>()
-                                                        val viewGameFragment = View_Game_Fragment.newInstance(game.id!!, platforms)
-                                                        requireActivity().supportFragmentManager.beginTransaction()
-                                                            .replace(R.id.layout, viewGameFragment)
-                                                            .addToBackStack(null)
-                                                            .commit()
-                                                    } else {
-                                                        // Lidar com o caso onde o estado já foi salvo
-                                                        Toast.makeText(requireContext(), "Estado da atividade já foi salvo. Tente novamente.", Toast.LENGTH_SHORT).show()
-                                                    }
-
-                                                } ?: run {
-                                                    Log.e("AddNewGame", "Erro: Corpo da resposta nulo.")
-                                                }
-                                            } else {
-                                                Log.e("AddNewGame", "Erro ao criar jogo: ${response.message()}")
-                                            }
-                                        }
-
-                                        override fun onFailure(call: Call<Game>, t: Throwable) {
-                                            Log.e("AddNewGame", "Falha na requisição: ${t.message}")
-                                        }
-                                    })
+                                    // Editar o jogo utilizando a nova imagem
+                                    editGame(coverImageUrl, gameTitle, description, isFree, selectedPegiInfo, selectedSequenceId, selectedCompanyId, selectedGenreIds)
+                                }
                             }
+                        } else {
+                            Log.e("AddNewGame", "Erro ao fazer upload da imagem: ${response.message()}")
                         }
-                    } else {
-                        Log.e("AddNewGame", "Erro ao fazer upload da imagem: ${response.message()}")
                     }
-                }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("AddNewGame", "Falha na requisição de upload: ${t.message}")
-                }
-            })
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Log.e("AddNewGame", "Falha na requisição de upload: ${t.message}")
+                    }
+                })
+            }
         }
+
 
 
         return view
     }
 
+    private fun editGame(coverImage: String, gameTitle: String, description: String, isFree: Boolean, selectedPegiInfo: Int, selectedSequenceId: Int?, selectedCompanyId: Int?, selectedGenreIds: List<Int>) {
+        val newGame = Game(
+            id = null,
+            name = gameTitle,
+            description = description,
+            isFree = isFree,
+            releaseDate = "2024-04-24T00:00:00Z",
+            pegiInfo = selectedPegiInfo,
+            coverImage = coverImage,
+            sequenceId = selectedSequenceId,
+            companyId = selectedCompanyId!!
+        )
+
+        Log.d("Edit Game", "${newGame}")
+
+        // Edita o jogo utilizando a imagem recebida (coverImage)
+        ApiManager.apiService.editGame(newGame, gameInfo!!.id)
+            .enqueue(object : Callback<Game> {
+                override fun onResponse(call: Call<Game>, response: Response<Game>) {
+                    if (response.isSuccessful) {
+                        val createdGame = response.body()
+                        createdGame?.let { game ->
+                            Log.d("AddNewGame", "Jogo editado com sucesso: $game")
+
+                            // Associação de gêneros
+                            ApiManager.apiService.deleteGameGenres(gameInfo!!.id)
+                                .enqueue(object : Callback<Void> {
+                                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                        if (response.isSuccessful) {
+                                            Log.d("AddNewGame", "Gêneros do jogo deletados com sucesso")
+
+                                            // Usar um contador para monitorar as associações bem-sucedidas
+                                            var successfulAssociations = 0
+                                            val totalAssociations = selectedGenreIds.size
+
+                                            for (genreId in selectedGenreIds) {
+                                                val gameToGenreAssociation = GameGenre(gameId = game.id, genreId = genreId)
+                                                ApiManager.apiService.addGenresToGame(gameToGenreAssociation)
+                                                    .enqueue(object : Callback<GameGenre> {
+                                                        override fun onResponse(call: Call<GameGenre>, response: Response<GameGenre>) {
+                                                            if (response.isSuccessful) {
+                                                                Log.d("AddNewGame", "Gênero associado com sucesso: $gameToGenreAssociation")
+                                                                successfulAssociations++
+                                                                if (successfulAssociations == totalAssociations) {
+                                                                    navigateBack()
+                                                                }
+                                                            } else {
+                                                                Log.e("AddNewGame", "Erro ao associar gênero: ${response.message()}")
+                                                            }
+                                                        }
+
+                                                        override fun onFailure(call: Call<GameGenre>, t: Throwable) {
+                                                            Log.e("AddNewGame", "Falha na requisição de associação de gênero: ${t.message}")
+                                                        }
+                                                    })
+                                            }
+                                        } else {
+                                            Log.e("AddNewGame", "Erro ao deletar gêneros do jogo: ${response.message()}")
+                                        }
+                                    }
+
+                                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                                        Log.e("AddNewGame", "Falha na requisição de deleção de gêneros do jogo: ${t.message}")
+                                    }
+                                })
+                        } ?: run {
+                            Log.e("AddNewGame", "Erro: Corpo da resposta nulo.")
+                        }
+                    } else {
+                        Log.e("AddNewGame", "Erro ao editar jogo: ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<Game>, t: Throwable) {
+                    Log.e("AddNewGame", "Falha na requisição de edição de jogo: ${t.message}")
+                }
+            })
+    }
+
+    private fun navigateBack() {
+        // Verifica se o estado não foi salvo antes de realizar a transação
+        if (!requireActivity().supportFragmentManager.isStateSaved) {
+            val fragmentManager = requireActivity().supportFragmentManager
+
+            // Pop the current fragment
+            fragmentManager.popBackStack()
+
+            // Remove the previous fragment
+            val previousFragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1).name
+            fragmentManager.popBackStack()
+
+            // Add the previous fragment again
+            fragmentManager.beginTransaction()
+                .replace(R.id.layout, View_Game_Fragment.newInstance(gameInfo!!.id, arrayListOf()))
+                .addToBackStack(previousFragmentTag)
+                .commit()
+        } else {
+            Toast.makeText(requireContext(), "Estado da atividade já foi salvo. Tente novamente.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun populateFields() {
+        if(gameInfo != null){
+            Log.d("EditGameFragment", "GameInfo received: $gameInfo")
+            gameTitleEditText.setText(gameInfo!!.name)
+            descriptionEditText.setText(gameInfo!!.description)
+            isFreeCheckBox.isChecked = gameInfo!!.isFree
+
+            // Carregar a imagem do coverImage usando Picasso
+            Picasso.get().load(gameInfo!!.coverImage).into(imageView)
+            }
+    }
 
     private fun loadCompanies(context: Context) {
         ApiManager.apiService.getCompanies().enqueue(object : Callback<List<Company>> {
@@ -362,7 +388,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     companies = response.body() ?: emptyList()
                     if (companies.isNotEmpty()) {
-                        companyAdapter = CompanyAdapter(context, companies, companyTitle, false, null)
+                        companyAdapter = CompanyAdapter(context, companies, companyTitle, false, gameInfo!!.company)
                         companyList.adapter = companyAdapter
                         adjustListViewHeight(companyList)
                     }
@@ -383,7 +409,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     sequences = response.body() ?: emptyList()
                     if (sequences.isNotEmpty()) {
-                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle, false, null)
+                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle, false, gameInfo!!.sequence)
                         sequenceList.adapter = sequenceAdapter
                         adjustListViewHeight(sequenceList)
                     }
@@ -404,7 +430,7 @@ class Add_New_Game_Fragment : Fragment() {
                 if (response.isSuccessful) {
                     genres = response.body() ?: emptyList()
                     if (genres.isNotEmpty()) {
-                        genreAdapter = GenresAdapter(context, genres, genreTitle, emptyList())
+                        genreAdapter = GenresAdapter(context, genres, genreTitle, gameInfo!!.genres)
                         genreList.adapter = genreAdapter
                         adjustListViewHeight(genreList)
                     }
@@ -419,30 +445,9 @@ class Add_New_Game_Fragment : Fragment() {
         })
     }
 
-    private fun loadPlatforms(context: Context) {
-        ApiManager.apiService.getPlatforms().enqueue(object : Callback<List<Platforms>> {
-            override fun onResponse(call: Call<List<Platforms>>, response: Response<List<Platforms>>) {
-                if (response.isSuccessful) {
-                    platforms = response.body() ?: emptyList()
-                    if (platforms.isNotEmpty()) {
-                        platformAdapter = PlatformsAdapter(context, platforms, platformTitle)
-                        platformList.adapter = platformAdapter
-                        adjustListViewHeight(platformList)
-                    }
-                } else {
-                    Log.e("AddNewGame", "Erro ao carregar gêneros: ${response.message()}")
-                }
-            }
-
-            override fun onFailure(call: Call<List<Platforms>>, t: Throwable) {
-                Log.e("AddNewGame", "Falha na requisição: ${t.message}")
-            }
-        })
-    }
-
     private fun loadPegiInfo(context: Context) {
         pegiInfoValues = context.resources.getStringArray(R.array.pegi_info_values)
-        pegiAdapter = PegyAdapter(context, pegiInfoValues, pegiTitle, null)
+        pegiAdapter = PegyAdapter(context, pegiInfoValues, pegiTitle, gameInfo!!.pegiInfo)
         pegiList.adapter = pegiAdapter
         adjustListViewHeight(pegiList)
     }
@@ -578,6 +583,16 @@ class Add_New_Game_Fragment : Fragment() {
         listView.isScrollContainer = totalItems > 5
     }
 
+    companion object {
+        private const val ARG_GAME = "game"
 
+        @JvmStatic
+        fun newInstance(game: GameInfo?) =
+            Edit_Game_Fragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARG_GAME, game)
+                }
+            }
+    }
 
 }

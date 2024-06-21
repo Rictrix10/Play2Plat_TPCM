@@ -74,14 +74,36 @@ const UserModel = {
             where: { username }
         });
     },
-        softDeleteUser: async (id) => {
-            return await prisma.user.update({
-                where: { id },
-                data: {
-                    isDeleted: true
-                }
-            });
-        },
+
+    softDeleteUser: async (id) => {
+        try {
+            await prisma.$transaction([
+                prisma.userGame.deleteMany({
+                    where: { userId: id },
+                }),
+                prisma.avaliation.deleteMany({
+                    where: { userId: id },
+                }),
+                prisma.userGameFavorite.deleteMany({
+                    where: { userId: id },
+                }),
+                prisma.user.update({
+                    where: { id },
+                    data: {
+                        username: "eliminated",
+                        email: "eliminated",
+                        password: "eliminated",
+                        avatar: "eliminated",
+                        isDeleted: true
+                    }
+                }),
+            ]);
+            return await prisma.user.findUnique({ where: { id } });
+        } catch (error) {
+            console.error('Erro ao excluir usuário:', error);
+            throw error;
+        }
+    },
 
             getPasswordByUserId: async (id) => {
                 try {

@@ -2,6 +2,8 @@ package com.example.play2plat_tpcm
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Collections
 import com.example.play2plat_tpcm.api.Paramater
+import com.example.play2plat_tpcm.api.RandomGenresResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -78,7 +81,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             redirectToFilters()
         }
 
-        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        sharedPreferences = requireActivity().getSharedPreferences("RandomLists", Context.MODE_PRIVATE)
         countValue = sharedPreferences.getInt("countValue", 0)
         Log.d("Search_Fragment", "Valor de countValue no onCreateView: $countValue")
         val genreValue = sharedPreferences.getString("genre", null)
@@ -106,7 +109,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             val fragment3 = if (companyValue != null) {
                 Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Companies", "Sony", 0)
+                Games_List_Horizontal_Fragment.newInstance("Companies", "Nintendo", 0)
             }
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container3, fragment3)
@@ -178,26 +181,28 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         // Verificar se countValue é um divisor de 10
         if (countValue % 10 == 0) {
-            getRandomGenre { genre ->
-                sharedPreferences.edit().putString("genre", genre).apply()
-                Log.d("Search_Fragment", "Novo valor de genre: $genre")
+
+            getRandomNames { genres ->
+                genres.take(3).forEachIndexed { index, genre ->
+                    when (index) {
+                        0 -> sharedPreferences.edit().putString("genre", genre).apply()
+                        1 -> sharedPreferences.edit().putString("genre2", genre).apply()
+                        2 -> sharedPreferences.edit().putString("genre3", genre).apply()
+                    }
+                    Log.d("Search_Fragment", "Novo valor de genre${index + 1}: $genre")
+                }
             }
+
             getRandomCompany { company ->
                 sharedPreferences.edit().putString("company", company).apply()
                 Log.d("Search_Fragment", "Novo valor de company: $company")
             }
-            getRandomGenre { genre2 ->
-                sharedPreferences.edit().putString("genre2", genre2).apply()
-                Log.d("Search_Fragment", "Novo valor de genre2: $genre2")
-            }
+
             getRandomPlatform { platform ->
                 sharedPreferences.edit().putString("platform", platform).apply()
                 Log.d("Search_Fragment", "Novo valor de platform: $platform")
             }
-            getRandomGenre { genre3 ->
-                sharedPreferences.edit().putString("genre3", genre3).apply()
-                Log.d("Search_Fragment", "Novo valor de genre3: $genre3")
-            }
+
             getRandomSequence { sequence ->
                 sharedPreferences.edit().putString("sequence", sequence).apply()
                 Log.d("Search_Fragment", "Novo valor de sequence: $sequence")
@@ -205,6 +210,26 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         }
     }
 
+    private fun getRandomNames(onGenresReceived: (List<String>) -> Unit) {
+        ApiManager.apiService.getRandomNames().enqueue(object : Callback<RandomGenresResponse> {
+            override fun onResponse(call: Call<RandomGenresResponse>, response: Response<RandomGenresResponse>) {
+                if (response.isSuccessful) {
+                    val genreResponse = response.body()
+                    if (genreResponse != null) {
+                        onGenresReceived(genreResponse.names)
+                    } else {
+                        Log.e("Search_Fragment", "Resposta de gêneros ou nomes de gêneros é nula")
+                    }
+                } else {
+                    Log.e("Search_Fragment", "Falha ao obter nomes de gêneros aleatórios: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<RandomGenresResponse>, t: Throwable) {
+                Log.e("Search_Fragment", "Falha na chamada da API para obter nomes de gêneros aleatórios: ${t.message}")
+            }
+        })
+    }
 
     private fun getRandomGenre(onGenreReceived: (String) -> Unit) {
         ApiManager.apiService.getRandomGenre().enqueue(object : Callback<Paramater> {
@@ -311,32 +336,63 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     }
 
     override fun onGamePictureClick(gameId: Int) {
-        redirectToViewGame(gameId)
+        if (isNetworkAvailable()) {
+            redirectToViewGame(gameId)
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
+
     }
 
     private fun redirectToGamesSearched() {
-        val gamesSearchedFragment = GamesSearched_Fragment()
-        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+
+        if (isNetworkAvailable()){
+            val gamesSearchedFragment = GamesSearched_Fragment()
+
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, gamesSearchedFragment)
                 .addToBackStack(null)
                 .commit()
-        } else {
-            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+
+        }
+        else{
+            redirectToNoConnectionFragment()
+
         }
     }
 
 
     private fun redirectToFilters() {
-        val filtersFragment = Filters_Fragment()
-        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+
+        if (isNetworkAvailable()){
+            val filtersFragment = Filters_Fragment()
+
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, filtersFragment)
                 .addToBackStack(null)
                 .commit()
-        } else {
-            Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
+
         }
+        else{
+            redirectToNoConnectionFragment()
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+
     }
 
 

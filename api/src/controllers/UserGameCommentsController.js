@@ -33,13 +33,16 @@ const UserGameCommentsController = {
 
     getUserGameCommentById: async (req, res) => {
         try {
-            const commentId = req.params.id;
-            const comment = await UserGameCommentsModel.getCommentById(commentId);
-            if (comment) {
+           const commentId = parseInt(req.params.id, 10); // Converter o ID para número inteiro
+           if (isNaN(commentId)) {
+                    return res.status(400).json({ error: 'ID inválido' });
+           }
+           const comment = await UserGameCommentsModel.getCommentById(commentId);
+           if (comment) {
                 res.json(comment);
-            } else {
+           } else {
                 res.status(404).json({ error: 'Comentário não encontrado' });
-            }
+           }
         } catch (error) {
             console.error('Erro ao buscar comentário por ID:', error);
             res.status(500).json({ error: 'Erro ao buscar comentário' });

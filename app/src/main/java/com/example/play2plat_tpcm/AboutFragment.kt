@@ -2,6 +2,7 @@ package com.example.play2plat_tpcm
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +11,14 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.play2plat_tpcm.Platforms_List_Fragment
 import com.example.play2plat_tpcm.R
+import com.example.play2plat_tpcm.api.ApiManager
+import com.example.play2plat_tpcm.api.Collections
+import com.example.play2plat_tpcm.api.Game
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class AboutFragment : Fragment() {
+class AboutFragment : Fragment(), Games_List_Horizontal_Fragment.OnEmptyListListener, Games_List_Horizontal_Fragment.OnNotEmptyListListener {
 
     //private lateinit var gameId: TextView
     private lateinit var description: TextView
@@ -20,6 +27,14 @@ class AboutFragment : Fragment() {
     private var currentUserType: Int = 0
     private lateinit var fragmentSequence: FrameLayout
     private lateinit var fragmentCompany: FrameLayout
+
+    override fun onListEmpty() {
+        fragmentCompany.visibility = View.GONE
+    }
+
+    override fun onListNotEmpty() {
+        fragmentCompany.visibility = View.VISIBLE
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,8 +59,54 @@ class AboutFragment : Fragment() {
         if (sequenceArg.equals("No", ignoreCase = true)) {
             fragmentSequence.visibility = View.GONE
         } else {
-            fragmentSequence.visibility = View.VISIBLE
+            ApiManager.apiService.getGamesSameSequence(gameIdArg).enqueue(object : Callback<List<Collections>> {
+                override fun onResponse(
+                    call: Call<List<Collections>>,
+                    response: Response<List<Collections>>
+                ) {
+                    if (response.isSuccessful) {
+                        val games = response.body()?.map { it.toGame() } ?: emptyList()
+                        if (games.isEmpty()) {
+                            fragmentSequence.visibility = View.GONE
+                        } else {
+                            fragmentSequence.visibility = View.VISIBLE
+                        }
+
+                    } else {
+                        Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                    Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+                }
+            })
+
         }
+
+        ApiManager.apiService.getGamesSameCompany(gameIdArg).enqueue(object :
+            Callback<List<Collections>> {
+            override fun onResponse(
+                call: Call<List<Collections>>,
+                response: Response<List<Collections>>
+            ) {
+                if (response.isSuccessful) {
+                    val games = response.body()?.map { it.toGame() } ?: emptyList()
+                    if (games.isEmpty()) {
+                        fragmentCompany.visibility = View.GONE
+                    } else {
+                        fragmentCompany.visibility = View.VISIBLE
+                    }
+                } else {
+                    Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
+
+                }
+            }
+
+            override fun onFailure(call: Call<List<Collections>>, t: Throwable) {
+                Log.e("Games_List_Grid_Fragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
@@ -71,6 +132,20 @@ class AboutFragment : Fragment() {
             .commit()
 
         return view
+    }
+
+    private fun Collections.toGame(): Game {
+        return Game(
+            id = this.id,
+            name = this.name,
+            description = "", // Se não tiver essa informação, pode deixar em branco ou ajustar conforme necessário
+            isFree = this.isFree,
+            releaseDate = "", // Se não tiver essa informação, pode deixar em branco ou ajustar conforme necessário
+            pegiInfo = 0, // Se não tiver essa informação, pode deixar 0 ou ajustar conforme necessário
+            coverImage = this.coverImage,
+            sequenceId = 0, // Se não tiver essa informação, pode deixar 0 ou ajustar conforme necessário
+            companyId = 0 // Se não tiver essa informação, pode deixar 0 ou ajustar conforme necessário
+        )
     }
 
     companion object {

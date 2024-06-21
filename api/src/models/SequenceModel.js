@@ -14,18 +14,23 @@ const SequenceModel = {
               orderBy: { name: 'asc' }
             });
     },
-            getRandomSequenceName: async () => {
-                const sequences = await prisma.sequence.findMany({
-                    select: {
-                        name: true
-                    }
-                });
-                if (sequences.length === 0) {
-                    return null;
+    getRandomSequenceName: async () => {
+        const sequences = await prisma.sequence.findMany({
+            select: {
+                name: true
+            },
+            where: {
+                games: {
+                    some: {} // Only sequences with at least one associated game
                 }
-                const randomIndex = Math.floor(Math.random() * sequences.length);
-                return sequences[randomIndex].name;
             }
+        });
+        if (sequences.length === 0) {
+            return null;
+        }
+        const randomIndex = Math.floor(Math.random() * sequences.length);
+        return sequences[randomIndex].name;
+    }
 };
 
 module.exports = SequenceModel;

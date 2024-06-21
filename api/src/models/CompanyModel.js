@@ -16,15 +16,21 @@ const CompanyModel = {
     },
     getRandomCompanyName: async () => {
         const companies = await prisma.company.findMany({
-              select: {
-                        name: true
-                    }
-                });
-                if (companies.length === 0) {
-                    return null;
+            select: {
+                id: true,
+                name: true
+            },
+            where: {
+                games: {
+                    some: {} // Only companies with at least one associated game
                 }
-                const randomIndex = Math.floor(Math.random() * companies.length);
-                return companies[randomIndex].name;
+            }
+        });
+        if (companies.length === 0) {
+            return null;
+        }
+        const randomIndex = Math.floor(Math.random() * companies.length);
+        return companies[randomIndex].name;
     }
 };
 

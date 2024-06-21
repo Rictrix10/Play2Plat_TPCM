@@ -20,19 +20,19 @@ const SequenceController = {
                 res.status(500).json({ error: 'Erro ao buscar sequências' });
             }
         },
-                    getRandomSequenceName: async (req, res) => {
-                        try {
-                            const sequenceName = await SequenceModel.getRandomSequenceName();
-                            if (!sequenceName) {
-                                res.status(404).json({ error: 'Nenhuma sequencia encontrada' });
-                            } else {
-                                res.json({ name: sequenceName });
-                            }
-                        } catch (error) {
-                            console.error('Erro ao buscar nome de sequencia aleatória:', error);
-                            res.status(500).json({ error: 'Erro ao buscar nome de sequencia aleatória' });
-                        }
-                    }
+    getRandomSequenceName: async (req, res) => {
+        try {
+            const sequenceName = await SequenceModel.getRandomSequenceName();
+            if (!sequenceName) {
+                res.status(404).json({ error: 'Nenhuma sequência encontrada' });
+            } else {
+                res.json({ name: sequenceName });
+            }
+        } catch (error) {
+            console.error('Erro ao buscar nome de sequência aleatória:', error);
+            res.status(500).json({ error: 'Erro ao buscar nome de sequência aleatória' });
+        }
+    }
 };
 
 module.exports = SequenceController;

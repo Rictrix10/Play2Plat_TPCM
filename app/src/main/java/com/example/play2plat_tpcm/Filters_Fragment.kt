@@ -312,7 +312,7 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
                 if (response.isSuccessful) {
                     companies = response.body() ?: emptyList()
                     if (companies.isNotEmpty()) {
-                        companyAdapter = CompanyAdapter(context, companies, companyTitle, true)
+                        companyAdapter = CompanyAdapter(context, companies, companyTitle, true, null)
                         companyList.adapter = companyAdapter
                         adjustListViewHeight(companyList)
                     }
@@ -333,7 +333,7 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
                 if (response.isSuccessful) {
                     sequences = response.body() ?: emptyList()
                     if (sequences.isNotEmpty()) {
-                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle, true)
+                        sequenceAdapter = SequenceAdapter(context, sequences, sequenceTitle, true, null)
                         sequenceList.adapter = sequenceAdapter
                         adjustListViewHeight(sequenceList)
                     }

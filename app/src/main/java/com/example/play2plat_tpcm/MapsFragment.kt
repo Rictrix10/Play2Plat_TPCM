@@ -3,6 +3,7 @@ package com.example.play2plat_tpcm
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import androidx.fragment.app.Fragment
 import android.os.Bundle
@@ -34,6 +35,8 @@ class MapsFragment : Fragment() {
     private var gameId: Int = 0
     private lateinit var googleMap: GoogleMap
     private lateinit var commentTextView: TextView
+
+    private val targetList = mutableListOf<Target>()
 
     private val callback = OnMapReadyCallback { map ->
         googleMap = map
@@ -116,8 +119,20 @@ class MapsFragment : Fragment() {
             if (avatarUrl.isEmpty()) {
                 val drawableResId = R.drawable.noimageprofile
                 val bitmap = BitmapFactory.decodeResource(resources, drawableResId)
+
+                // Criar um novo Bitmap com fundo branco
+                val backgroundBitmap = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(backgroundBitmap)
+                canvas.drawColor(Color.WHITE) // Pintar o fundo de branco
+
+                // Redimensionar o bitmap original
                 val resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false)
-                val roundedBitmap = getRoundedBitmap(resizedBitmap)
+
+                // Desenhar o bitmap redimensionado no canvas com fundo branco
+                canvas.drawBitmap(resizedBitmap, 0f, 0f, null)
+
+                // Arredondar o bitmap com fundo branco
+                val roundedBitmap = getRoundedBitmap(backgroundBitmap)
                 val markerOptions = MarkerOptions()
                     .position(location)
                     .title(comment.comments)  // Usando o comentário como title
@@ -130,10 +145,8 @@ class MapsFragment : Fragment() {
                 )
 
             // Carregar a imagem do avatar usando Picasso e arredondar
-            } else{ Picasso.get()
-                .load(comment.user.avatar)
-                .resize(50, 50)
-                .into(object : Target {
+            } else {
+                val target = object : Target {
                     override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                         bitmap?.let {
                             val roundedBitmap = getRoundedBitmap(it)
@@ -145,24 +158,27 @@ class MapsFragment : Fragment() {
                             googleMap.addMarker(markerOptions)
                             Log.d("MapsFragment", "Marker added for comment: ${comment.comments}")
                         }
+                        targetList.remove(this) // Remover o target da lista após o carregamento
                     }
 
-                    override fun onBitmapFailed(
-                        e: Exception?,
-                        errorDrawable: android.graphics.drawable.Drawable?
-                    ) {
+                    override fun onBitmapFailed(e: Exception?, errorDrawable: android.graphics.drawable.Drawable?) {
                         Log.e(
                             "MapsFragment",
                             "Failed to load avatar for comment: ${comment.comments}, error: ${e?.message}"
                         )
+                        targetList.remove(this) // Remover o target da lista após falha
                     }
 
                     override fun onPrepareLoad(placeHolderDrawable: android.graphics.drawable.Drawable?) {
                         // Placeholder, se necessário
                     }
-                })
+                }
+
+                // Adicionar o target à lista para manter a referência
+                targetList.add(target)
+                Picasso.get().load(comment.user.avatar).resize(50, 50).into(target)
+            }
         }
-    }
 
         // Movimentar a câmera para o primeiro marcador (opcional)
         comments.firstOrNull { it.latitude != null && it.longitude != null }?.let {

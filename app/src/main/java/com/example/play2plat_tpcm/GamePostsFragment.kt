@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -49,7 +50,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Locale
 
-class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickListener, GamePostsAdapter.OnReplyClickListener {
+class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickListener, GamePostsAdapter.OnReplyClickListener, GamePostsAdapter.onMoreOptionsClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var gameTextView: TextView
@@ -58,13 +59,18 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
     private lateinit var seeMapButton: Button
+    private lateinit var iconCrossView: ImageView
+    private lateinit var editButton: Button
+    private lateinit var deleteButton: Button
     private lateinit var container_layout: ConstraintLayout
+    private lateinit var more_options_layout: ConstraintLayout
 
     private var gameId: Int = 0
     private var gameName: String? = null
     private var primaryColor: Int = 0
     private var secondaryColor: Int = 0
-    private var isAnswerPostId: Int = 0
+    private var isAnswerPostId: Int? = 0
+    //private var edited: Int = 0
 
     private var selectedImageUri: Uri? = null
 
@@ -72,6 +78,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private var longitude: Double = 0.0
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var selectedPostId: Int = 0
 
     private val pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
@@ -108,13 +115,19 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         imageImageView = view.findViewById(R.id.image_icon)
         sendImageView = view.findViewById(R.id.send_icon)
         container_layout = view.findViewById(R.id.container)
+        more_options_layout = view.findViewById(R.id.more_options_layout)
         ReplyingTo = view.findViewById(R.id.replying_to_text)
         gameTextView.text = gameName
         seeMapButton = view.findViewById(R.id.button_see_map)
+        editButton = view.findViewById(R.id.option_edit)
+        deleteButton = view.findViewById(R.id.option_delete)
+        iconCrossView = view.findViewById(R.id.icon_cross)
 
         val colors = intArrayOf(primaryColor, secondaryColor)
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
         container_layout.background = gradientDrawable
+
+        imageImageView.setImageResource(R.drawable.image)
 
         imageImageView.setOnClickListener {
             selectVisualMedia()
@@ -131,12 +144,23 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         // Chama a API para obter os posts do jogo
         getGamePosts(gameId, userId)
 
+
+        seeMapButton.setOnClickListener(){
+            redirectToMapsFragment()
+        }
+
+        /*
+        editButton.setOnClickListener(){
+            getLocationAndPatchComment(userId, gameId)
+        }
+
+         */
         sendImageView.setOnClickListener {
             getLocationAndPostComment(userId, gameId)
         }
 
-        seeMapButton.setOnClickListener(){
-            redirectToMapsFragment()
+        deleteButton.setOnClickListener(){
+            deleteCommentWithConfirmation(userId)
         }
 
         return view
@@ -152,7 +176,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     val gamePosts = response.body()
                     if (gamePosts != null && gamePosts.isNotEmpty()) {
                         getLocationName(gamePosts[0].latitude, gamePosts[0].longitude) { locationInfo ->
-                            recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment)
+                            recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment, this@GamePostsFragment)
                         }
                     } else {
                         Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")
@@ -203,7 +227,9 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                                         }
                                     }
                                 } else {
-                                    Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                                    //Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                                    Log.e("AddNewComment", "Erro no upload: $errorBody")
                                 }
                             }
 
@@ -218,6 +244,61 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             } else {
                 //Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
                 postCommentWithNoLocation(userId, gameId)
+            }
+        }
+    }
+
+    private fun getLocationAndPatchComment(userId: Int, gameId: Int) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                latitude = location.latitude
+                longitude = location.longitude
+
+                getLocationName(latitude, longitude) { locationInfo ->  // Passando o lambda
+                    val comments = commentEditTextView.text.toString()
+                    if (selectedImageUri != null) {
+                        val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+                        val file = bitmapToFile(requireContext(), bitmap)
+                        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                        val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+
+                        val call = ApiManager.apiService.uploadImage(imagePart)
+                        call.enqueue(object : Callback<ResponseBody> {
+                            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                if (response.isSuccessful) {
+                                    val imageUrl = response.body()?.string()
+                                    imageUrl?.let {
+                                        val pattern = Regex("\"url\":\"(\\S+)\"")
+                                        val matchResult = pattern.find(it)
+                                        matchResult?.let { result ->
+                                            val coverImageUrl = result.groupValues[1]
+                                            patchComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
+                                        }
+                                    }
+                                } else {
+                                    //Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                                    Log.e("AddNewComment", "Erro no upload: $errorBody")
+                                }
+                            }
+
+                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                            }
+                        })
+                    } else {
+                        patchComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
+                    }
+                }
+            } else {
+                //Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
+                patchCommentWithNoLocation(userId, gameId)
             }
         }
     }
@@ -257,6 +338,120 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
     }
 
+    private fun patchCommentWithNoLocation(userId: Int, gameId: Int) {
+        val comments = commentEditTextView.text.toString()
+        if (selectedImageUri != null) {
+            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+            val file = bitmapToFile(requireContext(), bitmap)
+            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+
+            val call = ApiManager.apiService.uploadImage(imagePart)
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    if (response.isSuccessful) {
+                        val imageUrl = response.body()?.string()
+                        imageUrl?.let {
+                            val pattern = Regex("\"url\":\"(\\S+)\"")
+                            val matchResult = pattern.find(it)
+                            matchResult?.let { result ->
+                                val coverImageUrl = result.groupValues[1]
+                                patchComment(comments, coverImageUrl, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
+                            }
+                        }
+                    } else {
+                        Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                }
+            })
+        } else {
+            patchComment(comments, null, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
+        }
+    }
+
+
+
+    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double?, longitude: Double?, locationInfo: LocationInfo) {
+        val locationName = "${locationInfo.countryName}, ${locationInfo.adminName2}"
+        val newComment = Comment(
+            comments = comments,
+            image = imageUrl,
+            isAnswer = if (isAnswerPostId != 0) isAnswerPostId else null,
+            userId = userId,
+            gameId = gameId,
+            latitude = latitude,
+            longitude = longitude,
+            location = locationName
+        )
+
+        ApiManager.apiService.addComment(newComment)
+            .enqueue(object : Callback<Comment> {
+                override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+                    if (response.isSuccessful) {
+                        val postComment = response.body()
+                        Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
+                        more_options_layout.visibility = View.GONE
+                        commentEditTextView.text.clear()
+                        selectedImageUri = null
+                        imageImageView.setImageResource(R.drawable.image)
+                        ReplyingTo.visibility = View.GONE
+                        ReplyingTo.text = null
+                        isAnswerPostId = null
+
+                        getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
+                    } else {
+                        Log.e("AddNewComment", "Error posting comment: ${response.message()}")
+                        Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Comment>, t: Throwable) {
+                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                }
+            })
+    }
+
+    private fun patchComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double?, longitude: Double?, locationInfo: LocationInfo) {
+        val locationName = "${locationInfo.countryName}, ${locationInfo.adminName2}"
+        val newComment = Comment(
+            comments = comments,
+            image = imageUrl,
+            isAnswer = if (isAnswerPostId != 0) isAnswerPostId else null,
+            userId = userId,
+            gameId = gameId,
+            latitude = latitude,
+            longitude = longitude,
+            location = locationName
+        )
+
+        ApiManager.apiService.updateComment(selectedPostId, newComment)
+            .enqueue(object : Callback<Comment> {
+                override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+                    if (response.isSuccessful) {
+                        val patchComment = response.body()
+                        Toast.makeText(context, "Comment updated successfully!", Toast.LENGTH_SHORT).show()
+                        more_options_layout.visibility = View.GONE
+                        commentEditTextView.text.clear()
+                        selectedImageUri = null
+                        imageImageView.setImageResource(R.drawable.image)
+                        isAnswerPostId = null
+                        //edited = 1
+                        getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
+                    } else {
+                        Log.e("AddNewComment", "Error updating comment: ${response.message()}")
+                        Toast.makeText(context, "Error updating comment", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Comment>, t: Throwable) {
+                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                }
+            })
+    }
 
     private fun getLocationName(
         latitude: Double,
@@ -295,41 +490,6 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             e.printStackTrace()
             onResult(locationInfo)
         }
-    }
-
-
-
-
-    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double?, longitude: Double?, locationInfo: LocationInfo) {
-        val locationName = "${locationInfo.countryName}, ${locationInfo.adminName2}"
-        val newComment = Comment(
-            comments = comments,
-            image = imageUrl,
-            isAnswer = if (isAnswerPostId != 0) isAnswerPostId else null,
-            userId = userId,
-            gameId = gameId,
-            latitude = latitude,
-            longitude = longitude,
-            location = locationName
-        )
-
-        ApiManager.apiService.addComment(newComment)
-            .enqueue(object : Callback<Comment> {
-                override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
-                    if (response.isSuccessful) {
-                        val postComment = response.body()
-                        Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
-                        getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
-                    } else {
-                        Log.e("AddNewComment", "Error posting comment: ${response.message()}")
-                        Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<Comment>, t: Throwable) {
-                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                }
-            })
     }
 
     private fun getPostalCodeInfo(
@@ -406,10 +566,163 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
     override fun onReplyClick(postId: Int, username: String) {
-        isAnswerPostId = postId
-        ReplyingTo.visibility = View.VISIBLE
-        ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(username)
+        if(ReplyingTo.visibility == View.GONE){
+            ReplyingTo.visibility = View.VISIBLE
+            iconCrossView.visibility = View.VISIBLE
+
+            more_options_layout.visibility = View.GONE
+            isAnswerPostId = postId
+            ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(username)
+        }
+        else{
+            ReplyingTo.visibility = View.GONE
+            iconCrossView.visibility = View.GONE
+            ReplyingTo.text = null
+            isAnswerPostId = null
+        }
+
+        iconCrossView.setOnClickListener{
+            ReplyingTo.visibility = View.GONE
+            iconCrossView.visibility = View.GONE
+            ReplyingTo.text = null
+            isAnswerPostId = null
+        }
     }
+
+    override fun onOptionsClick(postId: Int) {
+        var clicked = 0
+        val sharedPreferencesEdits = requireActivity().getSharedPreferences("Editions", Context.MODE_PRIVATE)
+        val editor = sharedPreferencesEdits.edit()
+        editor.putInt("edited", 0)
+        editor.apply()
+
+
+        Log.d("Clicked: ", "${clicked}")
+        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", 0)
+        selectedPostId = postId
+        if (more_options_layout.visibility == View.VISIBLE) {
+            more_options_layout.visibility = View.GONE
+        } else {
+            more_options_layout.visibility = View.VISIBLE
+
+            ReplyingTo.visibility = View.GONE
+            iconCrossView.visibility = View.GONE
+            ReplyingTo.text = null
+            isAnswerPostId = null
+        }
+        editButton.setOnClickListener {
+            if (clicked == 0) {
+                clicked = 1
+                more_options_layout.visibility = View.GONE
+                ReplyingTo.visibility = View.VISIBLE
+                iconCrossView.visibility = View.VISIBLE
+                ReplyingTo.text = SpannableStringBuilder().append("Editing ")
+                getCommentDetails(postId)
+                sendImageView.setOnClickListener(null)
+
+                    sendImageView.setOnClickListener {
+                        if(sharedPreferencesEdits.getInt("edited", 0) == 0){
+                            getLocationAndPatchComment(userId, gameId)
+                            clicked = 1
+
+                            val editor = sharedPreferencesEdits.edit()
+                            editor.putInt("edited", 1)
+                            editor.apply()
+                        }
+                        else{
+                            getLocationAndPostComment(userId, gameId)
+                        }
+
+                    }
+            } else {
+                clicked = 0
+                commentEditTextView.setText(null)
+
+                sendImageView.setOnClickListener(null)
+
+                sendImageView.setOnClickListener {
+                    getLocationAndPostComment(userId, gameId)
+                }
+            }
+
+            iconCrossView.setOnClickListener{
+                val editor = sharedPreferencesEdits.edit()
+                editor.putInt("edited", 1)
+                editor.apply()
+                ReplyingTo.visibility = View.GONE
+                iconCrossView.visibility = View.GONE
+                commentEditTextView.setText(null)
+                ReplyingTo.text = null
+                isAnswerPostId = null
+            }
+        }
+
+
+    }
+
+
+    private fun getCommentDetails(postId: Int) {
+        ApiManager.apiService.getCommentById(postId).enqueue(object : Callback<Comment> {
+            override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+                if (response.isSuccessful) {
+                    val comment = response.body()
+                    comment?.let {
+                        commentEditTextView.setText(it.comments)
+                    }
+                } else {
+                    Log.e("GamePostsFragment", "Erro ao obter detalhes do comentário: ${response.message()}")
+                    Toast.makeText(context, "Erro ao obter detalhes do comentário", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Comment>, t: Throwable) {
+                Log.e("GamePostsFragment", "Falha na requisição para obter detalhes do comentário: ${t.message}")
+                Toast.makeText(context, "Falha na requisição para obter detalhes do comentário", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+
+    private fun deleteComment(postId: Int, userId: Int) {
+        ApiManager.apiService.deleteComment(postId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Comentário eliminado com sucesso", Toast.LENGTH_SHORT).show()
+                    // Redirecionar para a tela de login após deletar a conta
+                    more_options_layout.visibility = View.GONE
+                    getGamePosts(gameId, userId)
+                } else {
+                    Toast.makeText(context, "Falha ao eliminar o comentário", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(context, "Erro: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun deleteCommentWithConfirmation(userId: Int) {
+        val inflater = LayoutInflater.from(requireContext())
+        val view = inflater.inflate(R.layout.dialog_delete_content, null)
+
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Confirmação")
+            setView(view)
+            setPositiveButton("Sim") { dialog, which ->
+                deleteComment(selectedPostId, userId)
+            }
+            setNegativeButton("Não") { dialog, which ->
+                dialog.dismiss()
+            }
+            create()
+            show()
+        }
+    }
+
+
 
     companion object {
         private const val ARG_GAME_ID = "gameId"

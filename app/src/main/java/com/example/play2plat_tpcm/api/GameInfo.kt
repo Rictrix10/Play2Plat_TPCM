@@ -1,5 +1,9 @@
 package com.example.play2plat_tpcm.api
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class GameInfo (
     val id: Int,
     val name: String,
@@ -11,5 +15,6 @@ data class GameInfo (
     val sequence: String,
     val company: String,
     val genres: List<String>, // Lista de gêneros
-    val platforms: List<String>
-)
+    val platforms: List<String>,
+    val averageStars: Float
+) : Parcelable

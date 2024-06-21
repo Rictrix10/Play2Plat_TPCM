@@ -7,6 +7,72 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Game Rating:"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rating_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/rating"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="50dp"
+        android:background="@drawable/button_bd_3">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/circular_progress"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:indicatorSize="80dp"
+            app:trackThickness="10dp"
+            app:indicatorColor="#E3C10F"
+            app:trackColor="#808080"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/rating_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="@+id/circular_progress"
+            app:layout_constraintBottom_toBottomOf="@+id/circular_progress"
+            app:layout_constraintStart_toStartOf="@+id/circular_progress"
+            app:layout_constraintEnd_toEndOf="@+id/circular_progress">
+
+            <ImageView
+                android:id="@+id/star_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_star_full" />
+
+            <TextView
+                android:id="@+id/average_rating_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:layout_marginStart="4dp"
+                tools:text="4.5" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
         android:id="@+id/rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,7 +80,7 @@
         android:textColor="@color/white"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rating_box"
         app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout

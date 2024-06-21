@@ -104,6 +104,7 @@
 
         <FrameLayout
             android:id="@+id/fragment_company"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="2dp"

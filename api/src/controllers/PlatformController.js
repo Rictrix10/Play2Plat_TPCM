@@ -20,19 +20,19 @@ const PlatformController = {
                 res.status(500).json({ error: 'Erro ao buscar plataformas' });
             }
         },
-        getRandomPlatformName: async (req, res) => {
-                        try {
-                            const platformName = await PlatformModel.getRandomPlatformName();
-                            if (!platformName) {
-                                res.status(404).json({ error: 'Nenhum género encontrado' });
-                            } else {
-                                res.json({ name: platformName });
-                            }
-                        } catch (error) {
-                            console.error('Erro ao buscar nome de platforma aleatório:', error);
-                            res.status(500).json({ error: 'Erro ao buscar nome de platforma aleatório' });
-                        }
-                    }
+    getRandomPlatformName: async (req, res) => {
+        try {
+            const platformName = await PlatformModel.getRandomPlatformName();
+            if (!platformName) {
+                res.status(404).json({ error: 'Nenhuma plataforma encontrada' });
+            } else {
+                res.json({ name: platformName });
+            }
+        } catch (error) {
+            console.error('Erro ao buscar nome de plataforma aleatório:', error);
+            res.status(500).json({ error: 'Erro ao buscar nome de plataforma aleatório' });
+        }
+    }
 };
 
 module.exports = PlatformController;

@@ -5,16 +5,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Add_New_Game_Fragment"
-    android:orientation="horizontal"
+    tools:context=".Edit_Game_Fragment"
+    android:orientation="vertical"
     android:background="@drawable/bg_border">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/details_4">
+
+        <ImageView
+            android:id="@+id/back_icon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/icon_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:text="Edit Game"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/back_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginHorizontal="8dp"/>
+        <View
+            android:id="@+id/horizontal_line"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/details"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/container"
         app:layout_constraintBottom_toTopOf="@+id/save">
 
             <LinearLayout
@@ -31,10 +78,8 @@
                     android:layout_height="wrap_content"
                     android:padding="16dp"
                     android:text="@string/upload_cover"
-
-                    android:background="@drawable/button_bd_3"
+                    android:background="@drawable/button_bd"
                     android:textColor="#FFFF"/>
-
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_view"
@@ -121,37 +166,6 @@
 
                     <ListView
                         android:id="@+id/genres_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:nestedScrollingEnabled="true"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/platform_accordion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:orientation="vertical"
-                    android:background="@drawable/text_input"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:id="@+id/platform_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/icon_platforms"
-                        android:drawableEnd="@drawable/icon_up"
-                        android:drawablePadding="8dp"
-                        android:text="@string/platforms"
-                        android:textColor="#393657"
-                        android:padding="10dp"
-                        android:gravity="center_vertical"/>
-
-                    <ListView
-                        android:id="@+id/platform_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
@@ -266,6 +280,7 @@
                     android:layoutDirection="rtl"
                     android:buttonTint="@color/white"
                     />
+
 
             </LinearLayout>
 
