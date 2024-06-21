@@ -23,11 +23,6 @@ const CompanyModel = {
             where: {
                 games: {
                     some: {} // Only companies with at least one associated game
-                },
-                _count: {
-                    games: {
-                       gte: 7
-                    }
                 }
             }
         });
