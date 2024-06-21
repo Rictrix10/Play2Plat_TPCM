@@ -55,25 +55,41 @@ const GenreModel = {
                             return filteredGenres[randomIndex].name;
                         },
 
-    getRandomGenreNames: async (count) => {
+    getRandomGenreNames: async (count, genreName) => {
         try {
-            // Primeiro, obtenha todos os gêneros que têm pelo menos 7 jogos associados
+            // Encontre o gênero pelo nome
+            const genre = await prisma.genre.findUnique({
+                where: {
+                    name: genreName
+                },
+                select: {
+                    id: true
+                }
+            });
+
+            if (!genre) {
+                return [];
+            }
+
+            // Obtenha todos os gêneros que têm pelo menos 3 jogos associados e onde genreId corresponde ao id encontrado
             const genresWithCounts = await prisma.genre.findMany({
                 where: {
                     gameGenres: {
-                        some: {}
+                        some: {
+                            genreId: genre.id
+                        }
                     }
                 },
                 select: {
                     name: true,
                     _count: {
-                        select: { games: true }
+                        select: { gameGenres: true }
                     }
                 }
             });
 
-            // Filtre os gêneros que têm pelo menos 7 jogos associados
-            const validGenres = genresWithCounts.filter(genre => genre._count.games >= 2);
+            // Filtre os gêneros que têm pelo menos 3 jogos associados
+            const validGenres = genresWithCounts.filter(genre => genre._count.gameGenres >= 3);
 
             if (validGenres.length === 0) {
                 return [];
