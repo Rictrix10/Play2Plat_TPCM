@@ -90,10 +90,10 @@ const UserModel = {
                 prisma.user.update({
                     where: { id },
                     data: {
-                        username: null,
-                        email: null,
-                        password: null,
-                        avatar: null,
+                        username: "eliminated",
+                        email: "eliminated",
+                        password: "eliminated",
+                        avatar: "eliminated",
                         isDeleted: true
                     }
                 }),
