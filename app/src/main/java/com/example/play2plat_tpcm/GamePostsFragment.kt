@@ -140,6 +140,14 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
+        val currentUserType = sharedPreferences.getInt("user_type_id", 0)
+
+
+        if (currentUserType == 1) {
+            seeMapButton.visibility = View.VISIBLE
+        } else {
+            seeMapButton.visibility = View.GONE
+        }
 
         // Chama a API para obter os posts do jogo
         getGamePosts(gameId, userId)

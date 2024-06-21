@@ -13,6 +13,7 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+
     <TextView
         android:id="@+id/commentTextView"
         android:layout_width="match_parent"
@@ -21,4 +22,11 @@
         android:textColor="@color/white"
         android:text="Clique num marcador para ver o comentário"
         android:textSize="16sp" />
+
+    <View
+        android:id="@+id/last_item_margin"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="8dp"
+        />
 </LinearLayout>

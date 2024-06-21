@@ -81,18 +81,21 @@ class GamePostsAdapter(
     override fun onBindViewHolder(holder: GamePostViewHolder, position: Int) {
         val post = posts[position]
         val context = holder.itemView.context
-        holder.username.text = post.user.username
+        if (post.user.username == null || post.user.avatar == "eliminated" ){
+            holder.username.text = "Deleted User"
+        }
+        else{
+            holder.username.text = post.user.username
+        }
         holder.location.text = post.location
         holder.textPost.text = post.comments
-        if(post.user.avatar != null && post.user.avatar != ""){
+        if(post.user.avatar != null && post.user.avatar != "" && post.user.avatar != "eliminated"){
             Picasso.get().load(post.user.avatar).into(holder.profilePicture)
         }
         else{
             Picasso.get().load(R.drawable.noimageuser).into(holder.profilePicture)
             //profileImageView.setImageResource(R.drawable.noimageuser)
         }
-
-
 
         holder.imagePost.setOnClickListener {
             val fragment = FullScreenImageFragment.newInstance(post.image)
@@ -120,7 +123,9 @@ class GamePostsAdapter(
         getPostsAnswers(post.id, holder.responseList)
 
         holder.profilePicture.setOnClickListener {
-            onProfilePictureClickListener.onProfilePictureClick(post.user.id)
+            if(post.user.avatar != "eliminated"){
+                onProfilePictureClickListener.onProfilePictureClick(post.user.id)
+            }
         }
 
         holder.replyIcon.setOnClickListener {
