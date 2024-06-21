@@ -19,7 +19,7 @@
         android:text="@string/favorites"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

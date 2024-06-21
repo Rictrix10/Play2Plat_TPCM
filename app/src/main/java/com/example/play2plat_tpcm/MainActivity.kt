@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -88,7 +89,6 @@ class MainActivity : AppCompatActivity() {
         tabs.forEach { (layId, icon, text) ->
             if (layId == layoutId) {
                 changeTabsIcon(icon, selectedDrawableId)
-                text?.let { changeTabsText(it, true) }
             } else {
                 when (icon) {
                     R.id.games_icon -> changeTabsIcon(icon, R.drawable.icon_games)
@@ -97,10 +97,11 @@ class MainActivity : AppCompatActivity() {
                     R.id.search_icon -> changeTabsIcon(icon, R.drawable.icon_search)
                     R.id.add_new_game_icon -> changeTabsIcon(icon, R.drawable.icon_add)
                 }
-                text?.let { changeTabsText(it, false) }
             }
+            text?.let { changeTabsText(it, false) } // Sempre chamamos changeTabsText para manter a cor constante.
         }
     }
+
 
     private fun changeTabsIcon(iconId: Int, drawableId: Int) {
         findViewById<ImageView>(iconId)?.setImageResource(drawableId)
@@ -108,27 +109,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun changeTabsText(textViewId: Int, isSelected: Boolean) {
         val textView = findViewById<TextView>(textViewId)
-        val selectedColorStart = Color.parseColor("#FF1F53")
-        val selectedColorEnd = Color.parseColor("#1F91E9")
-        val unselectedColor = Color.WHITE
-
-        if (isSelected) {
-            val text = textView.text.toString()
-            textView.text = text
-            val textPaint = textView.paint
-            val width = textPaint.measureText(text)
-            val textShader = LinearGradient(
-                0f, 0f, width, textView.textSize,
-                intArrayOf(selectedColorStart, selectedColorEnd),
-                null, Shader.TileMode.CLAMP
-            )
-            textPaint.shader = textShader
-        } else {
-            textView.text = textView.text.toString()
-            textView.setTextColor(unselectedColor)
-            textView.paint.shader = null
-        }
+        val colorWhite = getColor(R.color.white)
+        textView.setTextColor(colorWhite)
+        textView.paint.shader = null
     }
+
 
     private fun updateAdminIconVisibility() {
         val adminLayout = findViewById<View>(R.id.new_game_lay)

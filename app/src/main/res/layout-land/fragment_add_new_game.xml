@@ -28,7 +28,7 @@
                     android:padding="16dp"
                     android:text="@string/upload_cover"
                     android:background="@drawable/button_bd"
-                    android:textColor="#FFFF"/>
+                    android:textColor="@color/white"/>
 
                 <ImageView
                     android:id="@+id/image_view"

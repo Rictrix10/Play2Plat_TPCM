@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:layout_marginStart="16dp"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/recycler_view_game_covers" />

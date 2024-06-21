@@ -32,7 +32,7 @@
             android:text="@string/edit_profile"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -156,7 +156,7 @@
         android:layout_marginTop="156dp"
         android:text="@string/change_pass"
         android:background="@drawable/button_bd"
-        android:textColor="#FFFF"
+        android:textColor="@color/white"
         android:layout_marginHorizontal="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/confirm_password" />
@@ -168,7 +168,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/save"
         android:background="@drawable/button_bd"
-        android:textColor="#FFFF"
+        android:textColor="@color/white"
         android:layout_marginHorizontal="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/change_password" />
