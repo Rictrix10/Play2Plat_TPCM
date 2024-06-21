@@ -6,7 +6,7 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="white">#232949</color>
+    <color name="white">#FFFFFFFF</color>
     <color name="light_blue_400">#FF29B6F6</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="gray_400">#FFBDBDBD</color>
@@ -15,7 +15,7 @@
     <color name="transparent">#00FFFFFF</color>
     <color name="WHITE">#FFFFFFFF</color>
     <color name="opaque_WHITE">#11FFFFFF</color>
-    <color name="startColor">#A7A9EB</color>
-    <color name="endColor">#FBFCFF</color>
-    <color name="backgroundTextInput">#C7CBE0</color>
+    <color name="startColor">#060320</color>
+    <color name="endColor">#232949</color>
+    <color name="backgroundTextInput">#CCC7F7</color>
 </resources>

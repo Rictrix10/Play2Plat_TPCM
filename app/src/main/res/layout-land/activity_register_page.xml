@@ -163,7 +163,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sign_in_prompt"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/m_plus_rounded_1c_extrabold"
                 android:textSize="16sp" />

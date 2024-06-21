@@ -1,6 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.Play2Plat_TPCM" parent="AppTheme">
+        <!-- Light theme settings -->
+    </style>
 
-    <style name="Theme.Play2Plat_TPCM" parent="android:Theme.Material.Light.NoActionBar" />
-
+    <style name="Theme.Play2Plat_TPCM.Dark" parent="AppTheme.Dark">
+        <!-- Dark theme settings -->
+    </style>
 </resources>
