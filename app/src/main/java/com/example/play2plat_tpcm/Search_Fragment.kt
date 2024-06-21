@@ -2,6 +2,8 @@ package com.example.play2plat_tpcm
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -326,21 +328,52 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     }
 
     override fun onGamePictureClick(gameId: Int) {
-        redirectToViewGame(gameId)
+        if (isNetworkAvailable()) {
+            redirectToViewGame(gameId)
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
+
     }
 
     private fun redirectToGamesSearched() {
-        val gamesSearchedFragment = GamesSearched_Fragment()
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, gamesSearchedFragment)
-            .addToBackStack(null)
-            .commit()
+        if (isNetworkAvailable()){
+            val gamesSearchedFragment = GamesSearched_Fragment()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, gamesSearchedFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
     }
 
     private fun redirectToFilters() {
-        val filtersFragment = Filters_Fragment()
+        if (isNetworkAvailable()){
+            val filtersFragment = Filters_Fragment()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, filtersFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, filtersFragment)
+            .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)
             .commit()
     }

@@ -8,6 +8,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -15,18 +16,30 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class Intro_Page : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_intro_page)
 
+
         // Verifica se o usuário está guardado nas SharedPreferences
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val rememberMe = sharedPreferences.getBoolean("remember_me", false)
 
+        val sharedPreferencesIntro = getSharedPreferences("Intro_Page", Context.MODE_PRIVATE)
+        val seen = sharedPreferencesIntro.getBoolean("seen", false)
+
         if (rememberMe) {
             // Redireciona diretamente para a MainActivity se "Remember Me" estiver ativo
             val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
+        if (seen) {
+            val intent = Intent(this, LoginPage::class.java)
             startActivity(intent)
             finish()
             return
@@ -46,6 +59,10 @@ class Intro_Page : AppCompatActivity() {
 
         // Define um ouvinte de clique para o botão "Get Started"
         btnGetStarted.setOnClickListener {
+            val sharedPreferencesIntro = getSharedPreferences("Intro_Page", Context.MODE_PRIVATE)
+            val editor = sharedPreferencesIntro.edit()
+            editor.putBoolean("seen", true)
+            editor.apply()
             // Cria uma intenção para iniciar a atividade LoginPage
             val intent = Intent(this, LoginPage::class.java)
             // Inicia a atividade LoginPage

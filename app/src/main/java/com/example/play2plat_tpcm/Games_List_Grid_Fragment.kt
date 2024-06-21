@@ -2,6 +2,8 @@ package com.example.play2plat_tpcm
 
 import android.content.res.Configuration
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -351,12 +353,19 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
 
     // Handle game click event
     override fun onGameClick(gameId: Int) {
-        val platforms = arrayListOf<String>()
-        val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, viewGameFragment)
-            .addToBackStack(null)
-            .commit()
+
+        if (isNetworkAvailable()) {
+            val platforms = arrayListOf<String>()
+            val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, viewGameFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
+
     }
 
     // Inner class for the fragment
@@ -386,6 +395,21 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             sequenceId = 0, // Se não tiver essa informação, pode deixar 0 ou ajustar conforme necessário
             companyId = 0
         )
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     fun GameFiltered.toGame(): Game {
