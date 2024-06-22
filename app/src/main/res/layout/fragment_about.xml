@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/genres"
@@ -75,11 +75,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingHorizontal="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/platforms_fragment_container"
-        android:layout_marginBottom="16dp">
+        android:layout_marginTop="8dp">
 
         <FrameLayout
             android:id="@+id/fragment_sequence"
@@ -96,11 +96,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingHorizontal="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/game_sequence"
-        android:layout_marginBottom="16dp">
+        android:layout_marginTop="8dp">
 
         <FrameLayout
             android:id="@+id/fragment_company"

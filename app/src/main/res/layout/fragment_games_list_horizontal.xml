@@ -10,14 +10,16 @@
 
     <TextView
         android:id="@+id/text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:layout_marginStart="16dp"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/recycler_view_game_covers" />
+        app:layout_constraintEnd_toStartOf="@id/iconArrowRight"
+        android:ellipsize="end"
+        android:maxLines="1"/>
 
     <ImageView
         android:id="@+id/iconArrowRight"
@@ -27,9 +29,7 @@
         app:srcCompat="@drawable/icon_arrow_right"
         android:contentDescription="Arrow Right"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/text_view"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_game_covers"

@@ -10,18 +10,22 @@
     tools:context=".View_Game_Fragment">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:paddingBottom="50dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -98,8 +102,8 @@
                     android:id="@+id/name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="33dp"
-                    android:layout_marginEnd="33dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_marginBottom="50dp"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
@@ -113,8 +117,8 @@
                     android:id="@+id/company"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="33dp"
-                    android:layout_marginEnd="33dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
                     android:textColor="#FFFFFF"
                     app:layout_constraintBottom_toTopOf="@id/horizontal_line"
@@ -210,35 +214,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/view_pager"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/frame"
                 app:layout_constraintTop_toBottomOf="@id/tab_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
 
-            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/frame"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="0dp">
 
-                <FrameLayout
-                    android:id="@+id/about_fragment_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"/>
-
-                <FrameLayout
-                    android:id="@+id/interact_fragment_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"/>
             </FrameLayout>
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     </androidx.core.widget.NestedScrollView>
 
@@ -255,5 +244,7 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

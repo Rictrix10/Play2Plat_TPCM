@@ -43,7 +43,8 @@ class GamePostsAdapter(
     private val posts: List<GameCommentsResponse>,
     private val onProfilePictureClickListener: OnProfilePictureClickListener,
     private val onReplyClickListener: OnReplyClickListener,
-    private val onOptionsClickListener: onMoreOptionsClickListener // Corrigir o nome da interface
+    private val onOptionsClickListener: onMoreOptionsClickListener, // Corrigir o nome da interface
+    private val isPreview: Boolean
 ) : RecyclerView.Adapter<GamePostsAdapter.GamePostViewHolder>() {
 
     interface OnProfilePictureClickListener {
@@ -54,10 +55,9 @@ class GamePostsAdapter(
         fun onReplyClick(postId: Int, username: String)
     }
 
-    interface onMoreOptionsClickListener{
+    interface onMoreOptionsClickListener {
         fun onOptionsClick(postId: Int)
     }
-
 
     class GamePostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profilePicture: CircleImageView = itemView.findViewById(R.id.profile_picture)
@@ -68,10 +68,7 @@ class GamePostsAdapter(
         val responseList: RecyclerView = itemView.findViewById(R.id.response_list)
         val replyIcon: ImageView = itemView.findViewById(R.id.reply_icon)
         val moreOptions: ImageView = itemView.findViewById(R.id.more_options)
-
-
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GamePostViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_game_post, parent, false)
@@ -84,15 +81,12 @@ class GamePostsAdapter(
         holder.username.text = post.user.username
         holder.location.text = post.location
         holder.textPost.text = post.comments
-        if(post.user.avatar != null && post.user.avatar != ""){
+
+        if (post.user.avatar != null && post.user.avatar != "") {
             Picasso.get().load(post.user.avatar).into(holder.profilePicture)
-        }
-        else{
+        } else {
             Picasso.get().load(R.drawable.noimageuser).into(holder.profilePicture)
-            //profileImageView.setImageResource(R.drawable.noimageuser)
         }
-
-
 
         holder.imagePost.setOnClickListener {
             val fragment = FullScreenImageFragment.newInstance(post.image)
@@ -115,30 +109,38 @@ class GamePostsAdapter(
             holder.location.visibility = View.GONE
         }
 
-        // Carregar as respostas do post
-        holder.responseList.layoutManager = LinearLayoutManager(holder.itemView.context)
-        getPostsAnswers(post.id, holder.responseList)
+        if (!isPreview) {
+            // Carregar as respostas do post
+            holder.responseList.layoutManager = LinearLayoutManager(holder.itemView.context)
+            getPostsAnswers(post.id, holder.responseList)
+        }
 
         holder.profilePicture.setOnClickListener {
             onProfilePictureClickListener.onProfilePictureClick(post.user.id)
         }
 
-        holder.replyIcon.setOnClickListener {
-            onReplyClickListener.onReplyClick(post.id, post.user.username)
-        }
-
-        holder.moreOptions.setOnClickListener{
-            onOptionsClickListener.onOptionsClick(post.id)
-        }
-
-        val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
-
-        // Verificar se o userId do post corresponde ao userId do SharedPreferences
-        if (post.user.id == userId) {
-            holder.moreOptions.visibility = View.VISIBLE
-        } else {
+        if (isPreview) {
+            holder.replyIcon.visibility = View.GONE
             holder.moreOptions.visibility = View.GONE
+        } else {
+            holder.replyIcon.visibility = View.VISIBLE
+            holder.replyIcon.setOnClickListener {
+                onReplyClickListener.onReplyClick(post.id, post.user.username)
+            }
+
+            holder.moreOptions.setOnClickListener {
+                onOptionsClickListener.onOptionsClick(post.id)
+            }
+
+            val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+            val userId = sharedPreferences.getInt("user_id", 0)
+
+            // Verificar se o userId do post corresponde ao userId do SharedPreferences
+            if (post.user.id == userId) {
+                holder.moreOptions.visibility = View.VISIBLE
+            } else {
+                holder.moreOptions.visibility = View.GONE
+            }
         }
 
         if (post.isAnswer == null) {
@@ -161,7 +163,7 @@ class GamePostsAdapter(
                 if (response.isSuccessful) {
                     val answers = response.body()
                     if (answers != null) {
-                        recyclerView.adapter = GamePostsAdapter(answers, onProfilePictureClickListener, onReplyClickListener, onOptionsClickListener)
+                        recyclerView.adapter = GamePostsAdapter(answers, onProfilePictureClickListener, onReplyClickListener, onOptionsClickListener, isPreview)
                     }
                 } else {
                     Log.e("GamePostsAdapter", "Erro na resposta: ${response.errorBody()}")
@@ -176,3 +178,5 @@ class GamePostsAdapter(
 
     fun getPostAtPosition(position: Int): GameCommentsResponse = posts[position]
 }
+
+

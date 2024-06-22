@@ -203,8 +203,8 @@ interface ApiService {
     @GET("user-game-comments-by-user-game/user/{userId}/game/{gameId}")
     fun getPosts(@Path("userId") userId: Int, @Path("gameId") gameId: Int): Call<List<GameCommentsResponse>>
 
-    @GET("user-game-comments/{id}")
-    fun getPostsPreview(@Path("id") id: Int): Call<List<GameCommentsResponse>>
+    @GET("user-game-comment-preview/game/{gameId}")
+    fun getPostsPreview(@Path("gameId") id: Int): Call<List<GameCommentsResponse>>
 
     @GET("user-game-comments-responses/post/{postId}")
     fun getAnswers(@Path("postId") userId: Int): Call<List<GameCommentsResponse>>
