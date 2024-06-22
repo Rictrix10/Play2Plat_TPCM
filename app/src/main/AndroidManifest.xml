@@ -70,5 +70,4 @@
             android:exported="false"
             android:theme="@style/Theme.Play2Plat_TPCM" />
     </application>
-
 </manifest>
