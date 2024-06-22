@@ -106,6 +106,11 @@ class RegisterPage : AppCompatActivity() {
             return
         }
 
+        if(username.isEmpty()){
+            Toast.makeText(this, "Username inválido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val user = UserRegister(username, email, password, userTypeId = 2)
         ApiManager.apiService.createUser(user).enqueue(object : Callback<UserRegisterResponse> {
             override fun onResponse(call: Call<UserRegisterResponse>, response: Response<UserRegisterResponse>) {

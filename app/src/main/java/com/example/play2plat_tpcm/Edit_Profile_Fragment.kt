@@ -525,62 +525,107 @@ class Edit_Profile_Fragment : Fragment() {
             platforms = null
         )
 
-        // First, fetch the Room User ID based on the userId
-        userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
-            if (roomUser != null) {
-                val updatedUserRoom = com.example.play2plat_tpcm.room.entities.User(
-                    id = roomUser.id, // Use the correct Room User ID
-                    idUser = userId,
-                    username = updatedUsername,
-                    email = updatedEmail,
-                    password = if (newPassword.isNotEmpty()) newPassword else "",
-                    avatar = avatarUrl ?: "",
-                    userTypeId = userTypeId
-                )
-
-                if (isNetworkAvailable(requireContext())) {
-                    ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : retrofit2.Callback<User> {
-                        override fun onResponse(call: Call<User>, response: Response<User>) {
-                            if (response.isSuccessful) {
-                                // Save to Room database
-                                saveUserToRoom(updatedUserRoom)
-                                redirectToProfile()
-                                Toast.makeText(requireContext(), getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
-                            } else {
-                                Log.e("EditProfile", "API response error: ${response.code()}")
-                                // Save to Room database even if API fails
-                                saveUserToRoom(updatedUserRoom)
-                                redirectToProfile()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<User>, t: Throwable) {
-                            Log.e("EditProfile", "Request error: ${t.message}")
-                            // Save to Room database even if API fails
-                            saveUserToRoom(updatedUserRoom)
-                            redirectToProfile()
-                        }
-                    })
-                } else {
-                    // Save to Room database when no internet
-                    saveUserToRoom(updatedUserRoom)
-                    val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-                    with(sharedPreferences2.edit()) {
-                        putInt("id", userId)
-                        putString("username", updatedUsername)
-                        putString("email", updatedEmail)
-                        putString("password", if (newPassword.isNotEmpty()) newPassword else "")
-                        putString("avatar", avatarUrl ?: "")
-                        putInt("userTypeId", userTypeId)
-                        apply()
-                    }
-                    redirectToProfile()
-                    Toast.makeText(requireContext(), getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Log.e("EditProfile", "User not found in Room database")
-            }
+        if(updatedUsername.isEmpty()){
+            Toast.makeText(
+                requireContext(),
+                "Username não pode estar vazio",
+                Toast.LENGTH_SHORT
+            ).show()
         }
+        else if(updatedEmail.isEmpty()){
+            Toast.makeText(
+                requireContext(),
+                "Email não pode estar vazio",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        else {
+
+            // First, fetch the Room User ID based on the userId
+            userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { roomUser ->
+                if (roomUser != null) {
+                    val updatedUserRoom = com.example.play2plat_tpcm.room.entities.User(
+                        id = roomUser.id, // Use the correct Room User ID
+                        idUser = userId,
+                        username = updatedUsername,
+                        email = updatedEmail,
+                        password = if (newPassword.isNotEmpty()) newPassword else "",
+                        avatar = avatarUrl ?: "",
+                        userTypeId = userTypeId
+                    )
+
+                    if (isNetworkAvailable(requireContext())) {
+                        ApiManager.apiService.updateUser(userId, updatedUser)
+                            .enqueue(object : retrofit2.Callback<User> {
+                                override fun onResponse(
+                                    call: Call<User>,
+                                    response: Response<User>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        // Save to Room database
+                                        saveUserToRoom(updatedUserRoom)
+                                        Toast.makeText(
+                                            requireContext(),
+                                            getString(R.string.profile_updated_successfully),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        redirectToProfile()
+                                    } else {
+                                        val errorMessage = when (response.code()) {
+                                            440 -> getString(R.string.username_in_use)
+                                            441 -> getString(R.string.email_in_use)
+                                            442 -> getString(R.string.password_invalid)
+                                            443 -> getString(R.string.email_invalid)
+                                            else -> getString(R.string.registration_failed)
+                                        }
+                                        Toast.makeText(
+                                            requireContext(),
+                                            errorMessage,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                        //saveUserToRoom(updatedUserRoom)
+                                        //redirectToProfile()
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<User>, t: Throwable) {
+                                    Log.e("EditProfile", "Request error: ${t.message}")
+                                    // Save to Room database even if API fails
+                                    saveUserToRoom(updatedUserRoom)
+                                    redirectToProfile()
+                                }
+                            })
+                    } else {
+                        // Save to Room database when no internet
+                        saveUserToRoom(updatedUserRoom)
+                        val sharedPreferences2 = requireContext().getSharedPreferences(
+                            "update_user",
+                            Context.MODE_PRIVATE
+                        )
+                        with(sharedPreferences2.edit()) {
+                            putInt("id", userId)
+                            putString("username", updatedUsername)
+                            putString("email", updatedEmail)
+                            putString("password", if (newPassword.isNotEmpty()) newPassword else "")
+                            putString("avatar", avatarUrl ?: "")
+                            putInt("userTypeId", userTypeId)
+                            apply()
+                        }
+                        redirectToProfile()
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.profile_updated_successfully),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Log.e("EditProfile", "User not found in Room database")
+                }
+            }
+
+        }
+
     }
 
 

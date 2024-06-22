@@ -84,7 +84,10 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
         recyclerView.adapter = gameCoverAdapter
 
+
         Log.d("Filters", "o seus filtros $filters")
+
+
 
         loadGames()
 

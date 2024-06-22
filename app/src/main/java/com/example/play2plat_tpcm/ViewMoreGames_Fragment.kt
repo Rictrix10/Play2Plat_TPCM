@@ -77,7 +77,8 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
 
         if (filterType == "Companies" || filterType == "SameCompany") {
             titleTextView.text = "From $paramater"
-        } else {
+        }
+        else {
             titleTextView.text = "$paramater Games"
         }
 
