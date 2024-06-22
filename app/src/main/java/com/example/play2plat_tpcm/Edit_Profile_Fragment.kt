@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.viewModels
@@ -507,36 +508,6 @@ class Edit_Profile_Fragment : Fragment() {
             return
         }
 
-
-        val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-        with(sharedPreferences2.edit()) {
-            putString("imageState", imageState)
-            putString("netState", netState)
-            apply()
-        }
-
-        /*
-
-        if(imageState == "NO" && netState == "NO"){
-            val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
-                putString("imageState", "NO")
-                putString("netState", "NO")
-                apply()
-            }
-        }
-        else{
-            val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
-                putString("imageState", "")
-                putString("netState", "")
-                apply()
-            }
-        }
-
-         */
-
-
         val updatedUser = User(
             id = userId,
             username = updatedUsername,
@@ -560,36 +531,31 @@ class Edit_Profile_Fragment : Fragment() {
                     userTypeId = userTypeId
                 )
 
-                Log.d("EditProfile", "Avatar recebido: ${updatedUserRoom.avatar}")
-
                 if (isNetworkAvailable(requireContext())) {
-                    Log.d("EditProfile", "Com internet")
                     ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : retrofit2.Callback<User> {
                         override fun onResponse(call: Call<User>, response: Response<User>) {
                             if (response.isSuccessful) {
-                                Log.d("EditProfile", "Updated User - API")
                                 // Save to Room database
                                 saveUserToRoom(updatedUserRoom)
-                                Log.d("EditProfile", "Updated User - Room")
                                 redirectToProfile()
+                                Toast.makeText(requireContext(), getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
                             } else {
                                 Log.e("EditProfile", "API response error: ${response.code()}")
-                                // Save to Room database
+                                // Save to Room database even if API fails
                                 saveUserToRoom(updatedUserRoom)
-                                // Save to local update queue
-                                //addToUpdateQueue(updatedUser)
+                                redirectToProfile()
                             }
                         }
 
                         override fun onFailure(call: Call<User>, t: Throwable) {
                             Log.e("EditProfile", "Request error: ${t.message}")
-                            // Save to Room database
+                            // Save to Room database even if API fails
                             saveUserToRoom(updatedUserRoom)
+                            redirectToProfile()
                         }
                     })
                 } else {
-                    // Save to Room database
-                    Log.d("EditProfile", "Sem internet")
+                    // Save to Room database when no internet
                     saveUserToRoom(updatedUserRoom)
                     val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
                     with(sharedPreferences2.edit()) {
@@ -602,14 +568,14 @@ class Edit_Profile_Fragment : Fragment() {
                         apply()
                     }
                     redirectToProfile()
-                    //addToUpdateQueue(updatedUser)
-                    // Save to local update queue
+                    Toast.makeText(requireContext(), getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Log.e("EditProfile", "User not found in Room database")
             }
         }
     }
+
 
     private fun saveUserToRoom(user: com.example.play2plat_tpcm.room.entities.User) {
         lifecycleScope.launch {

@@ -141,5 +141,8 @@
 
     <string name="click_marker_to_see_comment">Click on a marker to see the comment</string>
 
+    <string name="profile_updated_successfully">Profile updated successfully!</string>
+
+
 
 </resources>
