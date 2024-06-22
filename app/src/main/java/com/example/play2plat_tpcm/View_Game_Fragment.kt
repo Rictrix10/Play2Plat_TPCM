@@ -29,17 +29,10 @@ import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
-import android.widget.Button
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.widget.ViewPager2
-import com.example.play2plat_tpcm.api.Avaliation
-import com.example.play2plat_tpcm.api.UserGame
 import com.example.play2plat_tpcm.api.UserGameStateResponse
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -216,11 +209,11 @@ class View_Game_Fragment : Fragment() {
 
 
                             val pegiImageResId = when (game.pegiInfo) {
-                                3 -> R.drawable.pegi3
-                                7 -> R.drawable.pegi7
-                                12 -> R.drawable.pegi12
-                                16 -> R.drawable.pegi16
-                                18 -> R.drawable.pegi18
+                                3 -> R.drawable.image_pegi3
+                                7 -> R.drawable.image_pegi7
+                                12 -> R.drawable.image_pegi12
+                                16 -> R.drawable.image_pegi16
+                                18 -> R.drawable.image_pegi18
                                 else -> 0
                             }
                             if (pegiImageResId != 0) {

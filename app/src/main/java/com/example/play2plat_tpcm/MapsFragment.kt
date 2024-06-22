@@ -21,7 +21,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
@@ -117,7 +116,7 @@ class MapsFragment : Fragment() {
             val avatarUrl = comment.user.avatar ?: ""
 
             if (avatarUrl.isEmpty() || avatarUrl == "" || comment.user.username == null || comment.user.isDeleted == true) {
-                val drawableResId = R.drawable.noimageprofile
+                val drawableResId = R.drawable.icon_noimageprofile
                 val bitmap = BitmapFactory.decodeResource(resources, drawableResId)
 
                 // Criar um novo Bitmap com fundo branco

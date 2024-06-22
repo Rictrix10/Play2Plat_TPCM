@@ -27,7 +27,7 @@
                 android:id="@+id/imageView"
                 android:layout_width="205dp"
                 android:layout_height="205dp"
-                app:srcCompat="@drawable/play2plat_logo"
+                app:srcCompat="@drawable/logo_play2plat"
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="-230dp" />
 
@@ -60,7 +60,7 @@
                     android:layout_height="40dp"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/text_input"
-                    android:drawableLeft="@drawable/email"
+                    android:drawableLeft="@drawable/icon_email"
                     android:drawablePadding="8dp"
                     android:fontFamily="@font/m_plus_rounded_1c_medium"
                     android:hint="@string/email"
@@ -89,7 +89,7 @@
                         android:layout_height="40dp"
                         android:layout_marginLeft="45dp"
                         android:background="@drawable/text_input"
-                        android:drawableLeft="@drawable/password"
+                        android:drawableLeft="@drawable/icon_password"
                         android:drawablePadding="8dp"
                         android:fontFamily="@font/m_plus_rounded_1c_medium"
                         android:hint="@string/password"
@@ -105,7 +105,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="1dp"
                         android:padding="5dp"
-                        android:src="@drawable/ic_eye_off" />
+                        android:src="@drawable/icon_eye_off" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -119,7 +119,7 @@
                         android:layout_height="40dp"
                         android:layout_marginLeft="5dp"
                         android:background="@drawable/text_input"
-                        android:drawableLeft="@drawable/password"
+                        android:drawableLeft="@drawable/icon_password"
                         android:drawablePadding="8dp"
                         android:fontFamily="@font/m_plus_rounded_1c_medium"
                         android:hint="@string/confirm_password"
@@ -135,7 +135,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="45dp"
                         android:padding="5dp"
-                        android:src="@drawable/ic_eye_off" />
+                        android:src="@drawable/icon_eye_off" />
                 </RelativeLayout>
 
             </LinearLayout>

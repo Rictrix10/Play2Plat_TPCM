@@ -44,7 +44,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_toRightOf="@id/search_view"
-            android:src="@drawable/filtro"
+            android:src="@drawable/icon_filtro"
             android:layout_marginLeft="20dp"
             android:background="@drawable/quadrado"
             android:scaleType="center"/>

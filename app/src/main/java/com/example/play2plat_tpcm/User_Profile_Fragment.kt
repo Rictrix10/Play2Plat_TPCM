@@ -63,7 +63,7 @@ class User_Profile_Fragment : Fragment() {
             Picasso.get().load(avatarUrl).into(profileImageView)
         } else {
             // Se o avatar do usuário for nulo ou vazio, carregue a imagem padrão
-            profileImageView.setImageResource(R.drawable.noimageuser)
+            profileImageView.setImageResource(R.drawable.icon_noimageuser)
         }
     }
 
