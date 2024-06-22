@@ -76,7 +76,8 @@ class CompanyAdapter(
         companyTitle.text = if (selectedCompanies.isNotEmpty()) {
             selectedCompanies.joinToString(", ") { it.name }
         } else {
-            "Company"
+            // Use `context.getString` para pegar a string traduzida
+            context.getString(R.string.companies)
         }
     }
 
@@ -89,4 +90,5 @@ class CompanyAdapter(
         notifyDataSetChanged()
     }
 }
+
 
