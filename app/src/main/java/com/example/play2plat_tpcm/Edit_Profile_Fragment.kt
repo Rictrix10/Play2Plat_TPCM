@@ -11,6 +11,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -58,7 +60,11 @@ class Edit_Profile_Fragment : Fragment() {
     private lateinit var saveButton: Button
     private lateinit var selectImageView: ImageView
     private lateinit var backImageView: ImageView
-    private lateinit var containerLayout: View // Adicione esta linha
+    private lateinit var containerLayout: View
+    private lateinit var ivToggleNewPasswordVisibility: ImageView
+    private lateinit var ivToggleConfirmPasswordVisibility: ImageView
+    private var isNewPasswordVisible: Boolean = false
+    private var isConfirmPasswordVisible: Boolean = false
 
     private val userViewModel: UserViewModel by viewModels()
 
@@ -109,7 +115,23 @@ class Edit_Profile_Fragment : Fragment() {
         saveButton = view.findViewById(R.id.save)
         selectImageView = view.findViewById(R.id.select_picture)
         backImageView = view.findViewById(R.id.back_icon)
-        containerLayout = view.findViewById(R.id.container_layout) // Adicione esta linha
+        containerLayout = view.findViewById(R.id.container_layout)
+
+        // Adicionando os ícones de visibilidade da senha
+        ivToggleNewPasswordVisibility = view.findViewById(R.id.ivToggleNewPasswordVisibility)
+        ivToggleConfirmPasswordVisibility = view.findViewById(R.id.ivToggleConfirmPasswordVisibility)
+
+        // Listener para alternar a visibilidade da nova senha
+        ivToggleNewPasswordVisibility.setOnClickListener {
+            togglePasswordVisibility(newPasswordEditTextView, ivToggleNewPasswordVisibility, isNewPasswordVisible)
+            isNewPasswordVisible = !isNewPasswordVisible
+        }
+
+        // Listener para alternar a visibilidade da confirmação da senha
+        ivToggleConfirmPasswordVisibility.setOnClickListener {
+            togglePasswordVisibility(confirmPasswordEditTextView, ivToggleConfirmPasswordVisibility, isConfirmPasswordVisible)
+            isConfirmPasswordVisible = !isConfirmPasswordVisible
+        }
 
         selectImageView.setOnClickListener {
             Log.d("EditProfile", "Select image button clicked")
@@ -123,11 +145,18 @@ class Edit_Profile_Fragment : Fragment() {
 
         changePasswordButton.setOnClickListener {
             togglePasswordFieldsVisibility()
+            // Mostrar ícones de visibilidade de senha quando os campos de senha são mostrados
+            if (newPasswordEditTextView.visibility == View.VISIBLE) {
+                ivToggleNewPasswordVisibility.visibility = View.VISIBLE
+                ivToggleConfirmPasswordVisibility.visibility = View.VISIBLE
+            } else {
+                ivToggleNewPasswordVisibility.visibility = View.GONE
+                ivToggleConfirmPasswordVisibility.visibility = View.GONE
+            }
         }
 
         saveButton.setOnClickListener {
             uploadImageAndSaveProfile()
-
         }
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -137,6 +166,18 @@ class Edit_Profile_Fragment : Fragment() {
             loadUserProfile(userId)
         }
     }
+
+    private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
+        if (isVisible) {
+            editText.transformationMethod = PasswordTransformationMethod.getInstance()
+            imageView.setImageResource(R.drawable.ic_eye_off)
+        } else {
+            editText.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            imageView.setImageResource(R.drawable.ic_eye)
+        }
+        editText.setSelection(editText.text.length)
+    }
+
 
     private fun selectVisualMedia() {
         pickVisualMediaLauncher.launch("image/*")
@@ -150,6 +191,10 @@ class Edit_Profile_Fragment : Fragment() {
         }
         newPasswordEditTextView.visibility = visibility
         confirmPasswordEditTextView.visibility = visibility
+
+
+        ivToggleNewPasswordVisibility.visibility = visibility
+        ivToggleConfirmPasswordVisibility.visibility = visibility
     }
 
 
