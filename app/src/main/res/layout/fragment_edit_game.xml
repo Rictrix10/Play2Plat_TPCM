@@ -35,7 +35,7 @@
             android:textSize="30sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:text="Edit Game"
+            android:text="@string/edit_game"
             android:layout_marginTop="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/back_icon"

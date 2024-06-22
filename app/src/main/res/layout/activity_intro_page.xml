@@ -51,7 +51,7 @@
         android:layout_height="50dp"
         android:layout_margin="16dp"
         android:background="@drawable/details"
-        android:text="Get Started"
+        android:text="@string/btn_get_started_text"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

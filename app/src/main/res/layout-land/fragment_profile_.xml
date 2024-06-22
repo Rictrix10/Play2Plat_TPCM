@@ -219,7 +219,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/button_bd_6"
                 android:textColor="@color/WHITE"
-                android:text="Logout"
+                android:text="@string/logout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/game_sections2" />
 
@@ -232,7 +232,7 @@
                 android:paddingHorizontal="5dp"
                 android:background="@drawable/button_bd_5"
                 android:textColor="#FF0000"
-                android:text="Delete Account"
+                android:text="@string/delete_accountt"
                 app:layout_constraintEnd_toStartOf="@id/logout_button"
                 app:layout_constraintTop_toBottomOf="@id/game_sections2" />
 

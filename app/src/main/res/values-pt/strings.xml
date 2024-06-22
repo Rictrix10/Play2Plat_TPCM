@@ -120,7 +120,16 @@
     <string name="recent">Recente</string>
     <string name="rating">Avaliação</string>
 
+    <string name="logout">Sair</string>
+    <string name="delete_accountt">Apagar Conta</string>
 
+    <string name="game_rating">Avaliação do Jogo:</string>
+    <string name="platformss">Plataformas:</string>
 
+    <string name="no_internet_message">Sem conexão com a internet.\nVerifique a sua conexão ou tente novamente mais tarde</string>
+    <string name="edit_game">Editar Jogo</string>
+    <string name="click_marker_to_see_comment">Clique num marcador para ver o comentário</string>
+
+    <string name="profile_updated_successfully">Perfil atualizado com sucesso!</string>
 
 </resources>

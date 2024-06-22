@@ -11,6 +11,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.viewModels
@@ -58,7 +61,11 @@ class Edit_Profile_Fragment : Fragment() {
     private lateinit var saveButton: Button
     private lateinit var selectImageView: ImageView
     private lateinit var backImageView: ImageView
-    private lateinit var containerLayout: View // Adicione esta linha
+    private lateinit var containerLayout: View
+    private lateinit var ivToggleNewPasswordVisibility: ImageView
+    private lateinit var ivToggleConfirmPasswordVisibility: ImageView
+    private var isNewPasswordVisible: Boolean = false
+    private var isConfirmPasswordVisible: Boolean = false
 
     private val userViewModel: UserViewModel by viewModels()
 
@@ -109,7 +116,23 @@ class Edit_Profile_Fragment : Fragment() {
         saveButton = view.findViewById(R.id.save)
         selectImageView = view.findViewById(R.id.select_picture)
         backImageView = view.findViewById(R.id.back_icon)
-        containerLayout = view.findViewById(R.id.container_layout) // Adicione esta linha
+        containerLayout = view.findViewById(R.id.container_layout)
+
+        // Adicionando os ícones de visibilidade da senha
+        ivToggleNewPasswordVisibility = view.findViewById(R.id.ivToggleNewPasswordVisibility)
+        ivToggleConfirmPasswordVisibility = view.findViewById(R.id.ivToggleConfirmPasswordVisibility)
+
+        // Listener para alternar a visibilidade da nova senha
+        ivToggleNewPasswordVisibility.setOnClickListener {
+            togglePasswordVisibility(newPasswordEditTextView, ivToggleNewPasswordVisibility, isNewPasswordVisible)
+            isNewPasswordVisible = !isNewPasswordVisible
+        }
+
+        // Listener para alternar a visibilidade da confirmação da senha
+        ivToggleConfirmPasswordVisibility.setOnClickListener {
+            togglePasswordVisibility(confirmPasswordEditTextView, ivToggleConfirmPasswordVisibility, isConfirmPasswordVisible)
+            isConfirmPasswordVisible = !isConfirmPasswordVisible
+        }
 
         selectImageView.setOnClickListener {
             Log.d("EditProfile", "Select image button clicked")
@@ -123,11 +146,18 @@ class Edit_Profile_Fragment : Fragment() {
 
         changePasswordButton.setOnClickListener {
             togglePasswordFieldsVisibility()
+            // Mostrar ícones de visibilidade de senha quando os campos de senha são mostrados
+            if (newPasswordEditTextView.visibility == View.VISIBLE) {
+                ivToggleNewPasswordVisibility.visibility = View.VISIBLE
+                ivToggleConfirmPasswordVisibility.visibility = View.VISIBLE
+            } else {
+                ivToggleNewPasswordVisibility.visibility = View.GONE
+                ivToggleConfirmPasswordVisibility.visibility = View.GONE
+            }
         }
 
         saveButton.setOnClickListener {
             uploadImageAndSaveProfile()
-
         }
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -137,6 +167,18 @@ class Edit_Profile_Fragment : Fragment() {
             loadUserProfile(userId)
         }
     }
+
+    private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
+        if (isVisible) {
+            editText.transformationMethod = PasswordTransformationMethod.getInstance()
+            imageView.setImageResource(R.drawable.ic_eye_off)
+        } else {
+            editText.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            imageView.setImageResource(R.drawable.ic_eye)
+        }
+        editText.setSelection(editText.text.length)
+    }
+
 
     private fun selectVisualMedia() {
         pickVisualMediaLauncher.launch("image/*")
@@ -150,6 +192,10 @@ class Edit_Profile_Fragment : Fragment() {
         }
         newPasswordEditTextView.visibility = visibility
         confirmPasswordEditTextView.visibility = visibility
+
+
+        ivToggleNewPasswordVisibility.visibility = visibility
+        ivToggleConfirmPasswordVisibility.visibility = visibility
     }
 
 
@@ -462,36 +508,6 @@ class Edit_Profile_Fragment : Fragment() {
             return
         }
 
-
-        val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-        with(sharedPreferences2.edit()) {
-            putString("imageState", imageState)
-            putString("netState", netState)
-            apply()
-        }
-
-        /*
-
-        if(imageState == "NO" && netState == "NO"){
-            val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
-                putString("imageState", "NO")
-                putString("netState", "NO")
-                apply()
-            }
-        }
-        else{
-            val sharedPreferences = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
-                putString("imageState", "")
-                putString("netState", "")
-                apply()
-            }
-        }
-
-         */
-
-
         val updatedUser = User(
             id = userId,
             username = updatedUsername,
@@ -515,36 +531,31 @@ class Edit_Profile_Fragment : Fragment() {
                     userTypeId = userTypeId
                 )
 
-                Log.d("EditProfile", "Avatar recebido: ${updatedUserRoom.avatar}")
-
                 if (isNetworkAvailable(requireContext())) {
-                    Log.d("EditProfile", "Com internet")
                     ApiManager.apiService.updateUser(userId, updatedUser).enqueue(object : retrofit2.Callback<User> {
                         override fun onResponse(call: Call<User>, response: Response<User>) {
                             if (response.isSuccessful) {
-                                Log.d("EditProfile", "Updated User - API")
                                 // Save to Room database
                                 saveUserToRoom(updatedUserRoom)
-                                Log.d("EditProfile", "Updated User - Room")
                                 redirectToProfile()
+                                Toast.makeText(requireContext(), getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
                             } else {
                                 Log.e("EditProfile", "API response error: ${response.code()}")
-                                // Save to Room database
+                                // Save to Room database even if API fails
                                 saveUserToRoom(updatedUserRoom)
-                                // Save to local update queue
-                                //addToUpdateQueue(updatedUser)
+                                redirectToProfile()
                             }
                         }
 
                         override fun onFailure(call: Call<User>, t: Throwable) {
                             Log.e("EditProfile", "Request error: ${t.message}")
-                            // Save to Room database
+                            // Save to Room database even if API fails
                             saveUserToRoom(updatedUserRoom)
+                            redirectToProfile()
                         }
                     })
                 } else {
-                    // Save to Room database
-                    Log.d("EditProfile", "Sem internet")
+                    // Save to Room database when no internet
                     saveUserToRoom(updatedUserRoom)
                     val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
                     with(sharedPreferences2.edit()) {
@@ -557,14 +568,14 @@ class Edit_Profile_Fragment : Fragment() {
                         apply()
                     }
                     redirectToProfile()
-                    //addToUpdateQueue(updatedUser)
-                    // Save to local update queue
+                    Toast.makeText(requireContext(), getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Log.e("EditProfile", "User not found in Room database")
             }
         }
     }
+
 
     private fun saveUserToRoom(user: com.example.play2plat_tpcm.room.entities.User) {
         lifecycleScope.launch {

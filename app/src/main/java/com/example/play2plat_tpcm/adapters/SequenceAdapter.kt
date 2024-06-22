@@ -76,7 +76,8 @@ class SequenceAdapter(
         sequenceTitle.text = if (selectedSequences.isNotEmpty()) {
             selectedSequences.joinToString(", ") { it.name }
         } else {
-            "Sequences"
+            // Use `context.getString` para pegar a string traduzida
+            context.getString(R.string.sequencess)
         }
     }
 

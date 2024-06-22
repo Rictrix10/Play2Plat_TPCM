@@ -35,8 +35,8 @@
             android:layout_height="wrap_content"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            android:text="Edit Game"
+            android:textColor="#FFF"
+            android:text="@string/edit_game"
             android:layout_marginTop="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/back_icon"
@@ -79,7 +79,7 @@
                     android:padding="16dp"
                     android:text="@string/upload_cover"
                     android:background="@drawable/button_bd"
-                    android:textColor="#FFFF"/>
+                    android:textColor="@color/white"/>
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_view"

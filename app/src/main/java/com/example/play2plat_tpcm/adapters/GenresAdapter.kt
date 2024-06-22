@@ -64,8 +64,10 @@ class GenresAdapter(
         val selectedGenresNames = selectedGenrePositions.mapNotNull { position ->
             getItem(position)?.name
         }
+
+        // Use `context.getString` para pegar a string traduzida
         if (selectedGenresNames.isEmpty()) {
-            genreTitle.text = "Genres"
+            genreTitle.text = context.getString(R.string.genres)  // Pega a tradução do arquivo de strings
         } else {
             genreTitle.text = selectedGenresNames.joinToString(", ")
         }
@@ -75,7 +77,7 @@ class GenresAdapter(
         selectedGenrePositions.clear()
         notifyDataSetChanged()
     }
-
 }
+
 
 
