@@ -140,7 +140,7 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
                 orderType = orderTypeText
             )
 
-            val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance("Filtered", "", filters)
+            val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance("Filtered", "Founded", filters)
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, viewMoreGamesFragment)
                 .addToBackStack(null)
