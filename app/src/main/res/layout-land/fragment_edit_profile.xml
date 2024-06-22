@@ -49,7 +49,7 @@
                 android:layout_height="30dp"
                 android:background="@drawable/details"
                 android:scaleType="centerCrop"
-                android:src="@drawable/camera"
+                android:src="@drawable/icon_camera"
                 android:layout_marginStart="16dp" />
 
         </LinearLayout>
@@ -140,7 +140,7 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:padding="5dp"
-                android:src="@drawable/ic_eye_off"
+                android:src="@drawable/icon_eye_off"
                 android:visibility="gone"
                 android:layout_marginStart="340dp"
                 android:layout_marginTop="-42dp"/>
@@ -150,7 +150,7 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:padding="5dp"
-                android:src="@drawable/ic_eye_off"
+                android:src="@drawable/icon_eye_off"
                 android:visibility="gone"
                 android:layout_marginStart="750dp"
                 android:layout_marginTop="-45dp"/>

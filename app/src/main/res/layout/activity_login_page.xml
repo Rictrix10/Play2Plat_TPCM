@@ -19,7 +19,7 @@
             android:id="@+id/imageView"
             android:layout_width="424dp"
             android:layout_height="242dp"
-            app:srcCompat="@drawable/play2plat_logo"
+            app:srcCompat="@drawable/logo_play2plat"
             android:layout_marginTop="20dp" />
 
         <LinearLayout
@@ -53,7 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/text_input"
-                    android:drawableLeft="@drawable/password"
+                    android:drawableLeft="@drawable/icon_password"
                     android:drawablePadding="8dp"
                     android:fontFamily="@font/m_plus_rounded_1c_medium"
                     android:hint="@string/password"
@@ -69,7 +69,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:padding="5dp"
-                    android:src="@drawable/ic_eye_off" />
+                    android:src="@drawable/icon_eye_off" />
             </RelativeLayout>
 
             <CheckBox

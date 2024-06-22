@@ -12,7 +12,7 @@
         android:id="@+id/no_connection_image"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:src="@drawable/no_connection"
+        android:src="@drawable/image_no_connection"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/no_connection_text"
         app:layout_constraintStart_toStartOf="parent"

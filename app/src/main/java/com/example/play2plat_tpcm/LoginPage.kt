@@ -107,10 +107,10 @@ class LoginPage : AppCompatActivity() {
     private fun togglePasswordVisibility() {
         if (isPasswordVisible) {
             etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
-            ivTogglePasswordVisibility.setImageResource(R.drawable.ic_eye_off)
+            ivTogglePasswordVisibility.setImageResource(R.drawable.icon_eye_off)
         } else {
             etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            ivTogglePasswordVisibility.setImageResource(R.drawable.ic_eye)
+            ivTogglePasswordVisibility.setImageResource(R.drawable.icon_eye)
         }
         isPasswordVisible = !isPasswordVisible
         etPassword.setSelection(etPassword.text.length)

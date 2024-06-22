@@ -23,15 +23,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import com.squareup.picasso.Picasso
 import com.example.play2plat_tpcm.api.ApiManager
-import com.example.play2plat_tpcm.api.Paramater
 import com.example.play2plat_tpcm.api.Password
 import com.example.play2plat_tpcm.api.User
 import com.example.play2plat_tpcm.room.vm.UserViewModel
-import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -40,7 +37,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.io.IOException
 
 private const val ARG_USER_ID = "user_id"
 
@@ -326,7 +322,7 @@ class Profile_Fragment : Fragment() {
                 if (roomUser.avatar != null) {
                     loadImage(roomUser.avatar)
                 } else {
-                    profileImageView.setImageResource(R.drawable.noimageuser)
+                    profileImageView.setImageResource(R.drawable.icon_noimageuser)
                 }
             } else {
                 Log.e("Profile_Fragment", "User not found in Room database")
@@ -494,7 +490,7 @@ class Profile_Fragment : Fragment() {
                 })
             }
         } else {
-            profileImageView.setImageResource(R.drawable.noimageuser)
+            profileImageView.setImageResource(R.drawable.icon_noimageuser)
             val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
             applyGradientFromBitmap(bitmap)
         }

@@ -11,10 +11,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import androidx.core.content.ContentProviderCompat.requireContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var isAdmin: IsAdmin
@@ -40,21 +38,11 @@ class MainActivity : AppCompatActivity() {
     fun onClick(v: View) {
         when (v.id) {
             R.id.games_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Games_2_Fragment())
-                }
-                else{
-                    replaceFragment(NoConnectionFragment())
-                }
+                replaceFragment(Games_2_Fragment())
                 updateTabSelection(R.id.games_lay, R.id.games_icon, R.drawable.icon_games_selected, R.id.games_text)
             }
             R.id.favorites_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Favorites_Fragment())
-                }
-                else{
-                    replaceFragment(NoConnectionFragment())
-                }
+                replaceFragment(Favorites_Fragment())
                 updateTabSelection(R.id.favorites_lay, R.id.favorites_icon, R.drawable.icon_favorites_selected, R.id.favorites_text)
             }
             R.id.profile_lay -> {
@@ -65,26 +53,15 @@ class MainActivity : AppCompatActivity() {
                 updateTabSelection(R.id.profile_lay, R.id.profile_icon, R.drawable.icon_profile_selected, R.id.profile_text)
             }
             R.id.search_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Search_Fragment())
-                }
-                else{
-                    replaceFragment(NoConnectionFragment())
-                }
+                replaceFragment(Search_Fragment())
                 updateTabSelection(R.id.search_lay, R.id.search_icon, R.drawable.icon_search_selected, R.id.search_text)
             }
             R.id.new_game_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Add_New_Game_Fragment())
-                }
-                else{
-                    replaceFragment(NoConnectionFragment())
-                }
+                replaceFragment(Add_New_Game_Fragment())
                 updateTabSelection(R.id.new_game_lay, R.id.add_new_game_icon, R.drawable.icon_add_selected, null)
             }
         }
     }
-
 
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
@@ -112,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         tabs.forEach { (layId, icon, text) ->
             if (layId == layoutId) {
                 changeTabsIcon(icon, selectedDrawableId)
+                text?.let { changeTabsText(it, true) }
             } else {
                 when (icon) {
                     R.id.games_icon -> changeTabsIcon(icon, R.drawable.icon_games)
@@ -120,29 +98,38 @@ class MainActivity : AppCompatActivity() {
                     R.id.search_icon -> changeTabsIcon(icon, R.drawable.icon_search)
                     R.id.add_new_game_icon -> changeTabsIcon(icon, R.drawable.icon_add)
                 }
+                text?.let { changeTabsText(it, false) }
             }
-            text?.let { changeTabsText(it, false) } // Sempre chamamos changeTabsText para manter a cor constante.
         }
     }
-
 
     private fun changeTabsIcon(iconId: Int, drawableId: Int) {
         findViewById<ImageView>(iconId)?.setImageResource(drawableId)
     }
 
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
     private fun changeTabsText(textViewId: Int, isSelected: Boolean) {
         val textView = findViewById<TextView>(textViewId)
-        val colorWhite = getColor(R.color.white)
-        textView.setTextColor(colorWhite)
-        textView.paint.shader = null
-    }
+        val selectedColorStart = Color.parseColor("#FF1F53")
+        val selectedColorEnd = Color.parseColor("#1F91E9")
+        val unselectedColor = ContextCompat.getColor(this, R.color.white)
 
+        if (isSelected) {
+            val text = textView.text.toString()
+            textView.text = text
+            val textPaint = textView.paint
+            val width = textPaint.measureText(text)
+            val textShader = LinearGradient(
+                0f, 0f, width, textView.textSize,
+                intArrayOf(selectedColorStart, selectedColorEnd),
+                null, Shader.TileMode.CLAMP
+            )
+            textPaint.shader = textShader
+        } else {
+            textView.text = textView.text.toString()
+            textView.setTextColor(unselectedColor)
+            textView.paint.shader = null
+        }
+    }
 
     private fun updateAdminIconVisibility() {
         val adminLayout = findViewById<View>(R.id.new_game_lay)

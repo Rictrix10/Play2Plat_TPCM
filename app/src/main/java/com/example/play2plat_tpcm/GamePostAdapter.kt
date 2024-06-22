@@ -13,31 +13,11 @@ import com.example.play2plat_tpcm.api.GameCommentsResponse
 import com.example.play2plat_tpcm.ui.theme.FullScreenImageFragment
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.GradientDrawable
-import android.net.Uri
-import android.os.Bundle
-import android.provider.MediaStore
-import android.text.SpannableStringBuilder
 import android.util.Log
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import com.example.play2plat_tpcm.api.ApiManager
-import com.example.play2plat_tpcm.api.Comment
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.File
-import java.io.FileOutputStream
 
 class GamePostsAdapter(
     private val posts: List<GameCommentsResponse>,
@@ -89,7 +69,7 @@ class GamePostsAdapter(
         if(post.user.avatar != null && post.user.avatar != "" && post.user.username != null){
             Picasso.get().load(post.user.avatar).into(holder.profilePicture)
         } else {
-            Picasso.get().load(R.drawable.noimageuser).into(holder.profilePicture)
+            Picasso.get().load(R.drawable.icon_noimageuser).into(holder.profilePicture)
         }
 
         holder.imagePost.setOnClickListener {

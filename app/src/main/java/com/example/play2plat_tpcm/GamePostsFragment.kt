@@ -3,7 +3,6 @@ package com.example.play2plat_tpcm
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.GradientDrawable
@@ -37,7 +36,6 @@ import com.example.play2plat_tpcm.api.GeoNamesServiceBuilder.service
 import com.example.play2plat_tpcm.api.LocationInfo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -140,7 +138,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
         container_layout.background = gradientDrawable
 
-        imageImageView.setImageResource(R.drawable.image)
+        imageImageView.setImageResource(R.drawable.icon_image)
 
         imageImageView.setOnClickListener {
             selectVisualMedia()
@@ -486,7 +484,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         more_options_layout.visibility = View.GONE
                         commentEditTextView.text.clear()
                         selectedImageUri = null
-                        imageImageView.setImageResource(R.drawable.image)
+                        imageImageView.setImageResource(R.drawable.icon_image)
                         ReplyingTo.visibility = View.GONE
                         ReplyingTo.text = null
                         isAnswerPostId = null
@@ -526,7 +524,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         more_options_layout.visibility = View.GONE
                         commentEditTextView.text.clear()
                         selectedImageUri = null
-                        imageImageView.setImageResource(R.drawable.image)
+                        imageImageView.setImageResource(R.drawable.icon_image)
                         isAnswerPostId = null
                         ReplyingTo.visibility = View.GONE
                         iconCrossView.visibility = View.GONE

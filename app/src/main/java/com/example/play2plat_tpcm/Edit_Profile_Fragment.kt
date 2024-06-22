@@ -30,8 +30,6 @@ import androidx.palette.graphics.Palette
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.User
 import com.example.play2plat_tpcm.room.vm.UserViewModel
-import com.google.gson.Gson
-import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -171,10 +169,10 @@ class Edit_Profile_Fragment : Fragment() {
     private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
         if (isVisible) {
             editText.transformationMethod = PasswordTransformationMethod.getInstance()
-            imageView.setImageResource(R.drawable.ic_eye_off)
+            imageView.setImageResource(R.drawable.icon_eye_off)
         } else {
             editText.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            imageView.setImageResource(R.drawable.ic_eye)
+            imageView.setImageResource(R.drawable.icon_eye)
         }
         editText.setSelection(editText.text.length)
     }
@@ -243,7 +241,7 @@ class Edit_Profile_Fragment : Fragment() {
                 if (roomUser.avatar != null) {
                     loadImage(roomUser.avatar)
                 } else {
-                    profileImageView.setImageResource(R.drawable.noimageuser)
+                    profileImageView.setImageResource(R.drawable.icon_noimageuser)
                 }
             } else {
                 Log.e("Profile_Fragment", "User not found in Room database")
@@ -310,7 +308,7 @@ class Edit_Profile_Fragment : Fragment() {
                 })
             }
         } else {
-            profileImageView.setImageResource(R.drawable.noimageuser)
+            profileImageView.setImageResource(R.drawable.icon_noimageuser)
             val bitmap = (profileImageView.drawable as BitmapDrawable).bitmap
             applyGradientFromBitmap(bitmap)
         }

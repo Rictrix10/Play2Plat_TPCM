@@ -17,7 +17,6 @@ import com.example.play2plat_tpcm.api.UserRegister
 import com.example.play2plat_tpcm.room.entities.User
 import com.example.play2plat_tpcm.room.vm.UserViewModel
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,10 +73,10 @@ class RegisterPage : AppCompatActivity() {
     private fun togglePasswordVisibility() {
         if (isPasswordVisible) {
             etPassword.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
-            ivTogglePasswordVisibility.setImageResource(R.drawable.ic_eye_off)
+            ivTogglePasswordVisibility.setImageResource(R.drawable.icon_eye_off)
         } else {
             etPassword.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
-            ivTogglePasswordVisibility.setImageResource(R.drawable.ic_eye)
+            ivTogglePasswordVisibility.setImageResource(R.drawable.icon_eye)
         }
         isPasswordVisible = !isPasswordVisible
         etPassword.setSelection(etPassword.text.length)
@@ -86,10 +85,10 @@ class RegisterPage : AppCompatActivity() {
     private fun toggleConfirmPasswordVisibility() {
         if (isConfirmPasswordVisible) {
             etConfirmPassword.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
-            ivToggleConfirmPasswordVisibility.setImageResource(R.drawable.ic_eye_off)
+            ivToggleConfirmPasswordVisibility.setImageResource(R.drawable.icon_eye_off)
         } else {
             etConfirmPassword.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
-            ivToggleConfirmPasswordVisibility.setImageResource(R.drawable.ic_eye)
+            ivToggleConfirmPasswordVisibility.setImageResource(R.drawable.icon_eye)
         }
         isConfirmPasswordVisible = !isConfirmPasswordVisible
         etConfirmPassword.setSelection(etConfirmPassword.text.length)
