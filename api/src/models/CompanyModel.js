@@ -14,7 +14,8 @@ const CompanyModel = {
             orderBy: { name: 'asc' }
         });
     },
-getRandomCompanyName: async () => {
+    getRandomCompanyName: async () => {
+        // Get companies with at least one associated game
         const companies = await prisma.company.findMany({
             select: {
                 id: true,
@@ -24,13 +25,23 @@ getRandomCompanyName: async () => {
                 games: {
                     some: {} // Only companies with at least one associated game
                 }
-            },
-            include: {
-                games: true
             }
         });
 
-        const filteredCompanies = companies.filter(company => company.games.length >= 7);
+        // Filter companies with at least 7 games
+        const companiesWithGamesCount = await Promise.all(companies.map(async company => {
+            const gamesCount = await prisma.game.count({
+                where: {
+                    companyId: company.id
+                }
+            });
+            return {
+                ...company,
+                gamesCount
+            };
+        }));
+
+        const filteredCompanies = companiesWithGamesCount.filter(company => company.gamesCount >= 7);
 
         if (filteredCompanies.length === 0) {
             return null;
