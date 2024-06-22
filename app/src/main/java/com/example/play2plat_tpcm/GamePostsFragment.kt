@@ -263,7 +263,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     val gamePosts = response.body()
                     if (gamePosts != null && gamePosts.isNotEmpty()) {
                         getLocationName(gamePosts[0].latitude, gamePosts[0].longitude) { locationInfo ->
-                            recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment, this@GamePostsFragment)
+                            recyclerView.adapter = GamePostsAdapter(gamePosts, this@GamePostsFragment, this@GamePostsFragment, this@GamePostsFragment, false)
                         }
                     } else {
                         Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")

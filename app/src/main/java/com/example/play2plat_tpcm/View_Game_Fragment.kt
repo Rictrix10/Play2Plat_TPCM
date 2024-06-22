@@ -30,8 +30,10 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
 import android.widget.Button
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.play2plat_tpcm.api.Avaliation
 import com.example.play2plat_tpcm.api.UserGame
@@ -64,7 +66,6 @@ class View_Game_Fragment : Fragment() {
     private var selectedOption: String? = null
     private var currentUserType: Int = 0
     private var userId: Int = 0
-    private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
     private var dominantColor: Int = 0
     private var vibrantColor: Int = 0
@@ -72,6 +73,7 @@ class View_Game_Fragment : Fragment() {
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var mushroomImage: ImageView
     private lateinit var editIcon: ImageView
+    private lateinit var frameLayout: FrameLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +101,6 @@ class View_Game_Fragment : Fragment() {
         collectionAccordion = view.findViewById(R.id.collection_accordion)
         collectionTitle = view.findViewById(R.id.collection_title)
         collectionList = view.findViewById(R.id.collection_list)
-        viewPager = view.findViewById(R.id.view_pager)
         tabLayout = view.findViewById(R.id.tab_layout)
         editIcon = view.findViewById(R.id.Edit_Icon)
 
@@ -157,42 +158,62 @@ class View_Game_Fragment : Fragment() {
                                         val colorDifferenceThreshold = 8 // Define o limiar de diferença entre cores
                                         val colorDifference = colourDistance(dominantColor, vibrantColor)
 
+                                        val gradientDrawable: GradientDrawable
                                         if (colorDifference < colorDifferenceThreshold) {
                                             // Se a diferença for muito baixa, escurecer ligeiramente a cor vibrante
                                             val darkerVibrantColor = ColorUtils.blendARGB(vibrantColor, Color.BLACK, 0.7f)
                                             val colors = intArrayOf(dominantColor, darkerVibrantColor)
-                                            val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
-                                            containerLayout.background = gradientDrawable
-                                            // Usar a cor mais escura no pagerAdapter
-                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, darkerVibrantColor, game.averageStars)
-                                            viewPager.adapter = pagerAdapter
+                                            gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                         } else {
                                             // Se a diferença for suficiente, use as cores normalmente
                                             val colors = intArrayOf(dominantColor, vibrantColor)
-                                            val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
-                                            containerLayout.background = gradientDrawable
-                                            // Usar a cor vibrante normal no pagerAdapter
-                                            val pagerAdapter = ViewGamesAdapter(requireActivity(), game.id, game.description, game.genres, game.platforms, game.name, game.sequence, game.company, dominantColor, vibrantColor, game.averageStars)
-                                            viewPager.adapter = pagerAdapter
+                                            gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
                                         }
 
-                                        Log.d("View_Game_Fragment", "Calculated Colors for Gradient: $dominantColor and $vibrantColor")
+                                        containerLayout.background = gradientDrawable
 
-                                        // Instancie o ViewPagerAdapter aqui com as cores calculadas
-                                        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                                            tab.text = when (position) {
-                                                0 -> "About"
-                                                1 -> "Interact"
-                                                else -> null
+                                        // Após definir o fundo, configure os fragmentos nos botões do TabLayout
+                                        val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
+
+                                        // Adicionando listener para selecionar fragmentos ao alternar abas
+                                        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                                            override fun onTabSelected(tab: TabLayout.Tab) {
+                                                when (tab.position) {
+                                                    0 -> {
+                                                        val aboutFragment = AboutFragment.newInstance(gameId, game.description, game.genres, game.platforms, game.sequence, game.company)
+                                                        replaceFragment(aboutFragment, "AboutFragmentTag")
+                                                    }
+                                                    1 -> {
+                                                        val interactFragment = InteractFragment.newInstance(gameId, game.name, dominantColor, vibrantColor, game.averageStars)
+                                                        replaceFragment(interactFragment, "InteractFragmentTag")
+                                                    }
+                                                }
                                             }
-                                        }.attach()
+
+                                            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                                                // O fragmento pode ser pausado aqui, se necessário
+                                            }
+
+                                            override fun onTabReselected(tab: TabLayout.Tab?) {
+                                                // Não faz nada aqui
+                                            }
+                                        })
+
+                                        tabLayout.addTab(tabLayout.newTab().setText("About"))
+                                        tabLayout.addTab(tabLayout.newTab().setText("Interact"))
+
+                                        // Inicialmente, mostra o primeiro fragmento
+                                        tabLayout.getTabAt(0)?.select()
+
+                                        Log.d("View_Game_Fragment", "Calculated Colors for Gradient: $dominantColor and $vibrantColor")
                                     }
                                 }
 
                                 override fun onError(e: Exception?) {
-                                    // Tratar erro de carregamento da imagem
+                                    // Tratar erro de carregamento da imagem, se necessário
                                 }
                             })
+
 
                             val pegiImageResId = when (game.pegiInfo) {
                                 3 -> R.drawable.pegi3
@@ -250,6 +271,14 @@ class View_Game_Fragment : Fragment() {
         }
 
     }
+
+    private fun replaceFragment(fragment: Fragment, tag: String) {
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame, fragment, tag)
+        transaction.commit()  // Remove `addToBackStack(tag)`
+    }
+
+
 
     override fun onDestroy() {
         super.onDestroy()

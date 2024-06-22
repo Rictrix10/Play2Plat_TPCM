@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/button_bd_3"
     android:padding="8dp"
-    android:layout_marginBottom="5dp">
+    android:layout_marginBottom="5dp"
+    android:orientation="vertical">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_picture"
