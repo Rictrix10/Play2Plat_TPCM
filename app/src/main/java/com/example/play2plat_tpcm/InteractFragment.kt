@@ -1,27 +1,41 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Avaliation
 import com.example.play2plat_tpcm.api.AverageStars
+import com.example.play2plat_tpcm.api.GameCommentsResponse
+import com.example.play2plat_tpcm.api.GeoNamesResponse
+import com.example.play2plat_tpcm.api.GeoNamesServiceBuilder
+import com.example.play2plat_tpcm.api.LocationInfo
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.Locale
 
-class InteractFragment : Fragment() {
+class InteractFragment : Fragment(),
+    GamePostsAdapter.OnProfilePictureClickListener,
+    GamePostsAdapter.OnReplyClickListener,
+    GamePostsAdapter.onMoreOptionsClickListener {
 
     private lateinit var starViews: List<ImageView>
-    private lateinit var postsLayout: LinearLayout
+    private lateinit var postsLayout: ConstraintLayout
     private lateinit var circularProgress: CircularProgressIndicator
     private lateinit var averageRatingText: TextView
     private lateinit var starIcon: ImageView
@@ -32,6 +46,22 @@ class InteractFragment : Fragment() {
     private var primaryColor: Int = 0
     private var secondaryColor: Int = 0
     private var averageRating: Float = 0.0f
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var emptyView: TextView
+    private lateinit var seeMoreText: TextView
+    private lateinit var iconDown1: ImageView
+    private lateinit var iconDown2: ImageView
+    private lateinit var iconAdd: ImageView
+
+    override fun onPause() {
+        super.onPause()
+        // Qualquer ação que precise ser interrompida quando o fragmento não está visível
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Retomar operações específicas quando o fragmento se torna visível novamente
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +84,14 @@ class InteractFragment : Fragment() {
         circularProgress = view.findViewById(R.id.circular_progress)
         averageRatingText = view.findViewById(R.id.average_rating_text)
         starIcon = view.findViewById(R.id.star_icon)
+        emptyView = view.findViewById(R.id.empty_view)
+        seeMoreText = view.findViewById(R.id.see_more_text)
+        iconDown1 = view.findViewById(R.id.icon_down_1)
+        iconDown2 = view.findViewById(R.id.icon_down_2)
+        iconAdd = view.findViewById(R.id.icon_add)
+
+        recyclerView = view.findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Initialize star views
         starViews = listOf(
@@ -74,22 +112,39 @@ class InteractFragment : Fragment() {
 
         loadUserAvaliation(userId, gameId)
 
+        getPreviewPosts(gameId, userId)
+
         // Set average rating and circular progress
 
         circularProgress.setProgressCompat((averageRating * 20).toInt(), true)
 
-
         averageRatingText.text = String.format("%.1f", averageRating)
 
-        // Click listener for posts layout
-        postsLayout.setOnClickListener {
-            redirectToGamePosts(gameId)
+        // Click listener for posts layou
+        postsLayout.setOnTouchListener { _, event ->
+            // Redirect to game posts when any touch event occurs within the postsBox
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                redirectToGamePosts(gameId)
+                return@setOnTouchListener true
+            }
+            false
         }
+
 
         return view
     }
 
+    override fun onProfilePictureClick(userId: Int) {
+        // Implement your code here to handle profile picture click
+    }
 
+    override fun onReplyClick(postId: Int, username: String) {
+        // Implement your code here to handle reply click
+    }
+
+    override fun onOptionsClick(postId: Int) {
+        // Implement your code here to handle options click
+    }
 
     private fun handleStarClick(rating: Int) {
         if (rating == currentRating) {
@@ -208,6 +263,125 @@ class InteractFragment : Fragment() {
             .commit()
     }
 
+    private fun getPreviewPosts(gameId: Int, userId: Int) {
+        ApiManager.apiService.getPostsPreview(gameId).enqueue(object : Callback<List<GameCommentsResponse>> {
+            override fun onResponse(
+                call: Call<List<GameCommentsResponse>>,
+                response: Response<List<GameCommentsResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val gamePosts = response.body()
+                    updateEmptyView(gamePosts!!)
+                    if (gamePosts != null && gamePosts.isNotEmpty()) {
+                        getLocationName(gamePosts[0].latitude, gamePosts[0].longitude) { locationInfo ->
+                            recyclerView.adapter = GamePostsAdapter(gamePosts, this@InteractFragment, this@InteractFragment, this@InteractFragment, true)
+                        }
+                    } else {
+                        Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")
+                    }
+                } else {
+                    Log.e("GamePostsFragment", "Erro na resposta: ${response.errorBody()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<GameCommentsResponse>>, t: Throwable) {
+                Log.e("GamePostsFragment", "Falha na chamada da API: ${t.message}")
+            }
+        })
+    }
+
+    private fun updateEmptyView(posts: List<GameCommentsResponse>) {
+        if (posts.isEmpty()) {
+            recyclerView.visibility = View.GONE
+            emptyView.visibility = View.VISIBLE
+            seeMoreText.visibility = View.GONE
+            iconDown1.visibility = View.GONE
+            iconDown2.visibility = View.GONE
+            iconAdd.visibility = View.VISIBLE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+            emptyView.visibility = View.GONE
+            seeMoreText.visibility = View.VISIBLE
+            iconDown1.visibility = View.VISIBLE
+            iconDown2.visibility = View.VISIBLE
+            iconAdd.visibility = View.GONE
+        }
+    }
+
+    private fun getLocationName(
+        latitude: Double,
+        longitude: Double,
+        onResult: (LocationInfo) -> Unit
+    ) {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        var locationInfo = LocationInfo(null, null, null, null, null, null)
+
+        try {
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses != null && addresses.isNotEmpty()) {
+                val address = addresses[0]
+                val cityName = address.locality
+                val countryName = address.countryName
+                val countryCode = address.countryCode
+                val postalCode = address.postalCode
+
+                locationInfo = LocationInfo(cityName, countryName, countryCode, postalCode, null, null)
+
+                if (postalCode != null && countryCode != null) {
+                    getPostalCodeInfo(postalCode, countryCode, "rictrix") { updatedLocationInfo ->
+                        val finalLocationInfo = locationInfo.copy(
+                            adminName1 = updatedLocationInfo.adminName1,
+                            adminName2 = updatedLocationInfo.adminName2
+                        )
+                        onResult(finalLocationInfo)
+                    }
+                } else {
+                    onResult(locationInfo)
+                }
+            } else {
+                onResult(locationInfo)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            onResult(locationInfo)
+        }
+    }
+
+    private fun getPostalCodeInfo(
+        postalCode: String,
+        countryCode: String,
+        username: String,
+        onResult: (LocationInfo) -> Unit
+    ) {
+        val call = GeoNamesServiceBuilder.service.getLocationInfo(postalCode, countryCode, username)
+        call.enqueue(object : Callback<GeoNamesResponse> {
+            override fun onResponse(call: Call<GeoNamesResponse>, response: Response<GeoNamesResponse>) {
+                if (response.isSuccessful) {
+                    val locationInfoResponse = response.body()
+                    if (locationInfoResponse != null && locationInfoResponse.postalCodes.isNotEmpty()) {
+                        val firstResult = locationInfoResponse.postalCodes[0]
+                        val locationInfo = LocationInfo(
+                            null, null, null, postalCode,
+                            firstResult.adminName1, firstResult.adminName2
+                        )
+                        onResult(locationInfo)
+                    } else {
+                        Log.e("PostalCodeInfo", "No results found for postal code: $postalCode")
+                        onResult(LocationInfo(null, null, null, postalCode, null, null))
+                    }
+                } else {
+                    Log.e("PostalCodeInfo", "Error: ${response.message()}")
+                    onResult(LocationInfo(null, null, null, postalCode, null, null))
+                }
+            }
+
+            override fun onFailure(call: Call<GeoNamesResponse>, t: Throwable) {
+                Log.e("PostalCodeInfo", "Failure: ${t.message}")
+                onResult(LocationInfo(null, null, null, postalCode, null, null))
+            }
+        })
+    }
+
     companion object {
         private const val ARG_GAME_ID = "gameId"
         private const val ARG_GAME_NAME = "gameName"
@@ -228,6 +402,3 @@ class InteractFragment : Fragment() {
             }
     }
 }
-
-
-

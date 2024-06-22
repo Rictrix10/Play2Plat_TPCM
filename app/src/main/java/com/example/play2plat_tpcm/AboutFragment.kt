@@ -36,6 +36,16 @@ class AboutFragment : Fragment(), Games_List_Horizontal_Fragment.OnEmptyListList
         fragmentCompany.visibility = View.VISIBLE
     }
 
+    override fun onPause() {
+        super.onPause()
+        // Qualquer ação que precise ser interrompida quando o fragmento não está visível
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Retomar operações específicas quando o fragmento se torna visível novamente
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -150,7 +160,7 @@ class AboutFragment : Fragment(), Games_List_Horizontal_Fragment.OnEmptyListList
 
     companion object {
         @JvmStatic
-        fun newInstance(gameId: Int, description: String, genres: List<String>, platforms: List<String>, sequence: String, company: String) =
+        fun newInstance(gameId: Int, description: String, genres: List<String>, platforms: List<String>, sequence: String?, company: String) =
             AboutFragment().apply {
                 arguments = Bundle().apply {
                     putInt("gameId", gameId)
