@@ -88,6 +88,12 @@ const UserController = {
             };
 
             if (password) {
+                const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+                    if (!passwordRegex.test(password)) {
+                        return res.status(442).json({
+                            error: 'A password deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial',
+                        });
+                    }
                 data.password = await bcrypt.hash(password, 10);
             }
 

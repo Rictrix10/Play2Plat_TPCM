@@ -508,6 +508,13 @@ class Edit_Profile_Fragment : Fragment() {
             return
         }
 
+        val sharedPreferences2 = requireContext().getSharedPreferences("update_user", Context.MODE_PRIVATE)
+        with(sharedPreferences2.edit()) {
+            putString("imageState", imageState)
+            putString("netState", netState)
+            apply()
+        }
+
         val updatedUser = User(
             id = userId,
             username = updatedUsername,
