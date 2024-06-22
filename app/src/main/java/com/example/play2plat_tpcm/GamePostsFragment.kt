@@ -90,6 +90,19 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
     }
 
+    private val locationPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineLocationGranted || coarseLocationGranted) {
+            // Permissão concedida
+
+        } else {
+            // Permissão negada
+            Toast.makeText(requireContext(), "Permissão de localização negada", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -173,6 +186,17 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
         return view
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+    }
+    
 
     private fun getGamePosts(gameId: Int, userId: Int) {
         ApiManager.apiService.getPosts(userId, gameId).enqueue(object : Callback<List<GameCommentsResponse>> {
@@ -409,7 +433,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         ReplyingTo.visibility = View.GONE
                         ReplyingTo.text = null
                         isAnswerPostId = null
-
+                        iconCrossView.visibility = View.GONE
                         getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error posting comment: ${response.message()}")
@@ -447,6 +471,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         selectedImageUri = null
                         imageImageView.setImageResource(R.drawable.image)
                         isAnswerPostId = null
+                        ReplyingTo.visibility = View.GONE
+                        iconCrossView.visibility = View.GONE
                         //edited = 1
                         getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
                     } else {
