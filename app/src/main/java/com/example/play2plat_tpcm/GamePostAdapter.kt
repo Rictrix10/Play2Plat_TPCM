@@ -131,7 +131,7 @@ class GamePostsAdapter(
         } else {
             holder.replyIcon.visibility = View.VISIBLE
             holder.replyIcon.setOnClickListener {
-                onReplyClickListener.onReplyClick(post.id, post.user.username)
+                onReplyClickListener.onReplyClick(post.id, post.user.username!!)
             }
 
             holder.moreOptions.setOnClickListener {
