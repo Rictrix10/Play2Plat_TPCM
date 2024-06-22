@@ -99,7 +99,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
         } else {
             // Permissão negada
-            Toast.makeText(requireContext(), "Permissão de localização negada", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), "Permissão de localização negada", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -176,6 +176,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
 
          */
+
         sendImageView.setOnClickListener {
             getLocationAndPostComment(userId, gameId)
         }
@@ -184,19 +185,73 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             deleteCommentWithConfirmation(userId)
         }
 
+        if (!checkLocationPermissions()) {
+            // Permissões não concedidas, solicitar permissão
+            requestLocationPermissions()
+        } else {
+            // Permissões já concedidas, continuar com o fluxo normal
+            Log.d("GamePostsFragment", "Permissões de localização já concedidas")
+        }
+
         return view
     }
 
+
+    /*
     override fun onResume() {
         super.onResume()
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-            return
-        }
 
+        if (!checkLocationPermissions()) {
+            // Permissões não concedidas, solicitar permissão
+            requestLocationPermissions()
+        } else {
+            // Permissões já concedidas, continuar com o fluxo normal
+            Log.d("GamePostsFragment", "Permissões de localização já concedidas")
+        }
     }
-    
+
+     */
+
+    private fun requestLocationPermissions() {
+        locationPermissionRequest.launch(arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ))
+    }
+
+
+    private fun checkLocationPermissions(): Boolean {
+        return (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permissões concedidas, continuar com o fluxo do aplicativo
+                Log.d("GamePostsFragment", "Permissões de localização concedidas pelo usuário")
+            } else {
+                // Permissões negadas, mas vamos prosseguir mesmo assim
+                Log.d("GamePostsFragment", "Permissões de localização não concedidas pelo usuário")
+            }
+        }
+    }
+
+    /*
+    private fun checkLocationPermissions(): Boolean {
+        return (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun requestLocationPermissions() {
+        locationPermissionRequest.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+    }
+
+     */
+
+
+
 
     private fun getGamePosts(gameId: Int, userId: Int) {
         ApiManager.apiService.getPosts(userId, gameId).enqueue(object : Callback<List<GameCommentsResponse>> {
@@ -226,114 +281,116 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
 
     private fun getLocationAndPostComment(userId: Int, gameId: Int) {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-            return
-        }
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
 
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                latitude = location.latitude
-                longitude = location.longitude
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                location?.let { loc ->
+                    latitude = loc.latitude
+                    longitude = loc.longitude
 
-                getLocationName(latitude, longitude) { locationInfo ->  // Passando o lambda
-                    val comments = commentEditTextView.text.toString()
-                    if (selectedImageUri != null) {
-                        val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
-                        val file = bitmapToFile(requireContext(), bitmap)
-                        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                        val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+                    getLocationName(latitude, longitude) { locationInfo ->
+                        val comments = commentEditTextView.text.toString()
+                        if (selectedImageUri != null) {
+                            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+                            val file = bitmapToFile(requireContext(), bitmap)
+                            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-                        val call = ApiManager.apiService.uploadImage(imagePart)
-                        call.enqueue(object : Callback<ResponseBody> {
-                            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                                if (response.isSuccessful) {
-                                    val imageUrl = response.body()?.string()
-                                    imageUrl?.let {
-                                        val pattern = Regex("\"url\":\"(\\S+)\"")
-                                        val matchResult = pattern.find(it)
-                                        matchResult?.let { result ->
-                                            val coverImageUrl = result.groupValues[1]
-                                            postComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
+                            val call = ApiManager.apiService.uploadImage(imagePart)
+                            call.enqueue(object : Callback<ResponseBody> {
+                                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                    if (response.isSuccessful) {
+                                        val imageUrl = response.body()?.string()
+                                        imageUrl?.let {
+                                            val pattern = Regex("\"url\":\"(\\S+)\"")
+                                            val matchResult = pattern.find(it)
+                                            matchResult?.let { result ->
+                                                val coverImageUrl = result.groupValues[1]
+                                                postComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
+                                            }
                                         }
+                                    } else {
+                                        val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                                        Log.e("AddNewComment", "Erro no upload: $errorBody")
                                     }
-                                } else {
-                                    //Log.e("AddNewComment", "Erro no upload: ${response.message()}")
-                                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                                    Log.e("AddNewComment", "Erro no upload: $errorBody")
                                 }
-                            }
 
-                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                            }
-                        })
-                    } else {
-                        postComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
+                                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                                }
+                            })
+                        } else {
+                            postComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
+                        }
                     }
+                } ?: run {
+                    postCommentWithNoLocation(userId, gameId)
                 }
-            } else {
-                //Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
-                postCommentWithNoLocation(userId, gameId)
             }
+
+
+        } else {
+            //requestLocationPermissions()
+            postCommentWithNoLocation(userId, gameId)
         }
     }
+
 
     private fun getLocationAndPatchComment(userId: Int, gameId: Int) {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-            return
-        }
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                latitude = location.latitude
-                longitude = location.longitude
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                location?.let { loc ->
+                    latitude = loc.latitude
+                    longitude = loc.longitude
 
-                getLocationName(latitude, longitude) { locationInfo ->  // Passando o lambda
-                    val comments = commentEditTextView.text.toString()
-                    if (selectedImageUri != null) {
-                        val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
-                        val file = bitmapToFile(requireContext(), bitmap)
-                        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                        val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+                    getLocationName(latitude, longitude) { locationInfo ->
+                        val comments = commentEditTextView.text.toString()
+                        if (selectedImageUri != null) {
+                            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
+                            val file = bitmapToFile(requireContext(), bitmap)
+                            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-                        val call = ApiManager.apiService.uploadImage(imagePart)
-                        call.enqueue(object : Callback<ResponseBody> {
-                            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                                if (response.isSuccessful) {
-                                    val imageUrl = response.body()?.string()
-                                    imageUrl?.let {
-                                        val pattern = Regex("\"url\":\"(\\S+)\"")
-                                        val matchResult = pattern.find(it)
-                                        matchResult?.let { result ->
-                                            val coverImageUrl = result.groupValues[1]
-                                            patchComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
+                            val call = ApiManager.apiService.uploadImage(imagePart)
+                            call.enqueue(object : Callback<ResponseBody> {
+                                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                    if (response.isSuccessful) {
+                                        val imageUrl = response.body()?.string()
+                                        imageUrl?.let {
+                                            val pattern = Regex("\"url\":\"(\\S+)\"")
+                                            val matchResult = pattern.find(it)
+                                            matchResult?.let { result ->
+                                                val coverImageUrl = result.groupValues[1]
+                                                patchComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
+                                            }
                                         }
+                                    } else {
+                                        val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                                        Log.e("AddNewComment", "Erro no upload: $errorBody")
                                     }
-                                } else {
-                                    //Log.e("AddNewComment", "Erro no upload: ${response.message()}")
-                                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                                    Log.e("AddNewComment", "Erro no upload: $errorBody")
                                 }
-                            }
 
-                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                            }
-                        })
-                    } else {
-                        patchComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
+                                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
+                                }
+                            })
+                        } else {
+                            patchComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
+                        }
                     }
+                } ?: run {
+                    patchCommentWithNoLocation(userId, gameId)
                 }
-            } else {
-                //Toast.makeText(context, "Could not get location. Please try again.", Toast.LENGTH_SHORT).show()
-                patchCommentWithNoLocation(userId, gameId)
             }
+
+        } else {
+            patchCommentWithNoLocation(userId, gameId)
         }
     }
+
 
     private fun postCommentWithNoLocation(userId: Int, gameId: Int) {
         val comments = commentEditTextView.text.toString()

@@ -92,7 +92,7 @@ const UserModel = {
                     data: {
                         username: null,
                         email: null,
-                        avatar: "",
+                        avatar: null,
                         isDeleted: true
                     }
                 }),
