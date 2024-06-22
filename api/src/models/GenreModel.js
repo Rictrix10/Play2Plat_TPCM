@@ -55,6 +55,7 @@ const GenreModel = {
                             return filteredGenres[randomIndex].name;
                         },
 
+    /*
     getRandomGenreNames: async (count) => {
         const genres = await prisma.genre.findMany({
             select: {
@@ -74,6 +75,42 @@ const GenreModel = {
         const shuffledGenres = genres.sort(() => Math.random() - 0.5);
         return shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
     }
+    */
+
+            getRandomGenreNames: async () => {
+                const genres = await prisma.genre.findMany({
+                    select: {
+                        id: true,
+                        name: true
+                    },
+                    where: {
+                        gameGenres: {
+                            some: {} // Only companies with at least one associated game
+                        }
+                    }
+                });
+
+                const genresWithGamesCount = await Promise.all(genres.map(async genre => {
+                    const gamesCount = await prisma.gameGenre.count({
+                        where: {
+                            genreId: genre.id
+                        }
+                    });
+                    return {
+                        ...genre,
+                        gamesCount
+                    };
+                }));
+
+                const filteredGenres = genresWithGamesCount.filter(genre => genre.gamesCount >= 7);
+
+                if (filteredGenres.length === 0) {
+                    return null;
+                }
+
+                const randomIndex = Math.floor(Math.random() * filteredGenres.length);
+                return filteredGenres[randomIndex].name;
+            }
 
 
 };
