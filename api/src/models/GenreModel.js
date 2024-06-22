@@ -77,7 +77,7 @@ const GenreModel = {
     }
     */
 
-            getRandomGenreNames: async () => {
+            getRandomGenreNames: async (count) => {
                 const genres = await prisma.genre.findMany({
                     select: {
                         id: true,
@@ -108,8 +108,10 @@ const GenreModel = {
                     return null;
                 }
 
-                const randomIndex = Math.floor(Math.random() * filteredGenres.length);
-                return filteredGenres[randomIndex].name;
+                //const randomIndex = Math.floor(Math.random() * filteredGenres.length);
+                //return filteredGenres[randomIndex].name;
+                        const shuffledGenres = genres.sort(() => Math.random() - 0.5);
+                        return shuffledGenres.slice(0, Math.min(count, shuffledGenres.length)).map(genre => genre.name);
             }
 
 

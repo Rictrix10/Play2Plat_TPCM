@@ -79,12 +79,12 @@ const GenreController = {
 
     getRandomGenreNames: async (req, res) => {
         try {
-            /*
+
             let { count } = req.query;
             count = parseInt(count) || 3; // Padrão para retornar até 3 nomes
-            */
 
-            const genreNames = await GenreModel.getRandomGenreNames();
+
+            const genreNames = await GenreModel.getRandomGenreNames(count);
 
             if (genreNames.length === 0) {
                 res.status(404).json({ error: 'Nenhum gênero encontrado' });
