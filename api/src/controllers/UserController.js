@@ -79,6 +79,31 @@ const UserController = {
             const userId = parseInt(req.params.id); // Converter o ID para Int
             const { email, password, username, avatar, userTypeId, isDeleted } = req.body;
 
+                    const currentUser = await UserModel.getUserById(userId);
+                        if (!currentUser) {
+                            return res.status(404).json({ error: 'Utilizador não encontrado' });
+                        }
+
+                        // Verificar se o email ou o username são diferentes dos atuais
+                        if (email && email !== currentUser.email) {
+                            // Verificar se o novo email já está em uso
+                            const existingUserByEmail = await UserModel.findUserByEmail(email);
+                            if (!validator.isEmail(email)) {
+                                  return res.status(443).json({ error: 'Email inválido' });
+                            }
+                            if (existingUserByEmail) {
+                                return res.status(441).json({ error: 'Email já está em uso' });
+                            }
+                        }
+
+                        if (username && username !== currentUser.username) {
+                            // Verificar se o novo username já está em uso
+                            const existingUserByUsername = await UserModel.findUserByUsername(username);
+                            if (existingUserByUsername) {
+                                return res.status(440).json({ error: 'Nome de utilizador já está em uso' });
+                            }
+                        }
+
             const data = {
                 email,
                 username,
