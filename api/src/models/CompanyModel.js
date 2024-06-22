@@ -14,7 +14,7 @@ const CompanyModel = {
             orderBy: { name: 'asc' }
         });
     },
-    getRandomCompanyName: async () => {
+getRandomCompanyName: async () => {
         const companies = await prisma.company.findMany({
             select: {
                 id: true,
@@ -24,13 +24,20 @@ const CompanyModel = {
                 games: {
                     some: {} // Only companies with at least one associated game
                 }
+            },
+            include: {
+                games: true
             }
         });
-        if (companies.length === 0) {
+
+        const filteredCompanies = companies.filter(company => company.games.length >= 7);
+
+        if (filteredCompanies.length === 0) {
             return null;
         }
-        const randomIndex = Math.floor(Math.random() * companies.length);
-        return companies[randomIndex].name;
+
+        const randomIndex = Math.floor(Math.random() * filteredCompanies.length);
+        return filteredCompanies[randomIndex].name;
     }
 };
 
