@@ -90,17 +90,16 @@ const UserModel = {
                 prisma.user.update({
                     where: { id },
                     data: {
-                        username: "eliminated",
-                        email: "eliminated",
-                        password: "eliminated",
-                        avatar: "eliminated",
+                        username: null,
+                        email: null,
+                        avatar: "",
                         isDeleted: true
                     }
                 }),
             ]);
             return await prisma.user.findUnique({ where: { id } });
         } catch (error) {
-            console.error('Erro ao excluir usuário:', error);
+            console.error('Erro ao excluir utilizador:', error);
             throw error;
         }
     },
