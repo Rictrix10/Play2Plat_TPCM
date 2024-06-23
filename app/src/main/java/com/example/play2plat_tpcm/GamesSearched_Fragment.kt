@@ -53,7 +53,12 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
                     } else {
                         // Mostrar uma mensagem de erro informando que pelo menos três caracteres são necessários
                         // Por exemplo:
-                        Toast.makeText(requireContext(), "Por favor, insira pelo menos três caracteres.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.insert_three_characters),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                     }
                 }
                 return true

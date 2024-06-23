@@ -216,7 +216,8 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
             mostFavoritedButton.alpha = 0.5f
 
             // Mostrar mensagem de confirmação
-            Toast.makeText(context, "Filters reset successfully", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.filters_reset_success), Toast.LENGTH_SHORT).show()
+
         }
 
         alphaButton = view.findViewById(R.id.alpha_button)
@@ -252,9 +253,12 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
 
     override fun onPlatformsSelected(selectedPlatforms: List<String>) {
         // Tratar a lista de plataformas selecionadas
-        Toast.makeText(context, "Selected platforms: $selectedPlatforms", Toast.LENGTH_SHORT).show()
+        val platformsString = selectedPlatforms.joinToString(", ")
+        val message = getString(R.string.selected_platforms, platformsString)
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         this.selectedPlatforms = selectedPlatforms
     }
+
 
     private fun toggleListVisibility(listView: ListView, titleView: TextView, iconResource: Int, filterType: String) {
         val isExpanded = listView.visibility == View.VISIBLE
