@@ -5,6 +5,8 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -28,9 +30,14 @@ class MainActivity : AppCompatActivity() {
 
         changeTabsText(R.id.games_text, true)
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, Games_2_Fragment())
-            .commit()
+        if (isNetworkAvailable()) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, Games_2_Fragment())
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
 
         updateAdminIconVisibility()
     }
@@ -38,11 +45,21 @@ class MainActivity : AppCompatActivity() {
     fun onClick(v: View) {
         when (v.id) {
             R.id.games_lay -> {
-                replaceFragment(Games_2_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Games_2_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.games_lay, R.id.games_icon, R.drawable.icon_games_selected, R.id.games_text)
             }
             R.id.favorites_lay -> {
-                replaceFragment(Favorites_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Favorites_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.favorites_lay, R.id.favorites_icon, R.drawable.icon_favorites_selected, R.id.favorites_text)
             }
             R.id.profile_lay -> {
@@ -53,11 +70,21 @@ class MainActivity : AppCompatActivity() {
                 updateTabSelection(R.id.profile_lay, R.id.profile_icon, R.drawable.icon_profile_selected, R.id.profile_text)
             }
             R.id.search_lay -> {
-                replaceFragment(Search_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Search_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.search_lay, R.id.search_icon, R.drawable.icon_search_selected, R.id.search_text)
             }
             R.id.new_game_lay -> {
-                replaceFragment(Add_New_Game_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Add_New_Game_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.new_game_lay, R.id.add_new_game_icon, R.drawable.icon_add_selected, null)
             }
         }
@@ -75,6 +102,21 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.e("MainActivity", "Container R.id.layout nÃ£o encontrado.")
         }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment = NoConnectionFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun updateTabSelection(layoutId: Int, iconId: Int, selectedDrawableId: Int, selectedTextId: Int?) {

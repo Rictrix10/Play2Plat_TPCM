@@ -2,6 +2,8 @@ package com.example.play2plat_tpcm
 
 import android.content.Context
 import android.location.Geocoder
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -104,7 +107,18 @@ class InteractFragment : Fragment(),
 
         // Set click listeners for stars
         for ((index, starView) in starViews.withIndex()) {
-            starView.setOnClickListener { handleStarClick(index + 1) }
+            starView.setOnClickListener {
+                if (isNetworkAvailable()) {
+                    handleStarClick(index + 1)
+                }
+                else{
+                    Toast.makeText(
+                        requireContext(),
+                        "Erro ao avaliar, verifique a sua internet",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -152,6 +166,11 @@ class InteractFragment : Fragment(),
             updateStarViews(0)
             currentRating = 0
             deleteAvaliation(userId, gameId)
+            Toast.makeText(
+                requireContext(),
+                "Avaliação removida com sucesso",
+                Toast.LENGTH_SHORT
+            ).show()
         } else {
             // Update stars to the new rating
             updateStarViews(rating)
@@ -163,8 +182,18 @@ class InteractFragment : Fragment(),
                         val userAvaliation = avaliations?.find { it.gameId == gameId }
                         if (userAvaliation == null) {
                             addAvaliation(userId, gameId, rating)
+                            Toast.makeText(
+                                requireContext(),
+                                "Avaliação adicionada com sucesso",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         } else {
                             updateAvaliation(userId, gameId, rating)
+                            Toast.makeText(
+                                requireContext(),
+                                "Avaliação atualizada com sucesso",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
@@ -256,11 +285,17 @@ class InteractFragment : Fragment(),
     }
 
     private fun redirectToGamePosts(gameId: Int) {
-        val gamePostsFragment = GamePostsFragment.newInstance(gameId, gameName!!, primaryColor, secondaryColor)
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, gamePostsFragment)
-            .addToBackStack(null)
-            .commit()
+        if (isNetworkAvailable()) {
+            val gamePostsFragment =
+                GamePostsFragment.newInstance(gameId, gameName!!, primaryColor, secondaryColor)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, gamePostsFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
     }
 
     private fun getPreviewPosts(gameId: Int, userId: Int) {
@@ -380,6 +415,22 @@ class InteractFragment : Fragment(),
                 onResult(LocationInfo(null, null, null, postalCode, null, null))
             }
         })
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+
     }
 
     companion object {

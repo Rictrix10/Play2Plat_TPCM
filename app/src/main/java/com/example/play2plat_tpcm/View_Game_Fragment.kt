@@ -5,6 +5,8 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +32,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.core.graphics.ColorUtils
 import com.example.play2plat_tpcm.api.UserGameStateResponse
 import com.google.android.material.tabs.TabLayout
@@ -109,7 +112,12 @@ class View_Game_Fragment : Fragment() {
         }
 
         backButton.setOnClickListener {
-            requireActivity().onBackPressed()
+            if (isNetworkAvailable()) {
+                requireActivity().onBackPressed()
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
         }
 
         loadCollections(view.context)
@@ -127,11 +135,20 @@ class View_Game_Fragment : Fragment() {
                         val game = response.body()
                         if (game != null) {
                             editIcon.setOnClickListener {
-                                val editGameFragment = Edit_Game_Fragment.newInstance(game)
-                                requireActivity().supportFragmentManager.beginTransaction()
-                                    .replace(R.id.layout, editGameFragment)
-                                    .addToBackStack(null)
-                                    .commit()
+                                if (isNetworkAvailable()) {
+                                    val editGameFragment = Edit_Game_Fragment.newInstance(game)
+                                    requireActivity().supportFragmentManager.beginTransaction()
+                                        .replace(R.id.layout, editGameFragment)
+                                        .addToBackStack(null)
+                                        .commit()
+                                }
+                                else{
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Preciso estar online para editar um jogo",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
 
                             nameTextView.text = game.name
@@ -256,7 +273,17 @@ class View_Game_Fragment : Fragment() {
         })
 
         favoriteIcon.setOnClickListener {
-            toggleFavoriteState(userId, gameId, mediaPlayer)
+            if (isNetworkAvailable()) {
+                toggleFavoriteState(userId, gameId, mediaPlayer)
+            }
+            else{
+                Toast.makeText(
+                    requireContext(),
+                    "Erro ao favoritar, verifique a sua internet",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
         }
 
         if (clickCount >= 20) {
@@ -277,6 +304,22 @@ class View_Game_Fragment : Fragment() {
         super.onDestroy()
         // Liberar recursos do mediaPlayer ao destruir o fragment
         mediaPlayer.release()
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+
     }
 
 

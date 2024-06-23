@@ -8,6 +8,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.GradientDrawable
 import android.location.Geocoder
 import android.location.Location
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -146,7 +148,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
         val backButton = view.findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
-            requireActivity().onBackPressed()
+            if (isNetworkAvailable()) {
+                requireActivity().onBackPressed()
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
         }
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -165,22 +172,39 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
 
         seeMapButton.setOnClickListener(){
-            redirectToMapsFragment()
+            if (isNetworkAvailable()) {
+                redirectToMapsFragment()
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
         }
 
-        /*
-        editButton.setOnClickListener(){
-            getLocationAndPatchComment(userId, gameId)
-        }
-
-         */
 
         sendImageView.setOnClickListener {
-            getLocationAndPostComment(userId, gameId)
+            if (isNetworkAvailable()) {
+                getLocationAndPostComment(userId, gameId)
+            }
+            else{
+                Toast.makeText(
+                    requireContext(),
+                    "Erro ao postar comentário, verifique a sua internet",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         deleteButton.setOnClickListener(){
-            deleteCommentWithConfirmation(userId)
+            if (isNetworkAvailable()) {
+                deleteCommentWithConfirmation(userId)
+            }
+            else{
+                Toast.makeText(
+                    requireContext(),
+                    "Erro ao eliminar comentário, verifique a sua internet",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         if (!checkLocationPermissions()) {
@@ -210,6 +234,22 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
      */
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+
+    }
+
     private fun requestLocationPermissions() {
         locationPermissionRequest.launch(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -235,20 +275,6 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             }
         }
     }
-
-    /*
-    private fun checkLocationPermissions(): Boolean {
-        return (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-    }
-
-    private fun requestLocationPermissions() {
-        locationPermissionRequest.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
-    }
-
-     */
-
-
 
 
     private fun getGamePosts(gameId: Int, userId: Int) {
@@ -475,6 +501,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             location = locationName
         )
 
+        if(comments.isEmpty()){
+            Toast.makeText(context, "Comentário não pode ficar vazio", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         ApiManager.apiService.addComment(newComment)
             .enqueue(object : Callback<Comment> {
                 override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
@@ -514,6 +545,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             longitude = longitude,
             location = locationName
         )
+
+        if(commentEditTextView.getText().toString().trim().isEmpty()){
+            Toast.makeText(context, "Comentário não pode ficar vazio", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         ApiManager.apiService.updateComment(selectedPostId, newComment)
             .enqueue(object : Callback<Comment> {
@@ -711,16 +747,38 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 sendImageView.setOnClickListener(null)
 
                     sendImageView.setOnClickListener {
-                        if(sharedPreferencesEdits.getInt("edited", 0) == 0){
-                            getLocationAndPatchComment(userId, gameId)
-                            clicked = 1
 
-                            val editor = sharedPreferencesEdits.edit()
-                            editor.putInt("edited", 1)
-                            editor.apply()
+                        if(sharedPreferencesEdits.getInt("edited", 0) == 0){
+                            if(isNetworkAvailable()) {
+                                getLocationAndPatchComment(userId, gameId)
+                                if (commentEditTextView.getText().toString().trim().isEmpty()) {
+                                } else {
+                                    clicked = 1
+
+                                    val editor = sharedPreferencesEdits.edit()
+                                    editor.putInt("edited", 1)
+                                    editor.apply()
+                                }
+                            }
+                            else{
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Erro ao editar comentário, verifique a sua internet",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                         else{
-                            getLocationAndPostComment(userId, gameId)
+                            if(isNetworkAvailable()) {
+                                getLocationAndPostComment(userId, gameId)
+                            }
+                            else{
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Erro ao postar comentário, verifique a sua internet",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
 
                     }

@@ -3,6 +3,8 @@ package com.example.play2plat_tpcm
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -90,7 +92,12 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
         backImageView = view.findViewById(R.id.back_icon)
 
         backImageView.setOnClickListener {
-            requireActivity().onBackPressed()
+            if (isNetworkAvailable()) {
+                requireActivity().onBackPressed()
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
         }
 
         companyAccordion.setOnClickListener {
@@ -227,7 +234,21 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
         mostFavoritedButton.setOnClickListener { setButtonActive(mostFavoritedButton) }
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+
+    }
 
     override fun onPlatformsSelected(selectedPlatforms: List<String>) {
         // Tratar a lista de plataformas selecionadas

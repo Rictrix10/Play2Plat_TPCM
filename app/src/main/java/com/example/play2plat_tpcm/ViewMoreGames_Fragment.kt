@@ -2,6 +2,8 @@ package com.example.play2plat_tpcm
 
 import android.content.Context
 import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -72,7 +74,12 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
 
         //loadFavoriteGames()
         backImageView.setOnClickListener {
-            requireActivity().onBackPressed()
+            if (isNetworkAvailable()) {
+                requireActivity().onBackPressed()
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
         }
 
         if (filterType == "Companies" || filterType == "SameCompany") {
@@ -117,6 +124,21 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
         return view
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+
+    }
 
     private fun redirectToViewGame(gameId: Int) {
         val platforms = arrayListOf<String>()

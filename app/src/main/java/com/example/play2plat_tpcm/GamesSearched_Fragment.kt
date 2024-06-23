@@ -66,7 +66,13 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
         })
 
         imageBackView.setOnClickListener {
-            requireActivity().onBackPressed()
+
+            if (isNetworkAvailable()) {
+                requireActivity().onBackPressed()
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
         }
 
         imageFilterView.setOnClickListener {
@@ -100,6 +106,7 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
 
          */
     }
+
 
     private fun showSearchedGames(filterType: String, parameter: String) {
         val fragment = Games_List_Grid_Fragment.newInstance(filterType, parameter, null)
