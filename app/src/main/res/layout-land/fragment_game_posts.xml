@@ -51,6 +51,17 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <Button
+        android:id="@+id/button_see_map"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:background="@drawable/button_bd_3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/container" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -61,6 +72,48 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginHorizontal="10dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/more_options_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toTopOf="@id/comment_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/option_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/icon_edit"
+            android:background="@drawable/button_bd_3"
+            android:layout_marginStart="10dp"
+            android:text="Editar"
+            android:textColor="@color/WHITE"
+            android:padding="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/option_delete" />
+
+        <!-- Botão Apagar -->
+        <Button
+            android:id="@+id/option_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:drawableStart="@drawable/icon_trash_can"
+            android:background="@drawable/button_bd_3"
+            android:textColor="@color/WHITE"
+            android:text="Apagar"
+            android:padding="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/option_edit"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/comment_layout"
@@ -76,6 +129,17 @@
         android:paddingEnd="8dp"
         android:background="@drawable/text_input"
         android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/icon_cross"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/icon_cross"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="12dp"
+            android:layout_marginStart="8dp"/>
 
         <!-- Adiciona a TextView para exibir "Replying to <nome do user que está a responder>" -->
         <TextView
@@ -138,7 +202,14 @@
             android:layout_marginStart="8dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+    <View
+        android:id="@+id/last_item_margin"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 
 
