@@ -131,7 +131,7 @@
 
 
 
-        <string name="game_rating">Game Rating:</string>
+    <string name="game_rating">Game Rating:</string>
     <string name="platformss">Platforms:</string>
 
 
@@ -143,6 +143,52 @@
 
     <string name="profile_updated_successfully">Profile updated successfully!</string>
 
+    <string name="game_name_empty">Please enter a game name.</string>
+    <string name="description_too_short">The description must be longer than 6 characters.</string>
+    <string name="genre_empty">Please select at least one genre.</string>
+    <string name="platform_empty">Please select at least one platform.</string>
+    <string name="company_empty">Please select a company.</string>
+    <string name="pegi_info_empty">Please select PEGI information.</string>
+    <string name="image_empty">Please select an image.</string>
+    <string name="activity_state_saved">Activity state has already been saved. Please try again.</string>
 
+    <string name="username_empty">Username cannot be empty</string>
+    <string name="email_empty">Email cannot be empty</string>
+
+    <string name="filters_reset_success">Filters reset successfully</string>
+
+    <string name="selected_platforms">Selected platforms: %s</string>
+
+    <string name="location_permission_denied">Location permission denied</string>
+    <string name="comment_post_error">Error posting comment, please check your internet connection</string>
+    <string name="delete_comment_error">Error deleting comment, please check your internet connection</string>
+    <string name="comment_empty_error">Comment cannot be empty</string>
+    <string name="comment_post_success">Comment posted successfully!</string>
+    <string name="error_posting_comment">Error posting comment</string>
+    <string name="comment_update_success">Comment updated successfully!</string>
+    <string name="error_update_comment">Error updating comment</string>
+    <string name="edit_comment_error">Error editing comment, please check your internet connection</string>
+    <string name="error_get_comment_details">Error retrieving comment details</string>
+    <string name="request_comment_details_failure">Request failed to get comment details</string>
+    <string name="comment_delete_success">Comment deleted successfully</string>
+    <string name="delete_comment_failure">Failed to delete comment</string>
+
+    <string name="insert_three_characters">Please enter at least three characters.</string>
+
+    <string name="rate_error_internet">Error rating, please check your internet connection</string>
+    <string name="remove_rating_success">Rating removed successfully</string>
+    <string name="add_rating_success">Rating added successfully</string>
+    <string name="update_rating_success">Rating updated successfully</string>
+
+    <string name="user_id_null">User ID is null</string>
+    <string name="platform_added">Platform added</string>
+    <string name="failed_to_add_platform">Failed to add platform</string>
+    <string name="platform_removed">Platform removed</string>
+    <string name="failed_to_remove_platform">Failed to remove platform</string>
+
+    <string name="account_deleted_success">Account deleted successfully</string>
+    <string name="failed_to_delete_account">Failed to delete account</string>
+
+    <string name="invalid_username">Invalid username</string>
 
 </resources>

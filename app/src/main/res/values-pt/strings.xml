@@ -132,4 +132,53 @@
 
     <string name="profile_updated_successfully">Perfil atualizado com sucesso!</string>
 
+    <string name="game_name_empty">Por favor, insira um nome para o jogo.</string>
+    <string name="description_too_short">A descrição deve ter mais de 6 caracteres.</string>
+    <string name="genre_empty">Por favor, selecione pelo menos um género.</string>
+    <string name="platform_empty">Por favor, selecione pelo menos uma plataforma.</string>
+    <string name="company_empty">Por favor, selecione uma franquia.</string>
+    <string name="pegi_info_empty">Por favor, selecione informação pegi.</string>
+    <string name="image_empty">Por favor, selecione uma imagem.</string>
+    <string name="activity_state_saved">Estado da atividade já foi salvo. Tente novamente.</string>
+
+    <string name="username_empty">Username não pode estar vazio</string>
+    <string name="email_empty">Email não pode estar vazio</string>
+
+    <string name="filters_reset_success">Filtros redefinidos com sucesso</string>
+
+    <string name="selected_platforms">Plataformas selecionadas: %s</string>
+
+    <string name="location_permission_denied">Permissão de localização negada</string>
+    <string name="comment_post_error">Erro ao postar comentário, verifique a sua internet</string>
+    <string name="delete_comment_error">Erro ao eliminar comentário, verifique a sua internet</string>
+    <string name="comment_empty_error">Comentário não pode ficar vazio</string>
+    <string name="comment_post_success">Comentário publicado com sucesso!</string>
+    <string name="error_posting_comment">Erro ao publicar comentário</string>
+    <string name="comment_update_success">Comentário atualizado com sucesso!</string>
+    <string name="error_update_comment">Erro ao atualizar comentário</string>
+    <string name="edit_comment_error">Erro ao editar comentário, verifique a sua internet</string>
+    <string name="error_get_comment_details">Erro ao obter detalhes do comentário</string>
+    <string name="request_comment_details_failure">Falha na requisição para obter detalhes do comentário</string>
+    <string name="comment_delete_success">Comentário eliminado com sucesso</string>
+    <string name="delete_comment_failure">Falha ao eliminar o comentário</string>
+
+
+    <string name="insert_three_characters">Por favor, insira pelo menos três caracteres.</string>
+
+    <string name="rate_error_internet">Erro ao avaliar, verifique a sua internet</string>
+    <string name="remove_rating_success">Avaliação removida com sucesso</string>
+    <string name="add_rating_success">Avaliação adicionada com sucesso</string>
+    <string name="update_rating_success">Avaliação atualizada com sucesso</string>
+
+    <string name="user_id_null">User ID está nulo</string>
+    <string name="platform_added">Plataforma adicionada</string>
+    <string name="failed_to_add_platform">Falha ao adicionar plataforma</string>
+    <string name="platform_removed">Plataforma removida</string>
+    <string name="failed_to_remove_platform">Falha ao remover plataforma</string>
+
+    <string name="account_deleted_success">Conta eliminada com sucesso</string>
+    <string name="failed_to_delete_account">Falha ao eliminar a conta</string>
+
+    <string name="invalid_username">Username inválido</string>
+
 </resources>

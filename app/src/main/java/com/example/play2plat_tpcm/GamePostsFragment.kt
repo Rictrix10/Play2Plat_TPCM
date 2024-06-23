@@ -188,7 +188,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             else{
                 Toast.makeText(
                     requireContext(),
-                    "Erro ao postar comentário, verifique a sua internet",
+                    getString(R.string.comment_post_error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -201,7 +201,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             else{
                 Toast.makeText(
                     requireContext(),
-                    "Erro ao eliminar comentário, verifique a sua internet",
+                    getString(R.string.delete_comment_error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -502,7 +502,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         )
 
         if(comments.isEmpty()){
-            Toast.makeText(context, "Comentário não pode ficar vazio", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                getString(R.string.comment_empty_error),
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
 
@@ -511,7 +516,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
                     if (response.isSuccessful) {
                         val postComment = response.body()
-                        Toast.makeText(context, "Comment posted successfully!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            getString(R.string.comment_post_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                         more_options_layout.visibility = View.GONE
                         commentEditTextView.text.clear()
                         selectedImageUri = null
@@ -523,7 +533,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error posting comment: ${response.message()}")
-                        Toast.makeText(context, "Error posting comment", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            getString(R.string.error_posting_comment),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                     }
                 }
 
@@ -547,7 +562,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         )
 
         if(commentEditTextView.getText().toString().trim().isEmpty()){
-            Toast.makeText(context, "Comentário não pode ficar vazio", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                getString(R.string.comment_empty_error),
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
 
@@ -556,7 +576,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
                     if (response.isSuccessful) {
                         val patchComment = response.body()
-                        Toast.makeText(context, "Comment updated successfully!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            getString(R.string.comment_update_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                         more_options_layout.visibility = View.GONE
                         commentEditTextView.text.clear()
                         selectedImageUri = null
@@ -568,7 +593,12 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error updating comment: ${response.message()}")
-                        Toast.makeText(context, "Error updating comment", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            getString(R.string.error_update_comment),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                     }
                 }
 
@@ -763,9 +793,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                             else{
                                 Toast.makeText(
                                     requireContext(),
-                                    "Erro ao editar comentário, verifique a sua internet",
+                                    getString(R.string.edit_comment_error),
                                     Toast.LENGTH_SHORT
                                 ).show()
+
                             }
                         }
                         else{
@@ -775,9 +806,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                             else{
                                 Toast.makeText(
                                     requireContext(),
-                                    "Erro ao postar comentário, verifique a sua internet",
+                                    getString(R.string.error_posting_comment),
                                     Toast.LENGTH_SHORT
                                 ).show()
+
                             }
                         }
 
@@ -819,13 +851,23 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     }
                 } else {
                     Log.e("GamePostsFragment", "Erro ao obter detalhes do comentário: ${response.message()}")
-                    Toast.makeText(context, "Erro ao obter detalhes do comentário", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.error_get_comment_details),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 }
             }
 
             override fun onFailure(call: Call<Comment>, t: Throwable) {
                 Log.e("GamePostsFragment", "Falha na requisição para obter detalhes do comentário: ${t.message}")
-                Toast.makeText(context, "Falha na requisição para obter detalhes do comentário", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    getString(R.string.request_comment_details_failure),
+                    Toast.LENGTH_SHORT
+                ).show()
+
             }
         })
     }
@@ -836,17 +878,27 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         ApiManager.apiService.deleteComment(postId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Comentário eliminado com sucesso", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.comment_delete_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     // Redirecionar para a tela de login após deletar a conta
                     more_options_layout.visibility = View.GONE
                     getGamePosts(gameId, userId)
                 } else {
-                    Toast.makeText(context, "Falha ao eliminar o comentário", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.delete_comment_failure),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(context, "Erro: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
