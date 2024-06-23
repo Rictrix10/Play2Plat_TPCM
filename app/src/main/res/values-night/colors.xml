@@ -19,4 +19,6 @@
     <color name="startColor">#060320</color>
     <color name="endColor">#232949</color>
     <color name="backgroundTextInput">#CCC7F7</color>
+    <color name="red">#FF0000</color>
+    <color name="HintColor">#847BD7</color>
 </resources>

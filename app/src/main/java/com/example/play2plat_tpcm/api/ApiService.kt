@@ -238,4 +238,7 @@ interface ApiService {
 
     @GET("user-game-comment/{id}")
     fun getCommentById(@Path("id") id: Int): Call<Comment>
+
+    @DELETE("games/{id}")
+    fun deleteGame(@Path("id") id: Int): Call<Void>
 }

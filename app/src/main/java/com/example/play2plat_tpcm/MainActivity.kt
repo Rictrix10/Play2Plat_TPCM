@@ -15,9 +15,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.activity.viewModels
 
 class MainActivity : AppCompatActivity() {
     private lateinit var isAdmin: IsAdmin
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
+    private val SELECTED_TAB_ID_KEY = "selected_tab_id"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,101 +28,67 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userTypeId = sharedPreferences.getInt("user_type_id", 2)
-
         isAdmin = IsAdmin(userTypeId == 1)
 
-        changeTabsText(R.id.games_text, true)
+        // Restaurar o estado da tab selecionada após mudanças de configuração
+        val selectedTabId = savedInstanceState?.getInt(SELECTED_TAB_ID_KEY)
+            ?: sharedPreferences.getInt(SELECTED_TAB_ID_KEY, R.id.games_lay)
+        updateTabSelection(selectedTabId)
 
-        if (isNetworkAvailable()) {
+        if (savedInstanceState == null) {
+            // Adicionar o fragmento inicial se não houver estado salvo (primeira criação da activity)
+            val initialFragment = Games_2_Fragment()
+            navigationViewModel.addToStack(initialFragment)
             supportFragmentManager.beginTransaction()
-                .replace(R.id.layout, Games_2_Fragment())
+                .replace(R.id.layout, initialFragment)
                 .commit()
-        }
-        else{
-            redirectToNoConnectionFragment()
         }
 
         updateAdminIconVisibility()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Salvar o estado da tab selecionada para lidar com mudanças de configuração
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val selectedTabId = sharedPreferences.getInt(SELECTED_TAB_ID_KEY, R.id.games_lay)
+        outState.putInt(SELECTED_TAB_ID_KEY, selectedTabId)
+    }
+
     fun onClick(v: View) {
         when (v.id) {
             R.id.games_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Games_2_Fragment())
-                }
-                else{
-                    redirectToNoConnectionFragment()
-                }
-                updateTabSelection(R.id.games_lay, R.id.games_icon, R.drawable.icon_games_selected, R.id.games_text)
+                replaceFragment(Games_2_Fragment())
+                updateTabSelection(R.id.games_lay)
+                saveSelectedTabId(R.id.games_lay)
             }
             R.id.favorites_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Favorites_Fragment())
-                }
-                else{
-                    redirectToNoConnectionFragment()
-                }
-                updateTabSelection(R.id.favorites_lay, R.id.favorites_icon, R.drawable.icon_favorites_selected, R.id.favorites_text)
+                replaceFragment(Favorites_Fragment())
+                updateTabSelection(R.id.favorites_lay)
+                saveSelectedTabId(R.id.favorites_lay)
             }
             R.id.profile_lay -> {
                 val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
                 val userId = sharedPreferences.getInt("user_id", 0)
                 val profileFragment = Profile_Fragment.newInstance(userId)
                 replaceFragment(profileFragment)
-                updateTabSelection(R.id.profile_lay, R.id.profile_icon, R.drawable.icon_profile_selected, R.id.profile_text)
+                updateTabSelection(R.id.profile_lay)
+                saveSelectedTabId(R.id.profile_lay)
             }
             R.id.search_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Search_Fragment())
-                }
-                else{
-                    redirectToNoConnectionFragment()
-                }
-                updateTabSelection(R.id.search_lay, R.id.search_icon, R.drawable.icon_search_selected, R.id.search_text)
+                replaceFragment(Search_Fragment())
+                updateTabSelection(R.id.search_lay)
+                saveSelectedTabId(R.id.search_lay)
             }
             R.id.new_game_lay -> {
-                if (isNetworkAvailable()) {
-                    replaceFragment(Add_New_Game_Fragment())
-                }
-                else{
-                    redirectToNoConnectionFragment()
-                }
-                updateTabSelection(R.id.new_game_lay, R.id.add_new_game_icon, R.drawable.icon_add_selected, null)
+                replaceFragment(Add_New_Game_Fragment())
+                updateTabSelection(R.id.new_game_lay)
+                saveSelectedTabId(R.id.new_game_lay)
             }
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-
-        val containerView = findViewById<View>(R.id.layout)
-        if (containerView != null) {
-            fragmentTransaction.replace(R.id.layout, fragment)
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-        } else {
-            Log.e("MainActivity", "Container R.id.layout nÃ£o encontrado.")
-        }
-    }
-
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
-
-    private fun redirectToNoConnectionFragment() {
-        val noConnectionFragment = NoConnectionFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, noConnectionFragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun updateTabSelection(layoutId: Int, iconId: Int, selectedDrawableId: Int, selectedTextId: Int?) {
+    private fun updateTabSelection(selectedTabId: Int) {
         val tabs = listOf(
             Triple(R.id.games_lay, R.id.games_icon, R.id.games_text),
             Triple(R.id.favorites_lay, R.id.favorites_icon, R.id.favorites_text),
@@ -129,19 +98,53 @@ class MainActivity : AppCompatActivity() {
         )
 
         tabs.forEach { (layId, icon, text) ->
-            if (layId == layoutId) {
-                changeTabsIcon(icon, selectedDrawableId)
+            if (layId == selectedTabId) {
+                changeTabsIcon(icon, getSelectedIconId(layId))
                 text?.let { changeTabsText(it, true) }
             } else {
-                when (icon) {
-                    R.id.games_icon -> changeTabsIcon(icon, R.drawable.icon_games)
-                    R.id.favorites_icon -> changeTabsIcon(icon, R.drawable.icon_favorites)
-                    R.id.profile_icon -> changeTabsIcon(icon, R.drawable.icon_profile)
-                    R.id.search_icon -> changeTabsIcon(icon, R.drawable.icon_search)
-                    R.id.add_new_game_icon -> changeTabsIcon(icon, R.drawable.icon_add)
-                }
+                changeTabsIcon(icon, getDefaultIconId(icon))
                 text?.let { changeTabsText(it, false) }
             }
+        }
+    }
+
+
+    private fun saveSelectedTabId(tabId: Int) {
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putInt(SELECTED_TAB_ID_KEY, tabId)
+        editor.apply()
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        navigationViewModel.addToStack(fragment)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, fragment)
+            .addToBackStack(null) // Garante que o fragmento seja adicionado ao back stack
+            .commit()
+    }
+
+
+
+    private fun getSelectedIconId(layoutId: Int): Int {
+        return when (layoutId) {
+            R.id.games_lay -> R.drawable.icon_games_selected
+            R.id.favorites_lay -> R.drawable.icon_favorites_selected
+            R.id.profile_lay -> R.drawable.icon_profile_selected
+            R.id.search_lay -> R.drawable.icon_search_selected
+            R.id.new_game_lay -> R.drawable.icon_add_selected
+            else -> R.drawable.icon_games_selected // Defina um padrão ou lide com outros casos se necessário
+        }
+    }
+
+    private fun getDefaultIconId(iconId: Int): Int {
+        return when (iconId) {
+            R.id.games_icon -> R.drawable.icon_games
+            R.id.favorites_icon -> R.drawable.icon_favorites
+            R.id.profile_icon -> R.drawable.icon_profile
+            R.id.search_icon -> R.drawable.icon_search
+            R.id.add_new_game_icon -> R.drawable.icon_add
+            else -> R.drawable.icon_games // Defina um padrão ou lide com outros casos se necessário
         }
     }
 
