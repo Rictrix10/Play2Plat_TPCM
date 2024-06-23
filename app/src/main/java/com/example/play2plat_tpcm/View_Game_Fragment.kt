@@ -1,5 +1,6 @@
 package com.example.play2plat_tpcm
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -28,8 +29,11 @@ import com.example.play2plat_tpcm.adapters.CollectionsAdapter
 import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.EditText
 
 import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.example.play2plat_tpcm.api.UserGameStateResponse
 import com.google.android.material.tabs.TabLayout
@@ -66,6 +70,7 @@ class View_Game_Fragment : Fragment() {
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var mushroomImage: ImageView
     private lateinit var editIcon: ImageView
+    private lateinit var deleteIcon: ImageView
     private lateinit var frameLayout: FrameLayout
 
 
@@ -96,6 +101,7 @@ class View_Game_Fragment : Fragment() {
         collectionList = view.findViewById(R.id.collection_list)
         tabLayout = view.findViewById(R.id.tab_layout)
         editIcon = view.findViewById(R.id.Edit_Icon)
+        deleteIcon = view.findViewById(R.id.Delete_Icon)
 
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         currentUserType = sharedPreferences.getInt("user_type_id", 0)
@@ -134,11 +140,15 @@ class View_Game_Fragment : Fragment() {
                                     .commit()
                             }
 
+                            deleteIcon.setOnClickListener {
+                                showDeleteConfirmationDialog(gameId)
+                            }
+
                             nameTextView.text = game.name
                             companyTextView.text = game.company
-                            if(!game.isFree){
+                            if (!game.isFree) {
                                 isFreeImageView.visibility = View.GONE
-                            }else{
+                            } else {
                                 isFreeImageView.visibility = View.VISIBLE
                             }
                             Picasso.get().load(game.coverImage).into(gameImageView, object : com.squareup.picasso.Callback {
@@ -228,6 +238,61 @@ class View_Game_Fragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun showDeleteConfirmationDialog(gameId: Int) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_delete_game, null)
+        alertDialogBuilder.setView(dialogView)
+
+
+        val editText = dialogView.findViewById<EditText>(R.id.confirmation_text)
+
+        alertDialogBuilder.setPositiveButton("Delete") { dialog, _ ->
+            val confirmationText = editText.text.toString()
+            if (confirmationText == "Fatality") {
+                deleteGame(gameId)
+                dialog.dismiss()
+            } else {
+                Toast.makeText(requireContext(), "Type 'Fatality' to confirm", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.window?.setBackgroundDrawableResource(R.drawable.button_bd_3)
+        alertDialog.setOnShowListener {
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+            }
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            }
+        }
+
+        alertDialog.show()
+    }
+
+    private fun deleteGame(gameId: Int) {
+        // Código para deletar o jogo, pode ser uma chamada para uma API, por exemplo.
+        ApiManager.apiService.deleteGame(gameId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Game deleted successfully", Toast.LENGTH_SHORT).show()
+                    // Voltar à tela anterior ou atualizar a UI conforme necessário
+                    requireActivity().onBackPressed()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to delete game", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(requireContext(), "Failed to delete game", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -33,6 +33,8 @@ import com.example.play2plat_tpcm.adapters.GenresAdapter
 import com.example.play2plat_tpcm.adapters.PegyAdapter
 import com.example.play2plat_tpcm.api.GameGenre
 import com.example.play2plat_tpcm.api.GameInfo
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -268,7 +270,11 @@ class Edit_Game_Fragment : Fragment() {
         return view
     }
 
+    val gson = GsonBuilder().serializeNulls().create()
+
     private fun editGame(coverImage: String, gameTitle: String, description: String, isFree: Boolean, selectedPegiInfo: Int, selectedSequenceId: Int?, selectedCompanyId: Int?, selectedGenreIds: List<Int>) {
+        Log.d("Edit Game", "sequence: $selectedSequenceId")
+
         val newGame = Game(
             id = null,
             name = gameTitle,
@@ -277,29 +283,28 @@ class Edit_Game_Fragment : Fragment() {
             releaseDate = "2024-04-24T00:00:00Z",
             pegiInfo = selectedPegiInfo,
             coverImage = coverImage,
-            sequenceId = selectedSequenceId,
+            sequenceId = selectedSequenceId ?: null,
             companyId = selectedCompanyId!!
         )
 
-        Log.d("Edit Game", "${newGame}")
+        Log.d("Edit Game", "Request payload: ${gson.toJson(newGame)}")
 
-        // Edita o jogo utilizando a imagem recebida (coverImage)
         ApiManager.apiService.editGame(newGame, gameInfo!!.id)
             .enqueue(object : Callback<Game> {
                 override fun onResponse(call: Call<Game>, response: Response<Game>) {
+                    Log.d("Edit Game", "Response: ${response.raw()}")
                     if (response.isSuccessful) {
                         val createdGame = response.body()
+                        Log.d("Edit Game", "Response body: $createdGame")
                         createdGame?.let { game ->
                             Log.d("AddNewGame", "Jogo editado com sucesso: $game")
 
-                            // Associação de gêneros
                             ApiManager.apiService.deleteGameGenres(gameInfo!!.id)
                                 .enqueue(object : Callback<Void> {
                                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                                         if (response.isSuccessful) {
                                             Log.d("AddNewGame", "Gêneros do jogo deletados com sucesso")
 
-                                            // Usar um contador para monitorar as associações bem-sucedidas
                                             var successfulAssociations = 0
                                             val totalAssociations = selectedGenreIds.size
 
@@ -347,27 +352,35 @@ class Edit_Game_Fragment : Fragment() {
             })
     }
 
+
+
     private fun navigateBack() {
         // Verifica se o estado não foi salvo antes de realizar a transação
         if (!requireActivity().supportFragmentManager.isStateSaved) {
             val fragmentManager = requireActivity().supportFragmentManager
 
-            // Pop the current fragment
+            // Remove the current fragment
             fragmentManager.popBackStack()
 
-            // Remove the previous fragment
-            val previousFragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1).name
-            fragmentManager.popBackStack()
-
-            // Add the previous fragment again
-            fragmentManager.beginTransaction()
-                .replace(R.id.layout, View_Game_Fragment.newInstance(gameInfo!!.id, arrayListOf()))
-                .addToBackStack(previousFragmentTag)
-                .commit()
+            // Se houver um fragmento anterior na pilha, mostra ele novamente
+            if (fragmentManager.backStackEntryCount > 0) {
+                val previousFragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1).name
+                val previousFragment = fragmentManager.findFragmentByTag(previousFragmentTag)
+                if (previousFragment != null) {
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.layout, previousFragment)
+                        .commit()
+                }
+            } else {
+                // Se não houver fragmento anterior na pilha, volta para a tela anterior ou faz outra ação necessária
+                requireActivity().onBackPressed()
+            }
         } else {
             Toast.makeText(requireContext(), "Estado da atividade já foi salvo. Tente novamente.", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 
 
     private fun populateFields() {

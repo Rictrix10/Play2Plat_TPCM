@@ -19,9 +19,11 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.palette.graphics.Palette
 import com.squareup.picasso.Picasso
@@ -53,6 +55,7 @@ class Profile_Fragment : Fragment() {
     private var currentUserId: Int = 0
     private var user: User? = null
     private var userPassword: String = ""
+    private val navigationViewModel: FragmentNavigationViewModel by activityViewModels()
 
     private val userViewModel: UserViewModel by viewModels()
 
@@ -534,6 +537,7 @@ class Profile_Fragment : Fragment() {
     }
 
     private fun redirectToEditProfile() {
+        navigationViewModel.addToStack(Edit_Profile_Fragment())
         val editProfileFragment = Edit_Profile_Fragment()
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
             requireActivity().supportFragmentManager.beginTransaction()

@@ -88,15 +88,31 @@
                     android:id="@+id/Edit_Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_marginTop="16dp"
                     android:padding="8dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/icon_edit"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toTopOf="@id/game"
+                    app:layout_constraintEnd_toStartOf="@id/Delete_Icon"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/Delete_Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:padding="8dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/icon_trash_can"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toTopOf="@id/game"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
+
+
 
                 <TextView
                     android:id="@+id/name"
