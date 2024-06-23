@@ -181,4 +181,11 @@
 
     <string name="invalid_username">Username inválido</string>
 
+    <string name="image_shorter">Insira uma imagem mais pequena</string>
+
+    <string name="need_online_edit_game">Preciso estar online para editar um jogo</string>
+    <string name="error_favoriting">Erro ao favoritar, verifique a sua internet</string>
+
+
+
 </resources>

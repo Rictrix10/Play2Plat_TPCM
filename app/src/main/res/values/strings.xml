@@ -191,4 +191,10 @@
 
     <string name="invalid_username">Invalid username</string>
 
+    <string name="image_shorter">Insert a smaller image</string>
+    <string name="need_online_edit_game">You need to be online to edit a game</string>
+    <string name="error_favoriting">Error favoriting, please check your internet connection</string>
+
+
+
 </resources>

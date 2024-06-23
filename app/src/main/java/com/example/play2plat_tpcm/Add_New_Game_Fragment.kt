@@ -203,41 +203,42 @@ class Add_New_Game_Fragment : Fragment() {
                 }
             }
 
-            
+
             if (gameTitle.isEmpty()) {
-                Toast.makeText(requireContext(), "Por favor, insira um nome para o jogo.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.game_name_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (description.length <= 6) {
-                Toast.makeText(requireContext(), "A descrição deve ter mais de 6 caracteres.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.description_too_short), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (selectedGenreIds.isEmpty()) {
-                Toast.makeText(requireContext(), "Por favor, selecione pelo menos um gênero.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.genre_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (selectedPlatformIds.isEmpty()) {
-                Toast.makeText(requireContext(), "Por favor, selecione pelo menos uma plataforma.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.platform_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (selectedCompanyId == null) {
-                Toast.makeText(requireContext(), "Por favor, selecione uma empresa.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.company_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if(selectedPegiInfo == 0){
-                Toast.makeText(requireContext(), "Por favor, selecione informação pegi.", Toast.LENGTH_SHORT).show()
+            if (selectedPegiInfo == 0) {
+                Toast.makeText(requireContext(), getString(R.string.pegi_info_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (selectedImageUri == null) {
-                Toast.makeText(requireContext(), "Por favor, selecione uma imagem.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.image_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
 
             val context = requireContext()
 
@@ -328,7 +329,8 @@ class Add_New_Game_Fragment : Fragment() {
                                                             .commit()
                                                     } else {
                                                         // Lidar com o caso onde o estado já foi salvo
-                                                        Toast.makeText(requireContext(), "Estado da atividade já foi salvo. Tente novamente.", Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(requireContext(), getString(R.string.activity_state_saved), Toast.LENGTH_SHORT).show()
+
                                                     }
 
                                                 } ?: run {
@@ -436,6 +438,7 @@ class Add_New_Game_Fragment : Fragment() {
                     }
                 } else {
                     Log.e("AddNewGame", "Erro ao carregar gêneros: ${response.message()}")
+                    Toast.makeText(requireContext(), getString(R.string.image_shorter), Toast.LENGTH_SHORT).show()
                 }
             }
 

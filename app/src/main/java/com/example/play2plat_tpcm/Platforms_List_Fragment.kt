@@ -146,7 +146,12 @@ class Platforms_List_Fragment : Fragment() {
                                 }
                             }
                         } else {
-                            Toast.makeText(context, "User ID is null", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                getString(R.string.user_id_null),
+                                Toast.LENGTH_SHORT
+                            ).show()
+
                         }
                     }
                 }
@@ -168,9 +173,19 @@ class Platforms_List_Fragment : Fragment() {
         ApiManager.apiService.addPlatformsToUser(userPlatform).enqueue(object : Callback<UserPlatform> {
             override fun onResponse(call: Call<UserPlatform>, response: Response<UserPlatform>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Platform added", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.platform_added),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 } else {
-                    Toast.makeText(context, "Failed to add platform", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.failed_to_add_platform),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 }
             }
 
@@ -185,9 +200,17 @@ class Platforms_List_Fragment : Fragment() {
         ApiManager.apiService.addPlatformsToGame(userPlatform).enqueue(object : Callback<GamePlatform> {
             override fun onResponse(call: Call<GamePlatform>, response: Response<GamePlatform>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Platform added", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.platform_added),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(context, "Failed to add platform", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.failed_to_add_platform),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -201,9 +224,19 @@ class Platforms_List_Fragment : Fragment() {
         ApiManager.apiService.deletePlatformFromUser(userId, platformId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Platform removed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.platform_removed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 } else {
-                    Toast.makeText(context, "Failed to remove platform", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.failed_to_remove_platform),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 }
             }
 
@@ -217,9 +250,17 @@ class Platforms_List_Fragment : Fragment() {
         ApiManager.apiService.deletePlatformFromGame(userId, platformId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Platform removed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.platform_removed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(context, "Failed to remove platform", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.failed_to_remove_platform),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 

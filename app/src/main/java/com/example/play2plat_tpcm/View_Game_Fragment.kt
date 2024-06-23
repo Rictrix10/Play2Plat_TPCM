@@ -145,9 +145,10 @@ class View_Game_Fragment : Fragment() {
                                 else{
                                     Toast.makeText(
                                         requireContext(),
-                                        "Preciso estar online para editar um jogo",
+                                        getString(R.string.need_online_edit_game),
                                         Toast.LENGTH_SHORT
                                     ).show()
+
                                 }
                             }
 
@@ -279,9 +280,10 @@ class View_Game_Fragment : Fragment() {
             else{
                 Toast.makeText(
                     requireContext(),
-                    "Erro ao favoritar, verifique a sua internet",
+                    getString(R.string.error_favoriting),
                     Toast.LENGTH_SHORT
                 ).show()
+
             }
 
         }

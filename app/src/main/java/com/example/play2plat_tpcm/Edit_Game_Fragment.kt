@@ -202,28 +202,28 @@ class Edit_Game_Fragment : Fragment() {
             }
 
             if (gameTitle.isEmpty()) {
-                Toast.makeText(requireContext(), "Por favor, insira um nome para o jogo.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.game_name_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (description.length <= 6) {
-                Toast.makeText(requireContext(), "A descrição deve ter mais de 6 caracteres.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.description_too_short), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (selectedGenreIds.isEmpty()) {
-                Toast.makeText(requireContext(), "Por favor, selecione pelo menos um gênero.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.genre_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (selectedCompanyId == null) {
-                Toast.makeText(requireContext(), "Por favor, selecione uma empresa.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.company_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
 
-            if(selectedPegiInfo == 0){
-                Toast.makeText(requireContext(), "Por favor, selecione informação pegi.", Toast.LENGTH_SHORT).show()
+            if (selectedPegiInfo == 0) {
+                Toast.makeText(requireContext(), getString(R.string.pegi_info_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -372,7 +372,7 @@ class Edit_Game_Fragment : Fragment() {
                 .addToBackStack(previousFragmentTag)
                 .commit()
         } else {
-            Toast.makeText(requireContext(), "Estado da atividade já foi salvo. Tente novamente.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.activity_state_saved), Toast.LENGTH_SHORT).show()
         }
     }
 

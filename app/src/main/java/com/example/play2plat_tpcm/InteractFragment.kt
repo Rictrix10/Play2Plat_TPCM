@@ -114,9 +114,10 @@ class InteractFragment : Fragment(),
                 else{
                     Toast.makeText(
                         requireContext(),
-                        "Erro ao avaliar, verifique a sua internet",
+                        getString(R.string.rate_error_internet),
                         Toast.LENGTH_SHORT
                     ).show()
+
                 }
             }
         }
@@ -168,9 +169,10 @@ class InteractFragment : Fragment(),
             deleteAvaliation(userId, gameId)
             Toast.makeText(
                 requireContext(),
-                "Avaliação removida com sucesso",
+                getString(R.string.remove_rating_success),
                 Toast.LENGTH_SHORT
             ).show()
+
         } else {
             // Update stars to the new rating
             updateStarViews(rating)
@@ -184,16 +186,17 @@ class InteractFragment : Fragment(),
                             addAvaliation(userId, gameId, rating)
                             Toast.makeText(
                                 requireContext(),
-                                "Avaliação adicionada com sucesso",
+                                getString(R.string.add_rating_success),
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
                             updateAvaliation(userId, gameId, rating)
                             Toast.makeText(
                                 requireContext(),
-                                "Avaliação atualizada com sucesso",
+                                getString(R.string.update_rating_success),
                                 Toast.LENGTH_SHORT
                             ).show()
+
                         }
                     }
                 }

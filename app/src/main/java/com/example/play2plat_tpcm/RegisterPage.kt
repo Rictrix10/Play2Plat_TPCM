@@ -106,7 +106,12 @@ class RegisterPage : AppCompatActivity() {
         }
 
         if(username.isEmpty()){
-            Toast.makeText(this, "Username inválido", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                getString(R.string.invalid_username),
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
 
