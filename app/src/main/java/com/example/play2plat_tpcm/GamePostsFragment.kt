@@ -905,15 +905,15 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     private fun deleteCommentWithConfirmation(userId: Int) {
         val inflater = LayoutInflater.from(requireContext())
-        val view = inflater.inflate(R.layout.dialog_delete_content, null)
+        val view = inflater.inflate(R.layout.delete_comment, null)
 
         AlertDialog.Builder(requireContext()).apply {
-            setTitle("Confirmação")
+            setTitle(getString(R.string.confirm))
             setView(view)
-            setPositiveButton("Sim") { dialog, which ->
+            setPositiveButton(getString(R.string.confirm_yes)) { dialog, which ->
                 deleteComment(selectedPostId, userId)
             }
-            setNegativeButton("Não") { dialog, which ->
+            setNegativeButton(getString(R.string.confirm_no)) { dialog, which ->
                 dialog.dismiss()
             }
             create()

@@ -186,6 +186,17 @@
     <string name="need_online_edit_game">Preciso estar online para editar um jogo</string>
     <string name="error_favoriting">Erro ao favoritar, verifique a sua internet</string>
 
+    <string name="edit">Editar</string>
+    <string name="apagar">Apagar</string>
+
+
+    <string name="delete_comment">Você realmente deseja apagar este comentário?</string>
+    <string name="confirm">Confirmação</string>
+
+    <string name="no_posts_on_game">Ninguém postou sobre o jogo ainda. Seja o primeiro, compartilhe sua experiência</string>
+    <string name="see_more_posts">Ver mais posts</string>
+
+
 
 
 </resources>
