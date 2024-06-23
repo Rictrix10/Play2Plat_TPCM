@@ -518,7 +518,7 @@ class Edit_Profile_Fragment : Fragment() {
             username = updatedUsername,
             email = updatedEmail,
             password = if (newPassword.isNotEmpty()) newPassword else "",
-            avatar = avatarUrl ?: "",
+            avatar = avatarUrl ?: null,
             userTypeId = userTypeId,
             platforms = null
         )
@@ -548,7 +548,7 @@ class Edit_Profile_Fragment : Fragment() {
                         username = updatedUsername,
                         email = updatedEmail,
                         password = if (newPassword.isNotEmpty()) newPassword else "",
-                        avatar = avatarUrl ?: "",
+                        avatar = avatarUrl ?: null,
                         userTypeId = userTypeId
                     )
 

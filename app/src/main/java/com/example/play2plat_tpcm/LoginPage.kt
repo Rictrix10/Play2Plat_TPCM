@@ -119,7 +119,7 @@ class LoginPage : AppCompatActivity() {
     private fun loginUser() {
         val username = findViewById<EditText>(R.id.et_username).text.toString()
         val password = etPassword.text.toString()
-
+        Log.d("Login", "${username}, ${password}")
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, R.string.please_fill_all_fields, Toast.LENGTH_SHORT).show()
             return
@@ -134,7 +134,7 @@ class LoginPage : AppCompatActivity() {
                         val user = userLoginResponse.user
                         saveUserData(user)
                         if (user.avatar != null) {
-                            saveAvatarImage(user.avatar) { imagePath ->
+                            saveAvatarImage(user.avatar!!) { imagePath ->
                                 checkAndSaveUserToRoom(user, imagePath)
                             }
                         } else {
