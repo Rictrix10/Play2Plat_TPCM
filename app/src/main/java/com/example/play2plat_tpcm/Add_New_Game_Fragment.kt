@@ -214,11 +214,6 @@ class Add_New_Game_Fragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if (selectedCompanyId == null) {
-                Toast.makeText(requireContext(), "Por favor, selecione uma empresa.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             if (selectedGenreIds.isEmpty()) {
                 Toast.makeText(requireContext(), "Por favor, selecione pelo menos um gênero.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -226,6 +221,16 @@ class Add_New_Game_Fragment : Fragment() {
 
             if (selectedPlatformIds.isEmpty()) {
                 Toast.makeText(requireContext(), "Por favor, selecione pelo menos uma plataforma.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedCompanyId == null) {
+                Toast.makeText(requireContext(), "Por favor, selecione uma empresa.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(selectedPegiInfo == 0){
+                Toast.makeText(requireContext(), "Por favor, selecione informação pegi.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

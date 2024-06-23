@@ -211,15 +211,22 @@ class Edit_Game_Fragment : Fragment() {
                 return@setOnClickListener
             }
 
+            if (selectedGenreIds.isEmpty()) {
+                Toast.makeText(requireContext(), "Por favor, selecione pelo menos um gênero.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (selectedCompanyId == null) {
                 Toast.makeText(requireContext(), "Por favor, selecione uma empresa.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (selectedGenreIds.isEmpty()) {
-                Toast.makeText(requireContext(), "Por favor, selecione pelo menos um gênero.", Toast.LENGTH_SHORT).show()
+
+            if(selectedPegiInfo == 0){
+                Toast.makeText(requireContext(), "Por favor, selecione informação pegi.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
 
             val context = requireContext()
 
@@ -525,9 +532,6 @@ class Edit_Game_Fragment : Fragment() {
 
         return targetHeight
     }
-
-
-
 
 
     private fun selectVisualMedia() {
