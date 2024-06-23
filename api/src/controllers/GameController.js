@@ -93,11 +93,7 @@ getGameById: async (req, res) => {
     updateGame: async (req, res) => {
         try {
             const gameId = parseInt(req.params.id);
-            let { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars, isDeleted } = req.body;
-
-            if (sequenceId === 0) {
-                sequenceId = null;
-            }
+            const { name, description, isFree, releaseDate, pegiInfo, coverImage, sequenceId, companyId, averageStars, isDeleted } = req.body;
 
             const updatedGame = await GameModel.updateGame(gameId, {
                 name,
