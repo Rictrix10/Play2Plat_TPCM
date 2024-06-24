@@ -21,6 +21,43 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="5"
         tools:listitem="@layout/item_game_grid"/>
+
+    <View
+        android:id="@+id/last_item_margin"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/no_games_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/no_games"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/last_item_margin"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
+    <TextView
+        android:id="@+id/no_games_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nenhum jogo encontrado"
+        android:textAlignment="center"
+        android:paddingTop="16dp"
+        android:textSize="14dp"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/no_games_image"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +29,8 @@ import retrofit2.Response
 class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClickListener {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var noGamesImageView: ImageView
+    private lateinit var noGamesTextView: TextView
     private lateinit var gameCoverAdapter: Games_List_Grid_Adapter
     private var filterType: String? = null
     private var paramater: String? = null
@@ -78,7 +82,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
     ): View? {
         val view = inflater.inflate(R.layout.fragment_games_list_grid, container, false)
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
-
+        noGamesImageView = view.findViewById(R.id.no_games_image)
+        noGamesTextView = view.findViewById(R.id.no_games_text)
         updateGridLayoutManager()
 
         gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
@@ -87,7 +92,27 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
 
         Log.d("Filters", "o seus filtros $filters")
 
+        val validFilterTypes = listOf("Wish List", "Playing", "Paused", "Concluded")
+        val collectionsNames = resources.getStringArray(R.array.collections_names)
 
+        if (filterType == "Favorite") {
+            noGamesTextView.text = "Looks like you still don't have any favorited games"
+        } else if (filterType in validFilterTypes) {
+            val index = validFilterTypes.indexOf(filterType)
+            val collectionName = collectionsNames[index]
+            noGamesTextView.text = "Looks like you still don't have any games in collection $collectionName"
+        } else {
+            noGamesTextView.text = "No Games found"
+        }
+
+
+        //noGamesTextView.text = "From $paramater"
+        /*
+        else {
+            noGamesTextView.text = "$paramater Games"
+        }
+
+         */
 
         loadGames()
 
@@ -119,6 +144,17 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         }
     }
 
+    private fun updateUI(games: List<Game>) {
+        if (games.isEmpty()) {
+            noGamesImageView.visibility = View.VISIBLE
+            noGamesTextView.visibility = View.VISIBLE
+        } else {
+            noGamesImageView.visibility = View.GONE
+            noGamesTextView.visibility = View.GONE
+        }
+        gameCoverAdapter.updateGames(games)
+    }
+
     private fun getStateCollection(state: String) {
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
@@ -130,7 +166,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -151,7 +188,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.game.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -173,7 +211,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -194,7 +233,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -215,7 +255,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -251,7 +292,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                     } ?: emptyList()
 
                     Log.d("Games_List_Grid_Fragment", "Games response from API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("ViewMoreGames_Fragment", "Error in response: ${response.errorBody()}")
                     // Log the raw response body for debugging
@@ -297,7 +339,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -318,7 +361,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -339,7 +383,8 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    updateUI(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
