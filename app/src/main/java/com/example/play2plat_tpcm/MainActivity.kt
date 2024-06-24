@@ -58,12 +58,22 @@ class MainActivity : AppCompatActivity() {
     fun onClick(v: View) {
         when (v.id) {
             R.id.games_lay -> {
-                replaceFragment(Games_2_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Games_2_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.games_lay)
                 saveSelectedTabId(R.id.games_lay)
             }
             R.id.favorites_lay -> {
-                replaceFragment(Favorites_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Favorites_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.favorites_lay)
                 saveSelectedTabId(R.id.favorites_lay)
             }
@@ -76,12 +86,22 @@ class MainActivity : AppCompatActivity() {
                 saveSelectedTabId(R.id.profile_lay)
             }
             R.id.search_lay -> {
-                replaceFragment(Search_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Search_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.search_lay)
                 saveSelectedTabId(R.id.search_lay)
             }
             R.id.new_game_lay -> {
-                replaceFragment(Add_New_Game_Fragment())
+                if (isNetworkAvailable()) {
+                    replaceFragment(Add_New_Game_Fragment())
+                }
+                else{
+                    redirectToNoConnectionFragment()
+                }
                 updateTabSelection(R.id.new_game_lay)
                 saveSelectedTabId(R.id.new_game_lay)
             }
@@ -123,6 +143,22 @@ class MainActivity : AppCompatActivity() {
             .addToBackStack(null) // Garante que o fragmento seja adicionado ao back stack
             .commit()
     }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment = NoConnectionFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
 
 
 
