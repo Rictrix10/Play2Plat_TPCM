@@ -22,5 +22,41 @@
         app:spanCount="3"
         tools:listitem="@layout/item_game_grid"
         />
+
+    <ImageView
+        android:id="@+id/no_games_image"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/no_games"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/no_games_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
+    <TextView
+        android:id="@+id/no_games_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:paddingTop="16dp"
+        android:textSize="16dp"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/no_games_image"
+        app:layout_constraintBottom_toTopOf="@+id/last_item_margin"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
+    <View
+        android:id="@+id/last_item_margin"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

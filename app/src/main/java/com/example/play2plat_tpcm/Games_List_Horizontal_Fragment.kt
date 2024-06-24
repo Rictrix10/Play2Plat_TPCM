@@ -52,6 +52,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         private const val ARG_PARAMATER = "paramater"
         private const val ARG_PARAMATER_INT = "paramaterInt"
 
+
         fun newInstance(filterType: String, paramater: String, paramaterInt: Int): Games_List_Horizontal_Fragment {
             val fragment = Games_List_Horizontal_Fragment()
             val args = Bundle()
@@ -85,7 +86,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         arrowRight = view.findViewById(R.id.iconArrowRight)
 
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this)
+        gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this, filterType)
         recyclerView.adapter = gameCoverAdapter
         titleText = view.findViewById(R.id.text_view)
 
