@@ -1,6 +1,9 @@
 package com.example.play2plat_tpcm
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -94,6 +97,13 @@ class RegisterPage : AppCompatActivity() {
         etConfirmPassword.setSelection(etConfirmPassword.text.length)
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
     private fun registerUser() {
         val username = findViewById<EditText>(R.id.et_username).text.toString()
         val email = findViewById<EditText>(R.id.et_email).text.toString()
@@ -112,6 +122,11 @@ class RegisterPage : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
 
+            return
+        }
+
+        if(isNetworkAvailable() == false){
+            Toast.makeText(this, R.string.no_connection_register, Toast.LENGTH_SHORT).show()
             return
         }
 

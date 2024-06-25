@@ -26,6 +26,8 @@
     <string name="sign_up">Registar</string>
     <string name="email">Email</string>
     <string name="confirm_password">Confirmar passe</string>
+    <string name="no_connection_login">Erro no login, verifique a sua conexão</string>
+    <string name="no_connection_register">Erro no registo, verifique a sua conexão</string>
 
     <string name="upload_cover">Carregar Capa</string>
     <string name="enter_description">Descrição</string>
@@ -43,6 +45,8 @@
     <string name="games">Jogos</string>
     <string name="search">Pesquisar</string>
     <string name="profile">Perfil</string>
+    <string name="no_favorite_games">Parece que ainda não tens nenhum jogo favorito</string>
+    <string name="no_collection_games">Parece que ainda não tens nenhum jogo na coleção %1$s</string>
 
     <string name="action_games">Jogos de Ação:</string>
     <string name="free_games">Jogos Grátis:</string>

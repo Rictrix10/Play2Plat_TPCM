@@ -26,6 +26,8 @@
     <string name="sign_up">Sign Up</string>
     <string name="email">Email</string>
     <string name="confirm_password">Confirm Pass</string>
+    <string name="no_connection_login">Login error, check your connection</string>
+    <string name="no_connection_register">Register error, check your connection</string>
 
 
     <string name="upload_cover">Upload Cover</string>
@@ -44,6 +46,9 @@
     <string name="games">Games</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
+    <string name="no_favorite_games">Looks like you still dont have any favorited games</string>
+    <string name="no_collection_games">Looks like you still dont have any games in collection %1$s</string>
+
 
     <string name="action_games">Action Games:</string>
     <string name="free_games">Free Games:</string>

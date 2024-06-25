@@ -44,7 +44,7 @@ class Games_List_Horizontal_Adapter(
             holder.bind(games[position])
             holder.binding.moreGamesView!!.visibility = View.GONE // Hide 'more_games_view'
         } else if (position == games.size) {
-
+            holder.binding.moreGamesView!!.visibility = View.VISIBLE
             holder.binding.moreGamesText!!.text = currentFilterType
         }
 

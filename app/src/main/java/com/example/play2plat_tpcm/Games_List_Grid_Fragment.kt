@@ -96,11 +96,12 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         val collectionsNames = resources.getStringArray(R.array.collections_names)
 
         if (filterType == "Favorite") {
-            noGamesTextView.text = "Looks like you still don't have any favorited games"
+            noGamesTextView.text = getString(R.string.no_favorite_games);
         } else if (filterType in validFilterTypes) {
             val index = validFilterTypes.indexOf(filterType)
             val collectionName = collectionsNames[index]
-            noGamesTextView.text = "Looks like you still don't have any games in collection $collectionName"
+            val noCollectionGames = getString(R.string.no_collection_games, collectionName)
+            noGamesTextView.text = noCollectionGames
         } else {
             noGamesTextView.text = "No Games found"
         }
