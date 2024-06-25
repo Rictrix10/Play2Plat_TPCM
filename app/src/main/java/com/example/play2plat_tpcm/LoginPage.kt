@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.os.Environment
 import android.text.method.HideReturnsTransformationMethod
@@ -125,6 +127,11 @@ class LoginPage : AppCompatActivity() {
             return
         }
 
+        if(isNetworkAvailable() == false){
+            Toast.makeText(this, R.string.no_connection_login, Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val userLogin = UserLogin(username, password)
         ApiManager.apiService.loginUser(userLogin).enqueue(object : Callback<UserLoginResponse> {
             override fun onResponse(call: Call<UserLoginResponse>, response: Response<UserLoginResponse>) {
@@ -225,6 +232,13 @@ class LoginPage : AppCompatActivity() {
         val editor = sharedPreferences.edit()
         editor.putBoolean(KEY_REMEMBER_ME, isChecked)
         editor.apply()
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun checkRememberMe() {
