@@ -354,14 +354,35 @@ class Edit_Profile_Fragment : Fragment() {
 
 
     private fun redirectToProfile() {
-        val fragmentManager = requireActivity().supportFragmentManager
+        if (!requireActivity().supportFragmentManager.isStateSaved) {
+            val fragmentManager = requireActivity().supportFragmentManager
 
-        val currentFragment = fragmentManager.primaryNavigationFragment
-        if (currentFragment != null) {
-            navigationViewModel.removeFromStack(currentFragment)
+            // Remove the current fragment from back stack
+            fragmentManager.popBackStack()
+
+            // Remove the current fragment from ViewModel's stack
+            val currentFragment = fragmentManager.primaryNavigationFragment
+            if (currentFragment != null) {
+                navigationViewModel.removeFromStack(currentFragment)
+            }
+
+            // Se houver um fragmento anterior na pilha, mostra ele novamente
+            if (fragmentManager.backStackEntryCount > 0) {
+                val previousFragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1).name
+                val previousFragment = fragmentManager.findFragmentByTag(previousFragmentTag)
+
+                if (previousFragment != null) {
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.layout, previousFragment)
+                        .commit()
+                }
+            } else {
+                // Se não houver fragmento anterior na pilha, volta para a tela anterior ou faz outra ação necessária
+                requireActivity().onBackPressed()
+            }
+        } else {
+            Toast.makeText(requireContext(), getString(R.string.activity_state_saved), Toast.LENGTH_SHORT).show()
         }
-
-        requireActivity().onBackPressed()
     }
 
     private fun getCurrentUserAvatar(userId: Int, callback: (String?) -> Unit) {
