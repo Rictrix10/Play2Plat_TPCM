@@ -25,6 +25,24 @@ class CollectionsAdapter(
 
     private var selectedPosition: Int = -1
 
+    companion object {
+        private const val TAG = "CollectionsAdapter"
+
+        // Constantes para os estados de coleção em inglês
+        private const val WISH_LIST = "Wish List"
+        private const val PLAYING = "Playing"
+        private const val PAUSED = "Paused"
+        private const val CONCLUDED = "Concluded"
+
+        // Mapa para mapear estados de coleção nos diferentes idiomas para o inglês
+        private val collectionTranslationMap = mapOf(
+            "Lista de Desejos" to WISH_LIST,
+            "A jogar" to PLAYING,
+            "Pausado" to PAUSED,
+            "Concluído" to CONCLUDED
+        )
+    }
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.collections_list_item, parent, false)
         val linearLayout = view.findViewById<LinearLayout>(R.id.collection_item_layout)
@@ -49,7 +67,7 @@ class CollectionsAdapter(
             if (selectedPosition == position) {
                 // Se a posição já estiver selecionada, desmarque-a
                 selectedPosition = -1
-                collectionTitle.text = "Collections" // Limpa o título da coleção na tela principal
+                collectionTitle.text = context.getString(R.string.collections)// Limpa o título da coleção na tela principal
                 deleteUserGame()
             } else {
                 val previousPosition = selectedPosition
@@ -58,9 +76,9 @@ class CollectionsAdapter(
                 // Atualiza o título da coleção na tela principal
                 collectionTitle.text = values[position]
                 if (previousPosition == -1) {
-                    addUserGame(values[position])
+                    addUserGame(translateToEnglish(values[position]))
                 } else {
-                    updateUserGame(values[position])
+                    updateUserGame(translateToEnglish(values[position]))
                 }
             }
             // Notifica o adaptador sobre a alteração para atualizar a interface do usuário
@@ -77,6 +95,11 @@ class CollectionsAdapter(
     fun updateSelectedPosition(position: Int) {
         selectedPosition = position
         notifyDataSetChanged()
+    }
+
+    private fun translateToEnglish(state: String): String {
+        // Verifica se há uma tradução disponível, caso contrário, retorna o próprio estado
+        return collectionTranslationMap[state] ?: state
     }
 
     private fun addUserGame(state: String) {
@@ -140,8 +163,5 @@ class CollectionsAdapter(
             }
         })
     }
-
-    companion object {
-        private const val TAG = "CollectionsAdapter"
-    }
 }
+

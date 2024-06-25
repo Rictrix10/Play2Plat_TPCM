@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +38,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     private var paramater: String? = null
     private var paramaterInt: Int? = 0
     private var userId: Int = 0
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
     interface OnEmptyListListener {
         fun onListEmpty()
@@ -114,6 +116,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
 
     private fun redirectToViewMoreGames_Fragment(filterType: String?, paramater: String?) {
         val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance(filterType ?: "", paramater ?: "", null)
+        navigationViewModel.addToStack(viewMoreGamesFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, viewMoreGamesFragment)
             .addToBackStack(null)
@@ -368,6 +371,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         if (isNetworkAvailable()) {
             val platforms = arrayListOf<String>()
             val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+            navigationViewModel.addToStack(viewGameFragment)
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, viewGameFragment)
                 .addToBackStack(null)
@@ -410,6 +414,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)

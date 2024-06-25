@@ -37,6 +37,7 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.fragment.app.viewModels
 import com.example.play2plat_tpcm.api.UserGameStateResponse
 import com.google.android.material.tabs.TabLayout
 import kotlin.math.pow
@@ -74,6 +75,7 @@ class View_Game_Fragment : Fragment() {
     private lateinit var editIcon: ImageView
     private lateinit var deleteIcon: ImageView
     private lateinit var frameLayout: FrameLayout
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,6 +90,7 @@ class View_Game_Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_view_game, container, false)
+        mediaPlayer = MediaPlayer()
 
         // Initialize views
         nameTextView = view.findViewById(R.id.name)
@@ -118,6 +121,13 @@ class View_Game_Fragment : Fragment() {
 
         backButton.setOnClickListener {
             if (isNetworkAvailable()) {
+                val fragmentManager = requireActivity().supportFragmentManager
+
+                val currentFragment = fragmentManager.primaryNavigationFragment
+                if (currentFragment != null) {
+                    navigationViewModel.removeFromStack(currentFragment)
+                }
+
                 requireActivity().onBackPressed()
             }
             else{
@@ -142,6 +152,7 @@ class View_Game_Fragment : Fragment() {
                             editIcon.setOnClickListener {
                                 if (isNetworkAvailable()) {
                                     val editGameFragment = Edit_Game_Fragment.newInstance(game)
+                                    navigationViewModel.addToStack(editGameFragment)
                                     requireActivity().supportFragmentManager.beginTransaction()
                                         .replace(R.id.layout, editGameFragment)
                                         .addToBackStack(null)
@@ -365,11 +376,11 @@ class View_Game_Fragment : Fragment() {
     }
 
 
-
     override fun onDestroy() {
         super.onDestroy()
-        // Liberar recursos do mediaPlayer ao destruir o fragment
-        mediaPlayer.release()
+        if (::mediaPlayer.isInitialized) {
+            mediaPlayer.release()
+        }
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -381,6 +392,7 @@ class View_Game_Fragment : Fragment() {
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)

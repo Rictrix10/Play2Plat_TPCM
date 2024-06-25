@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
@@ -88,6 +89,7 @@ class Edit_Game_Fragment : Fragment() {
     private lateinit var pegiInfoValues: Array<String>
     private lateinit var pegiAdapter: PegyAdapter
     private lateinit var backButton: ImageView
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -366,13 +368,20 @@ class Edit_Game_Fragment : Fragment() {
         if (!requireActivity().supportFragmentManager.isStateSaved) {
             val fragmentManager = requireActivity().supportFragmentManager
 
-            // Remove the current fragment
+            // Remove the current fragment from back stack
             fragmentManager.popBackStack()
+
+            // Remove the current fragment from ViewModel's stack
+            val currentFragment = fragmentManager.primaryNavigationFragment
+            if (currentFragment != null) {
+                navigationViewModel.removeFromStack(currentFragment)
+            }
 
             // Se houver um fragmento anterior na pilha, mostra ele novamente
             if (fragmentManager.backStackEntryCount > 0) {
                 val previousFragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1).name
                 val previousFragment = fragmentManager.findFragmentByTag(previousFragmentTag)
+
                 if (previousFragment != null) {
                     fragmentManager.beginTransaction()
                         .replace(R.id.layout, previousFragment)

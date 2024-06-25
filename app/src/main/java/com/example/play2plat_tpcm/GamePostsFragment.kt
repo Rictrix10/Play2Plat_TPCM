@@ -28,6 +28,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
@@ -79,6 +80,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var selectedPostId: Int = 0
+
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
     private val pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
@@ -149,6 +152,13 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         val backButton = view.findViewById<ImageButton>(R.id.back_button)
         backButton.setOnClickListener {
             if (isNetworkAvailable()) {
+                val fragmentManager = requireActivity().supportFragmentManager
+
+                val currentFragment = fragmentManager.primaryNavigationFragment
+                if (currentFragment != null) {
+                    navigationViewModel.removeFromStack(currentFragment)
+                }
+
                 requireActivity().onBackPressed()
             }
             else{
@@ -243,6 +253,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)
@@ -702,6 +713,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     override fun onProfilePictureClick(userId: Int) {
         val viewGameFragment = Profile_Fragment.newInstance(userId)
+        navigationViewModel.addToStack(viewGameFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, viewGameFragment)
             .addToBackStack(null)
@@ -710,6 +722,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     private fun redirectToMapsFragment() {
         val mapsFragment = MapsFragment.newInstance(gameId)
+        navigationViewModel.addToStack(mapsFragment)
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, mapsFragment)

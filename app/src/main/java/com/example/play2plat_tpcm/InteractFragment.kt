@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
@@ -55,6 +56,7 @@ class InteractFragment : Fragment(),
     private lateinit var iconDown1: ImageView
     private lateinit var iconDown2: ImageView
     private lateinit var iconAdd: ImageView
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
     override fun onPause() {
         super.onPause()
@@ -291,6 +293,8 @@ class InteractFragment : Fragment(),
         if (isNetworkAvailable()) {
             val gamePostsFragment =
                 GamePostsFragment.newInstance(gameId, gameName!!, primaryColor, secondaryColor)
+
+            navigationViewModel.addToStack(gamePostsFragment)
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, gamePostsFragment)
                 .addToBackStack(null)
@@ -429,6 +433,7 @@ class InteractFragment : Fragment(),
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)

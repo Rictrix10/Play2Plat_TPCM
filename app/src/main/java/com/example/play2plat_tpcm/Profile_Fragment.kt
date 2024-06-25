@@ -5,12 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +24,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -92,6 +96,13 @@ class Profile_Fragment : Fragment() {
             editIconImageView.visibility = View.GONE
             backIconImageView.visibility = View.VISIBLE
             backIconImageView.setOnClickListener {
+                val fragmentManager = requireActivity().supportFragmentManager
+
+                val currentFragment = fragmentManager.primaryNavigationFragment
+                if (currentFragment != null) {
+                    navigationViewModel.removeFromStack(currentFragment)
+                }
+
                 requireActivity().onBackPressed()
             }
         }
@@ -103,14 +114,14 @@ class Profile_Fragment : Fragment() {
 
         // Verifique se o estado do fragmento já foi salvo antes de realizar a transação
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0)
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
+            val fragmentFavorite = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0)
+            childFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragmentFavorite)
                 .commit()
 
-            val fragment2 = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0)
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container2, fragment2)
+            val fragmentPlaying = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0)
+            childFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container2, fragmentPlaying)
                 .commit()
         } else {
             Log.d("Profile_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
@@ -339,10 +350,28 @@ class Profile_Fragment : Fragment() {
         val yesText = getString(R.string.confirm_yes)
         val noText = getString(R.string.confirm_no)
 
-        // Cria o alerta de confirmação
-        AlertDialog.Builder(requireContext()).apply {
-            setTitle(title)
-            setMessage(message)
+        // Criar um TextView para o título
+        val titleTextView = TextView(requireContext()).apply {
+            text = title
+            setPadding(20, 20, 20, 20)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+        }
+
+        // Criar um TextView para a mensagem
+        val messageTextView = TextView(requireContext()).apply {
+            text = message
+            setPadding(20, 20, 20, 20)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)  // Definir tamanho de texto conforme necessário
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.white))  // Definir cor do texto para branco
+            gravity = Gravity.CENTER
+        }
+
+        val alertDialog = AlertDialog.Builder(requireContext()).apply {
+            setCustomTitle(titleTextView)
+            setView(messageTextView)  // Definir o TextView customizado para a mensagem
             setPositiveButton(yesText) { dialog, which ->
                 // Eliminar dados guardados no SharedPreferences
                 clearSharedPreferences()
@@ -356,9 +385,21 @@ class Profile_Fragment : Fragment() {
                 // Fecha o diálogo sem fazer logout
                 dialog.dismiss()
             }
-            create()
-            show()
+        }.create()
+
+        // Definir propriedades do AlertDialog
+        alertDialog.window?.setBackgroundDrawableResource(R.drawable.button_bd_3)
+        alertDialog.setOnShowListener {
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+            }
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            }
         }
+
+        // Mostrar o AlertDialog
+        alertDialog.show()
     }
 
 
@@ -374,8 +415,17 @@ class Profile_Fragment : Fragment() {
         val passwordIncorrect = getString(R.string.password_incorrect)
         val passwordEmpty = getString(R.string.password_empty)
 
-        AlertDialog.Builder(requireContext()).apply {
-            setTitle(title)
+        val titleTextView = TextView(requireContext()).apply {
+            text = title
+            setPadding(20, 20, 20, 20)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+        }
+
+        val alertDialog = AlertDialog.Builder(requireContext()).apply {
+            setCustomTitle(titleTextView)
             setView(view)
             setPositiveButton(yesText) { dialog, which ->
                 val password = passwordEditText.text.toString()
@@ -397,10 +447,25 @@ class Profile_Fragment : Fragment() {
             setNegativeButton(noText) { dialog, which ->
                 dialog.dismiss()
             }
-            create()
-            show()
+        }.create()
+
+        // Configura as propriedades do AlertDialog
+        alertDialog.window?.setBackgroundDrawableResource(R.drawable.button_bd_3)
+        alertDialog.setOnShowListener {
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+            }
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            }
         }
+
+        // Mostra o AlertDialog
+        alertDialog.show()
     }
+
+
+
 
 
     private fun verifyPassword(userId: Int, password: String, callback: PasswordVerificationCallback) {
@@ -537,8 +602,9 @@ class Profile_Fragment : Fragment() {
     }
 
     private fun redirectToEditProfile() {
-        navigationViewModel.addToStack(Edit_Profile_Fragment())
+
         val editProfileFragment = Edit_Profile_Fragment()
+        navigationViewModel.addToStack(editProfileFragment)
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, editProfileFragment)

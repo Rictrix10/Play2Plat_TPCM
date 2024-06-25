@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.adapters.Games_List_Grid_Adapter
@@ -36,6 +37,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
     private var paramater: String? = null
     private var userId: Int = 0
     private var filters: Filters? = null
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
 
     companion object {
@@ -406,6 +408,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         if (isNetworkAvailable()) {
             val platforms = arrayListOf<String>()
             val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+            navigationViewModel.addToStack(viewGameFragment)
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, viewGameFragment)
                 .addToBackStack(null)
@@ -455,6 +458,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)

@@ -19,6 +19,7 @@ import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.play2plat_tpcm.adapters.CompanyAdapter
 import com.example.play2plat_tpcm.adapters.GenresAdapter
 import com.example.play2plat_tpcm.adapters.SequenceAdapter
@@ -64,6 +65,7 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
     private var onlyFreeGames: Boolean = false
     private var orderPreference: String = "Ascending"
     private lateinit var backImageView: ImageView
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
 
     override fun onCreateView(
@@ -93,6 +95,13 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
 
         backImageView.setOnClickListener {
             if (isNetworkAvailable()) {
+                val fragmentManager = requireActivity().supportFragmentManager
+
+                val currentFragment = fragmentManager.primaryNavigationFragment
+                if (currentFragment != null) {
+                    navigationViewModel.removeFromStack(currentFragment)
+                }
+
                 requireActivity().onBackPressed()
             }
             else{
@@ -133,9 +142,9 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
 
             val orderPreferenceText = ascending.isChecked
 
-            val selectedGenres = if (genresText == "Genres") emptyList<String>() else genresText.split(",")
-            val selectedCompanies = if (companiesText == "Companies") emptyList<String>() else companiesText.split(",")
-            val selectedSequences = if (sequencesText == "Sequences") emptyList<String>() else sequencesText.split(",")
+            val selectedGenres = if (genresText == "Genres" || genresText == "Géneros") emptyList<String>() else genresText.split(",")
+            val selectedCompanies = if (companiesText == "Companies" || companiesText == "Desenvolvedora" ) emptyList<String>() else companiesText.split(",")
+            val selectedSequences = if (sequencesText == "Sequences" || sequencesText == "Sequências") emptyList<String>() else sequencesText.split(",")
 
             val filters = Filters(
                 genres = if (selectedGenres.isEmpty()) emptyList() else selectedGenres,
@@ -148,12 +157,12 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
             )
 
             val viewMoreGamesFragment = ViewMoreGames_Fragment.newInstance("Filtered", "Founded", filters)
+            navigationViewModel.addToStack(viewMoreGamesFragment)
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, viewMoreGamesFragment)
                 .addToBackStack(null)
                 .commit()
         }
-
 
         return view
     }
@@ -244,6 +253,7 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)
