@@ -106,12 +106,12 @@ class AboutFragment : Fragment(), Games_List_Horizontal_Fragment.OnEmptyListList
             childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
         }
 
-        val fragmentSequenceInstance = Games_List_Horizontal_Fragment.newInstance("SameSequence", sequenceArg, gameIdArg)
+        val fragmentSequenceInstance = Games_List_Horizontal_Fragment.newInstance("SameSequence", sequenceArg, gameIdArg, false)
         childFragmentManager.beginTransaction()
             .replace(R.id.fragment_sequence, fragmentSequenceInstance)
             .commit()
 
-        val fragmentCompanyInstance = Games_List_Horizontal_Fragment.newInstance("SameCompany", companyArg, gameIdArg)
+        val fragmentCompanyInstance = Games_List_Horizontal_Fragment.newInstance("SameCompany", companyArg, gameIdArg, false)
         childFragmentManager.beginTransaction()
             .replace(R.id.fragment_company, fragmentCompanyInstance)
             .commit()
