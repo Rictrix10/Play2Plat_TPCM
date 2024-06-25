@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
@@ -24,6 +25,7 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
     private var favoriteGamesList: MutableList<ListFavoriteGames> = mutableListOf()
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var TitleLayout: ConstraintLayout
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,6 +56,7 @@ class Favorites_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickListen
         val platforms = arrayListOf<String>()
 
         val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+        navigationViewModel.addToStack(viewGameFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, viewGameFragment)
             .addToBackStack(null)

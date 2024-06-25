@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -25,6 +26,7 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var imageBackView: ImageView
     private lateinit var imageFilterView: ImageView
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +70,13 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
         imageBackView.setOnClickListener {
 
             if (isNetworkAvailable()) {
+                val fragmentManager = requireActivity().supportFragmentManager
+
+                val currentFragment = fragmentManager.primaryNavigationFragment
+                if (currentFragment != null) {
+                    navigationViewModel.removeFromStack(currentFragment)
+                }
+
                 requireActivity().onBackPressed()
             }
             else{
@@ -110,7 +119,7 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
 
     private fun showSearchedGames(filterType: String, parameter: String) {
         val fragment = Games_List_Grid_Fragment.newInstance(filterType, parameter, null)
-        requireActivity().supportFragmentManager.beginTransaction()
+        childFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
@@ -119,6 +128,7 @@ class GamesSearched_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListen
         val platforms = arrayListOf<String>()
 
         val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+        navigationViewModel.addToStack(viewGameFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, viewGameFragment)
             .addToBackStack(null)

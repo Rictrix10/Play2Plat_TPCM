@@ -362,10 +362,7 @@
                     android:text="@string/descending"
                     android:textColor="@color/white"
                     app:buttonTint="@color/checkbox_color" />
-
             </RadioGroup>
-
-
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

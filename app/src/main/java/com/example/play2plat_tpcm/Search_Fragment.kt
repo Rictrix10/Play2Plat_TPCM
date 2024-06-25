@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Collections
@@ -42,6 +43,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var sharedPreferences: SharedPreferences
     private var countValue: Int = 0
     private val uniqueGenres: Set<String> = HashSet()
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
 
     override fun onCreateView(
@@ -65,7 +67,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         // Verificação `isStateSaved` para fragmentos
         if (!parentFragmentManager.isStateSaved()) {
             val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0)
-            parentFragmentManager.beginTransaction()
+            childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
         } else {
@@ -98,7 +100,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             } else {
                 Games_List_Horizontal_Fragment.newInstance("Genres", "Action", 0)
             }
-            parentFragmentManager.beginTransaction()
+            childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container2, fragment2)
                 .commit()
         } else {
@@ -111,7 +113,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             } else {
                 Games_List_Horizontal_Fragment.newInstance("Companies", "Nintendo", 0)
             }
-            parentFragmentManager.beginTransaction()
+            childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container3, fragment3)
                 .commit()
         } else {
@@ -124,7 +126,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             } else {
                 Games_List_Horizontal_Fragment.newInstance("Genres", "Online Multiplayer", 0)
             }
-            parentFragmentManager.beginTransaction()
+            childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container4, fragment4)
                 .commit()
         } else {
@@ -137,7 +139,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             } else {
                 Games_List_Horizontal_Fragment.newInstance("Platforms", "PC", 0)
             }
-            parentFragmentManager.beginTransaction()
+            childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container5, fragment5)
                 .commit()
         } else {
@@ -150,7 +152,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             } else {
                 Games_List_Horizontal_Fragment.newInstance("Genres", "Survival", 0)
             }
-            parentFragmentManager.beginTransaction()
+            childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container6, fragment6)
                 .commit()
         } else {
@@ -163,7 +165,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             } else {
                 Games_List_Horizontal_Fragment.newInstance("Sequences", "Super Mario", 0)
             }
-            parentFragmentManager.beginTransaction()
+            childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container7, fragment7)
                 .commit()
         } else {
@@ -319,6 +321,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         val platforms = arrayListOf<String>()
 
         val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
+        navigationViewModel.addToStack(viewGameFragment)
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, viewGameFragment)
@@ -349,6 +352,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         if (isNetworkAvailable()){
             val gamesSearchedFragment = GamesSearched_Fragment()
+            navigationViewModel.addToStack(gamesSearchedFragment)
 
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, gamesSearchedFragment)
@@ -367,6 +371,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         if (isNetworkAvailable()){
             val filtersFragment = Filters_Fragment()
+            navigationViewModel.addToStack(filtersFragment)
 
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, filtersFragment)
@@ -388,6 +393,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.layout, noConnectionFragment)
             .addToBackStack(null)

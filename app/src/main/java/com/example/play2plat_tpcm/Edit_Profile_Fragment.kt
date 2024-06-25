@@ -66,6 +66,7 @@ class Edit_Profile_Fragment : Fragment() {
     private var isConfirmPasswordVisible: Boolean = false
 
     private val userViewModel: UserViewModel by viewModels()
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
     private var selectedImageUri: Uri? = null
 
@@ -353,16 +354,14 @@ class Edit_Profile_Fragment : Fragment() {
 
 
     private fun redirectToProfile() {
-        val sharedPreferences = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
+        val fragmentManager = requireActivity().supportFragmentManager
 
-        // Criar uma nova instância do Profile_Fragment com o ID do usuário
-        val profileFragment = Profile_Fragment.newInstance(userId)
+        val currentFragment = fragmentManager.primaryNavigationFragment
+        if (currentFragment != null) {
+            navigationViewModel.removeFromStack(currentFragment)
+        }
 
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.layout, profileFragment)
-            .addToBackStack(null)
-            .commit()
+        requireActivity().onBackPressed()
     }
 
     private fun getCurrentUserAvatar(userId: Int, callback: (String?) -> Unit) {

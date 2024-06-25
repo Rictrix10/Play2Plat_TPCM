@@ -88,15 +88,31 @@
                     android:id="@+id/Edit_Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_marginTop="16dp"
                     android:padding="8dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/icon_edit"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toTopOf="@id/game"
+                    app:layout_constraintEnd_toStartOf="@id/Delete_Icon"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/Delete_Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:padding="8dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/icon_trash_can"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toTopOf="@id/game"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
+
+
 
                 <TextView
                     android:id="@+id/name"
@@ -117,7 +133,7 @@
                     android:id="@+id/company"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="15dp"
                     android:textColor="@color/WHITE"
@@ -208,7 +224,7 @@
                 android:layout_marginHorizontal="3dp"
                 android:background="@drawable/button_bd_4"
                 app:tabIndicatorColor="@color/black"
-                app:tabSelectedTextColor="@color/white"
+                app:tabSelectedTextColor="@color/WHITE"
                 app:tabTextColor="@color/gray_600"
                 app:layout_constraintTop_toBottomOf="@id/container"
                 app:layout_constraintStart_toStartOf="parent"

@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Company
 import com.example.play2plat_tpcm.api.Game
@@ -90,6 +91,7 @@ class Add_New_Game_Fragment : Fragment() {
     private lateinit var pegiList: ListView
     private lateinit var pegiInfoValues: Array<String>
     private lateinit var pegiAdapter: PegyAdapter
+    private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -322,6 +324,7 @@ class Add_New_Game_Fragment : Fragment() {
                                                         // Redirecionar para View_Game_Fragment
                                                         val platforms = arrayListOf<String>()
                                                         val viewGameFragment = View_Game_Fragment.newInstance(game.id!!, platforms)
+                                                        navigationViewModel.addToStack(viewGameFragment)
                                                         requireActivity().supportFragmentManager.beginTransaction()
                                                             .replace(R.id.layout, viewGameFragment)
                                                             .addToBackStack(null)
@@ -582,7 +585,4 @@ class Add_New_Game_Fragment : Fragment() {
         // Habilita/desabilita o scroll
         listView.isScrollContainer = totalItems > 5
     }
-
-
-
 }
