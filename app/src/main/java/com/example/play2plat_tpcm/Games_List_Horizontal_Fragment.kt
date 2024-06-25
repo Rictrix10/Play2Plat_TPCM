@@ -37,6 +37,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     private var filterType: String? = null
     private var paramater: String? = null
     private var paramaterInt: Int? = 0
+    private var otherUser: Boolean = false
     private var userId: Int = 0
     private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
@@ -53,14 +54,16 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         private const val ARG_FILTER_TYPE = "filter_type"
         private const val ARG_PARAMATER = "paramater"
         private const val ARG_PARAMATER_INT = "paramaterInt"
+        private const val ARG_OTHER_USER = "otherUser"
 
 
-        fun newInstance(filterType: String, paramater: String, paramaterInt: Int): Games_List_Horizontal_Fragment {
+        fun newInstance(filterType: String, paramater: String, paramaterInt: Int, otherUser: Boolean): Games_List_Horizontal_Fragment {
             val fragment = Games_List_Horizontal_Fragment()
             val args = Bundle()
             args.putString(ARG_FILTER_TYPE, filterType)
             args.putString(ARG_PARAMATER, paramater)
             args.putInt(ARG_PARAMATER_INT, paramaterInt)
+            args.putBoolean(ARG_OTHER_USER, otherUser)
             fragment.arguments = args
             return fragment
         }
@@ -72,6 +75,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
             filterType = it.getString(ARG_FILTER_TYPE)
             paramater= it.getString(ARG_PARAMATER)
             paramaterInt = it.getInt(ARG_PARAMATER_INT)
+            otherUser = it.getBoolean(ARG_OTHER_USER)
         }
 
         // Retrieve userId from SharedPreferences

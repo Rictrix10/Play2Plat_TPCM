@@ -112,14 +112,20 @@ class Profile_Fragment : Fragment() {
             requireActivity().onBackPressed()
         }
 
+        val otherUser = if (userId == currentUserId) {
+            false
+        } else {
+            true
+        }
+
         // Verifique se o estado do fragmento já foi salvo antes de realizar a transação
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
-            val fragmentFavorite = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0)
+            val fragmentFavorite = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0, otherUser)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragmentFavorite)
                 .commit()
 
-            val fragmentPlaying = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0)
+            val fragmentPlaying = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0, otherUser)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container2, fragmentPlaying)
                 .commit()
