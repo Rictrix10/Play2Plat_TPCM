@@ -17,6 +17,7 @@ class Collections_2_Adapter(
 
     private var selectedPosition: Int = -1
 
+
     init {
         // Carregar a última coleção visualizada do SharedPreferences
         val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)

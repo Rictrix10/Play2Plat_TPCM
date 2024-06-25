@@ -401,6 +401,14 @@ class View_Game_Fragment : Fragment() {
     }
 
 
+    private val gameStateTranslationMap = mapOf(
+        "Wish List" to "Lista de Desejos",
+        "Playing" to "A jogar",
+        "Paused" to "Pausado",
+        "Concluded" to "Concluído"
+    )
+
+
     private fun loadUserGameState() {
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
@@ -426,15 +434,19 @@ class View_Game_Fragment : Fragment() {
         })
     }
 
+
     private fun selectOptionInAccordion(gameState: String?) {
-        val selectedPosition = collectionInfoValues.indexOf(gameState)
+        val translatedGameState = gameStateTranslationMap[gameState] ?: gameState
+
+        val selectedPosition = collectionInfoValues.indexOf(translatedGameState)
         if (selectedPosition != -1) {
             collectionAdapter.updateSelectedPosition(selectedPosition)
-            collectionTitle.text = gameState
+            collectionTitle.text = translatedGameState
         } else {
-            collectionTitle.text = "Collections"
+            collectionTitle.text = getString(R.string.collections)
         }
     }
+
 
 
     fun colourDistance(color1: Int, color2: Int): Double {

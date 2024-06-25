@@ -41,6 +41,22 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var TitleLayout: ConstraintLayout
 
+    private val gameStateTranslationMap = mapOf(
+        "Wish List" to "Lista de Desejos",
+        "Playing" to "A jogar",
+        "Paused" to "Pausado",
+        "Concluded" to "Concluído"
+    )
+
+    private val gameStateReverseTranslationMap = mapOf(
+        "Lista de Desejos" to "Wish List",
+        "A jogar" to "Playing",
+        "Pausado" to "Paused",
+        "Concluído" to "Concluded"
+    )
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -77,7 +93,8 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         })
 
         if (!childFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Grid_Fragment.newInstance(collectionTitle.text.toString(), "", null)
+            val englishFilterType = getEnglishGameState(collectionTitle.text.toString())
+            val fragment = Games_List_Grid_Fragment.newInstance(englishFilterType, "", null)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
@@ -88,9 +105,15 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         return view
     }
 
+    private fun getEnglishGameState(gameState: String): String {
+        return gameStateReverseTranslationMap[gameState] ?: gameState
+    }
+
+
     private fun showFilteredGames(filterType: String) {
         if (!childFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Grid_Fragment.newInstance(filterType, "", null)
+            val englishFilterType = getEnglishGameState(filterType)
+            val fragment = Games_List_Grid_Fragment.newInstance(englishFilterType, "", null)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
@@ -98,6 +121,8 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             // Lidar com o caso em que o estado da instância já foi salvo
         }
     }
+
+
 
     private fun loadCollections(context: Context) {
         collectionInfoValues = context.resources.getStringArray(R.array.collections_names)

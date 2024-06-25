@@ -142,9 +142,9 @@ class Filters_Fragment : Fragment(), Platforms_List_Fragment.OnPlatformsSelected
 
             val orderPreferenceText = ascending.isChecked
 
-            val selectedGenres = if (genresText == "Genres" || genresText == "Géneros") emptyList<String>() else genresText.split(",")
-            val selectedCompanies = if (companiesText == "Companies" || companiesText == "Desenvolvedora" ) emptyList<String>() else companiesText.split(",")
-            val selectedSequences = if (sequencesText == "Sequences" || sequencesText == "Sequências") emptyList<String>() else sequencesText.split(",")
+            val selectedGenres = if (genresText == getString(R.string.genres)) emptyList<String>() else genresText.split(",")
+            val selectedCompanies = if (companiesText == getString(R.string.companies)) emptyList<String>() else companiesText.split(",")
+            val selectedSequences = if (sequencesText == getString(R.string.sequencess)) emptyList<String>() else sequencesText.split(",")
 
             val filters = Filters(
                 genres = if (selectedGenres.isEmpty()) emptyList() else selectedGenres,
