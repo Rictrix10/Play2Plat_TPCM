@@ -38,6 +38,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     private var paramater: String? = null
     private var paramaterInt: Int? = 0
     private var otherUser: Boolean = false
+    private var paramaterUserId: Int = 0
     private var userId: Int = 0
     private val navigationViewModel: FragmentNavigationViewModel by viewModels()
 
@@ -55,15 +56,17 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         private const val ARG_PARAMATER = "paramater"
         private const val ARG_PARAMATER_INT = "paramaterInt"
         private const val ARG_OTHER_USER = "otherUser"
+        private const val ARG_PARAMATER_USER_ID = "paramaterUserId"
 
 
-        fun newInstance(filterType: String, paramater: String, paramaterInt: Int, otherUser: Boolean): Games_List_Horizontal_Fragment {
+        fun newInstance(filterType: String, paramater: String, paramaterInt: Int, otherUser: Boolean, paramaterUserId: Int ): Games_List_Horizontal_Fragment {
             val fragment = Games_List_Horizontal_Fragment()
             val args = Bundle()
             args.putString(ARG_FILTER_TYPE, filterType)
             args.putString(ARG_PARAMATER, paramater)
             args.putInt(ARG_PARAMATER_INT, paramaterInt)
             args.putBoolean(ARG_OTHER_USER, otherUser)
+            args.putInt(ARG_PARAMATER_USER_ID, paramaterUserId)
             fragment.arguments = args
             return fragment
         }
@@ -76,6 +79,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
             paramater= it.getString(ARG_PARAMATER)
             paramaterInt = it.getInt(ARG_PARAMATER_INT)
             otherUser = it.getBoolean(ARG_OTHER_USER)
+            paramaterUserId = it.getInt(ARG_PARAMATER_USER_ID)
         }
 
         // Retrieve userId from SharedPreferences
@@ -150,9 +154,9 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     }
 
     private fun getStateCollection(state: String) {
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", 0)
-        ApiManager.apiService.getStateCollection(userId, state).enqueue(object : Callback<List<Collections>> {
+        //val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        //val userId = sharedPreferences.getInt("user_id", 0)
+        ApiManager.apiService.getStateCollection(paramaterUserId, state).enqueue(object : Callback<List<Collections>> {
             override fun onResponse(
                 call: Call<List<Collections>>,
                 response: Response<List<Collections>>
@@ -173,7 +177,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
     }
 
     private fun getFavoriteGames() {
-        ApiManager.apiService.getFavoritesByUserId(userId).enqueue(object : Callback<List<ListFavoriteGames>> {
+        ApiManager.apiService.getFavoritesByUserId(paramaterUserId).enqueue(object : Callback<List<ListFavoriteGames>> {
             override fun onResponse(
                 call: Call<List<ListFavoriteGames>>,
                 response: Response<List<ListFavoriteGames>>

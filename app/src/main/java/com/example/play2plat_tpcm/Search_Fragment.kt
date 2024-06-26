@@ -66,7 +66,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         // Verificação `isStateSaved` para fragmentos
         if (!parentFragmentManager.isStateSaved()) {
-            val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0, false)
+            val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0, false, 0)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit()
@@ -96,9 +96,9 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         // Verificação `isStateSaved` para fragmentos adicionais
         if (!parentFragmentManager.isStateSaved()) {
             val fragment2 = if (genreValue != null) {
-                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue, 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue, 0, false, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Genres", "Action", 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Genres", "Action", 0, false, 0)
             }
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container2, fragment2)
@@ -109,9 +109,9 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         if (!parentFragmentManager.isStateSaved()) {
             val fragment3 = if (companyValue != null) {
-                Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0, false, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Companies", "Nintendo", 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Companies", "Nintendo", 0, false, 0)
             }
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container3, fragment3)
@@ -122,9 +122,9 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         if (!parentFragmentManager.isStateSaved()) {
             val fragment4 = if (genreValue2 != null) {
-                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue2, 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue2, 0, false, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Genres", "Online Multiplayer", 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Genres", "Online Multiplayer", 0, false, 0)
             }
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container4, fragment4)
@@ -135,9 +135,9 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         if (!parentFragmentManager.isStateSaved()) {
             val fragment5 = if (platformValue != null) {
-                Games_List_Horizontal_Fragment.newInstance("Platforms", platformValue, 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Platforms", platformValue, 0, false, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Platforms", "PC", 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Platforms", "PC", 0, false, 0)
             }
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container5, fragment5)
@@ -148,9 +148,9 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         if (!parentFragmentManager.isStateSaved()) {
             val fragment6 = if (genreValue3 != null) {
-                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue3, 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Genres", genreValue3, 0, false, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Genres", "Survival", 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Genres", "Survival", 0, false, 0)
             }
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container6, fragment6)
@@ -161,9 +161,9 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         if (!parentFragmentManager.isStateSaved()) {
             val fragment7 = if (sequenceValue != null) {
-                Games_List_Horizontal_Fragment.newInstance("Sequences", sequenceValue, 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Sequences", sequenceValue, 0, false, 0)
             } else {
-                Games_List_Horizontal_Fragment.newInstance("Sequences", "Super Mario", 0, false)
+                Games_List_Horizontal_Fragment.newInstance("Sequences", "Super Mario", 0, false, 0)
             }
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container7, fragment7)

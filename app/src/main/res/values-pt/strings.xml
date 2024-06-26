@@ -105,6 +105,9 @@
     <string name="confirm_message">Você realmente deseja fazer logout?</string>
     <string name="confirm_yes">Sim</string>
     <string name="confirm_no">Não</string>
+    <string name="error_delete_account">Erro ao apagar a conta, verifique a sua conexão</string>
+    <string name="deleted_user">Utilizador eliminado</string>
+    <string name="replying">Respondendo a </string>
 
 
 

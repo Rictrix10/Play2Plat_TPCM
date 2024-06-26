@@ -116,13 +116,15 @@ class MapsFragment : Fragment() {
             val avatarUrl = comment.user.avatar ?: ""
 
             if (avatarUrl.isEmpty() || avatarUrl == "" || comment.user.username == null || comment.user.isDeleted == true) {
-                val drawableResId = R.drawable.icon_noimageprofile
+                val drawableResId = R.drawable.icon_noimageuser
                 val bitmap = BitmapFactory.decodeResource(resources, drawableResId)
 
                 // Criar um novo Bitmap com fundo branco
                 val backgroundBitmap = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(backgroundBitmap)
-                canvas.drawColor(Color.WHITE) // Pintar o fundo de branco
+                //canvas.drawColor(Color.WHITE) // Pintar o fundo de branco
+                val whiteColor = resources.getColor(R.color.white, null)
+                canvas.drawColor(whiteColor)
 
                 // Redimensionar o bitmap original
                 val resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false)
@@ -131,7 +133,7 @@ class MapsFragment : Fragment() {
                 canvas.drawBitmap(resizedBitmap, 0f, 0f, null)
 
                 val usernameVal = if (comment.user.username == null) {
-                    "Deleted User"
+                    context?.getString(R.string.deleted_user)
                 } else {
                     comment.user.username
                 }
@@ -159,7 +161,7 @@ class MapsFragment : Fragment() {
                                 .position(location)
                                 .title(comment.comments)  // Usando o comentário como title
                                 //.snippet("${comment.user.username}")  // Usando o username como snippet
-                                .snippet(if (comment.user.username == null) "Deleted User" else comment.user.username)  // Usando o username como snippet
+                                .snippet(if (comment.user.username == null) context?.getString(R.string.deleted_user) else comment.user.username)  // Usando o username como snippet
                                 .icon(BitmapDescriptorFactory.fromBitmap(roundedBitmap))
                             googleMap.addMarker(markerOptions)
                             Log.d("MapsFragment", "Marker added for comment: ${comment.comments}")

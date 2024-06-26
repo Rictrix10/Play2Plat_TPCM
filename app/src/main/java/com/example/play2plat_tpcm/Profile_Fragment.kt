@@ -147,12 +147,12 @@ class Profile_Fragment : Fragment() {
 
         // Verifique se o estado do fragmento já foi salvo antes de realizar a transação
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
-            val fragmentFavorite = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0, otherUser)
+            val fragmentFavorite = Games_List_Horizontal_Fragment.newInstance("Favorite", "Favorite", 0, otherUser, userId )
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragmentFavorite)
                 .commit()
 
-            val fragmentPlaying = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0, otherUser)
+            val fragmentPlaying = Games_List_Horizontal_Fragment.newInstance("Playing", "Playing", 0, otherUser, userId )
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container2, fragmentPlaying)
                 .commit()
@@ -457,6 +457,15 @@ class Profile_Fragment : Fragment() {
             gravity = Gravity.CENTER
         }
 
+        if(isNetworkAvailable() == false){
+            Toast.makeText(
+                context,
+                getString(R.string.error_delete_account),
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
         val alertDialog = AlertDialog.Builder(requireContext()).apply {
             setCustomTitle(titleTextView)
             setView(view)
@@ -466,11 +475,30 @@ class Profile_Fragment : Fragment() {
                 if (password.isNotEmpty()) {
                     verifyPassword(currentUserId, password, object : PasswordVerificationCallback {
                         override fun onVerificationSuccess() {
-                            deleteAccount(userId)
+                            if(isNetworkAvailable()){
+                                deleteAccount(userId)
+                            }
+                            else{
+                                Toast.makeText(
+                                    context,
+                                    getString(R.string.error_delete_account),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
 
                         override fun onVerificationFailure() {
-                            Toast.makeText(context, passwordIncorrect, Toast.LENGTH_SHORT).show()
+                            if(isNetworkAvailable()){
+                                Toast.makeText(context, passwordIncorrect, Toast.LENGTH_SHORT).show()
+                            }
+                            else{
+                                Toast.makeText(
+                                    context,
+                                    getString(R.string.error_delete_account),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
                         }
                     })
                 } else {
@@ -515,7 +543,11 @@ class Profile_Fragment : Fragment() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(context, "Erro: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    getString(R.string.error_delete_account),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
@@ -523,6 +555,7 @@ class Profile_Fragment : Fragment() {
     private fun deleteAccount(userId: Int) {
         ApiManager.apiService.deleteAccount(userId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
+
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Conta eliminada com sucesso", Toast.LENGTH_SHORT).show()
                     // Redirecionar para a tela de login após deletar a conta
@@ -542,7 +575,11 @@ class Profile_Fragment : Fragment() {
                     startActivity(intent)
                     activity?.finish()
                 } else {
-                    Toast.makeText(context, "Falha ao eliminar a conta", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.error_delete_account),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -550,6 +587,7 @@ class Profile_Fragment : Fragment() {
                 Toast.makeText(context, "Erro: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+
     }
 
     private fun clearSharedPreferences() {
