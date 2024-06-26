@@ -43,6 +43,10 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.appcompat.app.AppCompatDelegate
+import android.content.res.Configuration
+import androidx.appcompat.widget.SwitchCompat
+import java.util.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -106,6 +110,7 @@ class Edit_Profile_Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inicialização das views
         profileImageView = view.findViewById(R.id.profile_picture)
         usernameEditTextView = view.findViewById(R.id.username)
         emailEditTextView = view.findViewById(R.id.email)
@@ -159,13 +164,68 @@ class Edit_Profile_Fragment : Fragment() {
             uploadImageAndSaveProfile()
         }
 
+        // Configuração inicial do tema com base nas preferências ou no modo do sistema
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val toggleTheme = view.findViewById<SwitchCompat>(R.id.toggle_theme) // Inicialização do SwitchCompat
+        toggleTheme.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES
+
+        toggleTheme.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Mudar para o tema Dark
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                // Mudar para o tema Light
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            // Recreate the activity to apply theme changes
+            requireActivity().recreate()
+        }
+
+        // Switch para alternar o idioma
+        val toggleLanguage = view.findViewById<SwitchCompat>(R.id.toggle_language)
+
+// Verifica a preferência do usuário para o idioma e ajusta o switch de acordo
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+
+// Verifica se o usuário já escolheu um idioma
+        val isEnglishSelected = sharedPreferences.getBoolean("is_english_selected", Locale.getDefault() == Locale.ENGLISH)
+        toggleLanguage.isChecked = isEnglishSelected
+
+        toggleLanguage.setOnCheckedChangeListener { _, isChecked ->
+            // Lógica para alternar o idioma aqui
+            val newLocale = if (isChecked) {
+                Locale.ENGLISH // Altera para inglês
+            } else {
+                Locale("pt", "PT") // Altera para português
+            }
+
+            // Atualiza a configuração do aplicativo com o novo idioma
+            updateLocale(requireContext(), newLocale)
+
+            // Salva a preferência do usuário para o idioma
+            sharedPreferences.edit().putBoolean("is_english_selected", isChecked).apply()
+
+            // Reinicia a atividade (ou fragmento) para aplicar as alterações
+            requireActivity().recreate()
+        }
+
+        // Carregamento do perfil do usuário
         val userId = sharedPreferences.getInt("user_id", 0)
 
         lifecycleScope.launch {
             loadUserProfile(userId)
         }
     }
+
+    private fun updateLocale(context: Context, locale: Locale) {
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(locale)
+        context.createConfigurationContext(configuration)
+        context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+    }
+
+
+
 
     private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
         if (isVisible) {
