@@ -92,7 +92,7 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         arrowRight = view.findViewById(R.id.iconArrowRight)
 
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this, filterType)
+        gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this, filterType, otherUser)
         recyclerView.adapter = gameCoverAdapter
         titleText = view.findViewById(R.id.text_view)
 

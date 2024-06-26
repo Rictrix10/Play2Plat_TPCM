@@ -20,6 +20,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sign_up_prompt">New Here? <font color="#D10341">Sign Up</font></string>
     <string name="sign_in_prompt">Have an account? <font color="#D10341">Sign In</font></string>
+    <string name="playing">Playing</string>
     <string name="sign_in">Sign In</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -48,7 +49,11 @@
     <string name="profile">Profile</string>
     <string name="no_favorite_games">Looks like you still dont have any favorited games</string>
     <string name="no_collection_games">Looks like you still dont have any games in collection %1$s</string>
-
+    <string name="no_playing_games_user">You don\'t have any games in collection Playing</string>
+    <string name="no_favorite_games_user">You don\'t have any favorited games</string>
+    <string name="no_playing_games_other">This user doesn\'t have any games in collection Playing</string>
+    <string name="no_favorite_games_other">This user doesn\'t have any favorited games</string>
+    <string name="more_games_future">Mais jogos no futuro</string>
 
     <string name="action_games">Action Games:</string>
     <string name="free_games">Free Games:</string>

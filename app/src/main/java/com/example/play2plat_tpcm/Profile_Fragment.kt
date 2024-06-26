@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -53,8 +54,13 @@ class Profile_Fragment : Fragment() {
     private lateinit var editIconImageView: ImageView
     private lateinit var containerLayout: ConstraintLayout
     private lateinit var backIconImageView: ImageView
+    private lateinit var platformsTextView: TextView
+    private lateinit var gameSections: LinearLayout
+    private lateinit var gameSections2: LinearLayout
     private lateinit var logoutButton: Button
     private lateinit var deleteButton: Button
+    private lateinit var noConnectionImageView: ImageView
+    private lateinit var noConnectionTextView: TextView
     private var userId: Int = 0
     private var currentUserId: Int = 0
     private var user: User? = null
@@ -84,7 +90,26 @@ class Profile_Fragment : Fragment() {
         backIconImageView = view.findViewById(R.id.back_icon)
         logoutButton = view.findViewById(R.id.logout_button)
         deleteButton = view.findViewById(R.id.delete_button)
+        platformsTextView = view.findViewById(R.id.platforms)
+        gameSections = view.findViewById(R.id.game_sections)
+        gameSections2 = view.findViewById(R.id.game_sections2)
+        noConnectionImageView = view.findViewById(R.id.no_connection_image)
+        noConnectionTextView = view.findViewById(R.id.no_connection_text)
 
+        if(isNetworkAvailable()){
+            platformsTextView.visibility = View.VISIBLE
+            gameSections.visibility = View.VISIBLE
+            gameSections2.visibility = View.VISIBLE
+            noConnectionImageView.visibility = View.GONE
+            noConnectionTextView.visibility = View.GONE
+        }
+        else{
+            platformsTextView.visibility = View.GONE
+            gameSections.visibility = View.GONE
+            gameSections2.visibility = View.GONE
+            noConnectionImageView.visibility = View.VISIBLE
+            noConnectionTextView.visibility = View.VISIBLE
+        }
         // Configurar a visibilidade do ícone de edição
         if (userId == currentUserId) {
             editIconImageView.visibility = View.VISIBLE
@@ -117,6 +142,8 @@ class Profile_Fragment : Fragment() {
         } else {
             true
         }
+
+
 
         // Verifique se o estado do fragmento já foi salvo antes de realizar a transação
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
