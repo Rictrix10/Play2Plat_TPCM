@@ -19,6 +19,7 @@
     <string name="hello_blank_fragment">Olá fragmento em branco</string>
     <string name="sign_up_prompt">Novo aqui? <font color="#D10341">Registe-se</font></string>
     <string name="sign_in_prompt">Tens conta? <font color="#D10341">Faz login</font></string>
+    <string name="playing">A jogar</string>
 
     <string name="sign_in">Login</string>
     <string name="username">Nome do utilizador</string>
@@ -47,6 +48,11 @@
     <string name="profile">Perfil</string>
     <string name="no_favorite_games">Parece que ainda não tens nenhum jogo favorito</string>
     <string name="no_collection_games">Parece que ainda não tens nenhum jogo na coleção %1$s</string>
+    <string name="no_playing_games_user">Não tens nenhum jogo na coleção A jogar</string>
+    <string name="no_favorite_games_user">Não tens nenhum jogo favorito</string>
+    <string name="no_playing_games_other">Este utilizador não tem nenhum jogo na coleção A jogar</string>
+    <string name="no_favorite_games_other">Este utilizador não tem nenhum jogo favorito</string>
+    <string name="more_games_future">Mais jogos no futuro</string>
 
     <string name="action_games">Jogos de Ação:</string>
     <string name="free_games">Jogos Grátis:</string>
