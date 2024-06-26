@@ -109,6 +109,9 @@
     <string name="confirm_message">Do you really want to log out?</string>
     <string name="confirm_yes">Yes</string>
     <string name="confirm_no">No</string>
+    <string name="error_delete_account">Error deleting account, check your connection</string>
+    <string name="deleted_user">Deleted user</string>
+    <string name="replying">Replying to </string>
 
 
 

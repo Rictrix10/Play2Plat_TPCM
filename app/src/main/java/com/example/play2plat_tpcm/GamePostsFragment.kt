@@ -733,14 +733,14 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
     }
 
-    override fun onReplyClick(postId: Int, username: String) {
+    override fun onReplyClick(postId: Int, username: String?) {
         if(ReplyingTo.visibility == View.GONE){
             ReplyingTo.visibility = View.VISIBLE
             iconCrossView.visibility = View.VISIBLE
 
             more_options_layout.visibility = View.GONE
             isAnswerPostId = postId
-            ReplyingTo.text = SpannableStringBuilder().append("Replying to ").append(username)
+            ReplyingTo.text = SpannableStringBuilder().append(context?.getString(R.string.replying)).append(" ").append(username)
         }
         else{
             ReplyingTo.visibility = View.GONE

@@ -155,7 +155,7 @@ class InteractFragment : Fragment(),
         // Implement your code here to handle profile picture click
     }
 
-    override fun onReplyClick(postId: Int, username: String) {
+    override fun onReplyClick(postId: Int, username: String?) {
         // Implement your code here to handle reply click
     }
 

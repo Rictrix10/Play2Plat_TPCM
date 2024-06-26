@@ -32,7 +32,7 @@ class GamePostsAdapter(
     }
 
     interface OnReplyClickListener {
-        fun onReplyClick(postId: Int, username: String)
+        fun onReplyClick(postId: Int, username: String?)
     }
 
     interface onMoreOptionsClickListener {
@@ -59,7 +59,7 @@ class GamePostsAdapter(
         val post = posts[position]
         val context = holder.itemView.context
         if (post.user.username == null || post.user.isDeleted == true ){
-            holder.username.text = "Deleted User"
+            holder.username.text = context.getString(R.string.deleted_user)
         }
         else{
             holder.username.text = post.user.username
@@ -111,7 +111,13 @@ class GamePostsAdapter(
         } else {
             holder.replyIcon.visibility = View.VISIBLE
             holder.replyIcon.setOnClickListener {
-                onReplyClickListener.onReplyClick(post.id, post.user.username!!)
+                post.user.username?.let { username ->
+                    onReplyClickListener.onReplyClick(post.id, username)
+                } ?: run {
+                    // Lidar com o caso onde username é nulo
+                    Log.e("GamePostsAdapter", "Username is null for post id: ${post.id}")
+                    onReplyClickListener.onReplyClick(post.id, context.getString(R.string.deleted_user))
+                }
             }
 
             holder.moreOptions.setOnClickListener {
