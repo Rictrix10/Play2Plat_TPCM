@@ -45,11 +45,8 @@ import java.util.Date
 import java.util.Locale
 import androidx.appcompat.app.AppCompatDelegate
 import android.content.res.Configuration
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import androidx.appcompat.widget.SwitchCompat
+import java.util.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -184,14 +181,49 @@ class Edit_Profile_Fragment : Fragment() {
             requireActivity().recreate()
         }
 
-        // Carregamento do perfil do usuário
+        // Switch para alternar o idioma
+        val toggleLanguage = view.findViewById<SwitchCompat>(R.id.toggle_language)
+
+// Verifica a preferência do usuário para o idioma e ajusta o switch de acordo
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+
+// Verifica se o usuário já escolheu um idioma
+        val isEnglishSelected = sharedPreferences.getBoolean("is_english_selected", Locale.getDefault() == Locale.ENGLISH)
+        toggleLanguage.isChecked = isEnglishSelected
+
+        toggleLanguage.setOnCheckedChangeListener { _, isChecked ->
+            // Lógica para alternar o idioma aqui
+            val newLocale = if (isChecked) {
+                Locale.ENGLISH // Altera para inglês
+            } else {
+                Locale("pt", "PT") // Altera para português
+            }
+
+            // Atualiza a configuração do aplicativo com o novo idioma
+            updateLocale(requireContext(), newLocale)
+
+            // Salva a preferência do usuário para o idioma
+            sharedPreferences.edit().putBoolean("is_english_selected", isChecked).apply()
+
+            // Reinicia a atividade (ou fragmento) para aplicar as alterações
+            requireActivity().recreate()
+        }
+
+        // Carregamento do perfil do usuário
         val userId = sharedPreferences.getInt("user_id", 0)
 
         lifecycleScope.launch {
             loadUserProfile(userId)
         }
     }
+
+    private fun updateLocale(context: Context, locale: Locale) {
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(locale)
+        context.createConfigurationContext(configuration)
+        context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+    }
+
 
 
 
