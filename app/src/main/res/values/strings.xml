@@ -209,5 +209,8 @@
     <string name="no_posts_on_game">No one has posted on the game yet. Be the first, share your experience</string>
     <string name="see_more_posts">See more posts</string>
 
+    <string name="switch_theme">Switch Theme</string>
+
+
 
 </resources>

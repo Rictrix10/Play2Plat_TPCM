@@ -43,6 +43,13 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.appcompat.app.AppCompatDelegate
+import android.content.res.Configuration
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import androidx.appcompat.widget.SwitchCompat
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -106,6 +113,7 @@ class Edit_Profile_Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Inicialização das views
         profileImageView = view.findViewById(R.id.profile_picture)
         usernameEditTextView = view.findViewById(R.id.username)
         emailEditTextView = view.findViewById(R.id.email)
@@ -159,6 +167,24 @@ class Edit_Profile_Fragment : Fragment() {
             uploadImageAndSaveProfile()
         }
 
+        // Configuração inicial do tema com base nas preferências ou no modo do sistema
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val toggleTheme = view.findViewById<SwitchCompat>(R.id.toggle_theme) // Inicialização do SwitchCompat
+        toggleTheme.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES
+
+        toggleTheme.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Mudar para o tema Dark
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                // Mudar para o tema Light
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            // Recreate the activity to apply theme changes
+            requireActivity().recreate()
+        }
+
+        // Carregamento do perfil do usuário
         val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", 0)
 
@@ -166,6 +192,8 @@ class Edit_Profile_Fragment : Fragment() {
             loadUserProfile(userId)
         }
     }
+
+
 
     private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
         if (isVisible) {
