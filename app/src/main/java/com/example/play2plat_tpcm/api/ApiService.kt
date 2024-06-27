@@ -234,7 +234,7 @@ interface ApiService {
     fun deleteComment(@Path("id") id: Int): Call<Void>
 
     @PATCH("user-game-comments/{id}")
-    fun updateComment(@Path("id") id: Int, @Body comment: Comment): Call<Comment>
+    fun updateComment(@Path("id") id: Int, @Body comment: PatchComment): Call<PatchComment>
 
     @GET("user-game-comment/{id}")
     fun getCommentById(@Path("id") id: Int): Call<Comment>

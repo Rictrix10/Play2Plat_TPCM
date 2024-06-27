@@ -233,6 +233,9 @@
 
     <string name="edit">Editar</string>
     <string name="apagar">Apagar</string>
+    <string name="editing">Editar</string>
+    <string name="type_here">Escreva aqui</string>
+    <string name="type_fatality_confirm">Escreva \'Fatality\' para confirmar a eliminação</string>
 
 
     <string name="delete_comment">Você realmente deseja apagar este comentário?</string>

@@ -39,6 +39,7 @@ import com.example.play2plat_tpcm.api.GameCommentsResponse
 import com.example.play2plat_tpcm.api.GeoNamesResponse
 import com.example.play2plat_tpcm.api.GeoNamesServiceBuilder.service
 import com.example.play2plat_tpcm.api.LocationInfo
+import com.example.play2plat_tpcm.api.PatchComment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -67,6 +68,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private lateinit var deleteButton: Button
     private lateinit var container_layout: ConstraintLayout
     private lateinit var more_options_layout: ConstraintLayout
+    private lateinit var commentsTextView: TextView
 
     private var gameId: Int = 0
     private var gameName: String? = null
@@ -140,6 +142,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         editButton = view.findViewById(R.id.option_edit)
         deleteButton = view.findViewById(R.id.option_delete)
         iconCrossView = view.findViewById(R.id.icon_cross)
+        commentsTextView = view.findViewById(R.id.comments)
+
 
         val colors = intArrayOf(primaryColor, secondaryColor)
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
@@ -175,8 +179,14 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
         if (currentUserType == 1) {
             seeMapButton.visibility = View.VISIBLE
+            val params = commentsTextView.layoutParams as ConstraintLayout.LayoutParams
+            params.topMargin = 28.dpToPx() // Defina a margem superior desejada
+            commentsTextView.layoutParams = params
         } else {
             seeMapButton.visibility = View.GONE
+            val params = commentsTextView.layoutParams as ConstraintLayout.LayoutParams
+            params.topMargin = 0 // Remove a margem superior
+            commentsTextView.layoutParams = params
         }
 
         // Chama a API para obter os posts do jogo
@@ -245,6 +255,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
      */
+    private fun Int.dpToPx(): Int {
+        val density = resources.displayMetrics.density
+        return (this * density).toInt()
+    }
 
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -305,8 +319,10 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                         }
                     } else {
                         Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")
+                        recyclerView.adapter = GamePostsAdapter(emptyList(), this@GamePostsFragment, this@GamePostsFragment, this@GamePostsFragment, false)
                     }
                 } else {
+                    recyclerView.adapter = GamePostsAdapter(emptyList(), this@GamePostsFragment, this@GamePostsFragment, this@GamePostsFragment, false)
                     Log.e("GamePostsFragment", "Erro na resposta: ${response.errorBody()}")
                 }
             }
@@ -582,10 +598,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     private fun patchComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double?, longitude: Double?, locationInfo: LocationInfo) {
         val locationName = "${locationInfo.countryName}, ${locationInfo.adminName2}"
-        val newComment = Comment(
+        val newComment = PatchComment(
             comments = comments,
-            image = imageUrl,
-            isAnswer = if (isAnswerPostId != 0) isAnswerPostId else null,
             userId = userId,
             gameId = gameId,
             latitude = latitude,
@@ -604,8 +618,8 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
         }
 
         ApiManager.apiService.updateComment(selectedPostId, newComment)
-            .enqueue(object : Callback<Comment> {
-                override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+            .enqueue(object : Callback<PatchComment> {
+                override fun onResponse(call: Call<PatchComment>, response: Response<PatchComment>) {
                     if (response.isSuccessful) {
                         val patchComment = response.body()
                         Toast.makeText(
@@ -634,7 +648,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     }
                 }
 
-                override fun onFailure(call: Call<Comment>, t: Throwable) {
+                override fun onFailure(call: Call<PatchComment>, t: Throwable) {
                     Log.e("AddNewComment", "Erro na requisição: ${t.message}")
                 }
             })
@@ -755,14 +769,32 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
     override fun onReplyClick(postId: Int, username: String?) {
-        if(ReplyingTo.visibility == View.GONE){
+        val sharedPreferencesEdits = requireActivity().getSharedPreferences("Editions", Context.MODE_PRIVATE)
+        if(ReplyingTo.visibility == View.GONE ){
             ReplyingTo.visibility = View.VISIBLE
             iconCrossView.visibility = View.VISIBLE
+
 
             more_options_layout.visibility = View.GONE
             isAnswerPostId = postId
             ReplyingTo.text = SpannableStringBuilder().append(context?.getString(R.string.replying)).append(" ").append(username)
         }
+
+        else if(sharedPreferencesEdits.getInt("edited", 0) == 0){
+            ReplyingTo.visibility = View.VISIBLE
+            iconCrossView.visibility = View.VISIBLE
+
+
+            more_options_layout.visibility = View.GONE
+            isAnswerPostId = postId
+            commentEditTextView.text.clear()
+            ReplyingTo.text = SpannableStringBuilder().append(context?.getString(R.string.replying)).append(" ").append(username)
+            val editor = sharedPreferencesEdits.edit()
+            editor.putInt("edited", 1)
+            editor.apply()
+        }
+
+
         else{
             ReplyingTo.visibility = View.GONE
             iconCrossView.visibility = View.GONE
@@ -806,7 +838,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                 more_options_layout.visibility = View.GONE
                 ReplyingTo.visibility = View.VISIBLE
                 iconCrossView.visibility = View.VISIBLE
-                ReplyingTo.text = SpannableStringBuilder().append("Editing ")
+
+                imageImageView.setOnClickListener(null)
+
+                val editing = getString(R.string.editing)
+                ReplyingTo.text = SpannableStringBuilder().append(editing).append(" ")
                 getCommentDetails(postId)
                 sendImageView.setOnClickListener(null)
 
@@ -921,6 +957,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                     // Redirecionar para a tela de login após deletar a conta
                     more_options_layout.visibility = View.GONE
                     getGamePosts(gameId, userId)
+
                 } else {
                     Toast.makeText(
                         context,
@@ -936,6 +973,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
             }
         })
     }
+
 
     private fun deleteCommentWithConfirmation(userId: Int) {
         val inflater = LayoutInflater.from(requireContext())
