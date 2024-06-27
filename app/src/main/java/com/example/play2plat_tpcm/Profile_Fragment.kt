@@ -349,7 +349,7 @@ class Profile_Fragment : Fragment() {
                         val canEditPlatforms = userId == currentUserId
                         if (platforms != null) {
                             val platformsFragment = Platforms_List_Fragment.newInstance(platforms, canEditPlatforms, true, currentUserId, false)
-                            childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commit()
+                            childFragmentManager.beginTransaction().replace(R.id.platforms_fragment, platformsFragment).commitAllowingStateLoss()
                         }
                     } else {
                         Log.e("Profile_Fragment", "API response did not return user data.")
@@ -365,6 +365,7 @@ class Profile_Fragment : Fragment() {
             }
         })
     }
+
 
 
 
