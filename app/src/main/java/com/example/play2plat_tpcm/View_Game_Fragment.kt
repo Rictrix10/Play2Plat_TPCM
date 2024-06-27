@@ -141,7 +141,16 @@ class View_Game_Fragment : Fragment() {
         loadUserGameState()
 
         collectionAccordion.setOnClickListener {
-            toggleListVisibility(collectionList, collectionTitle)
+            if(isNetworkAvailable()){
+                toggleListVisibility(collectionList, collectionTitle)
+            }
+            else{
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.no_net_collections),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         val gameId = arguments?.getInt("gameId") ?: 6

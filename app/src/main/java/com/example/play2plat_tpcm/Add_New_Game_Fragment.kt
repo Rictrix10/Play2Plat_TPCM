@@ -5,6 +5,8 @@ import android.animation.AnimatorInflater
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -162,211 +164,334 @@ class Add_New_Game_Fragment : Fragment() {
         loadPegiInfo(view.context)
 
         saveButton.setOnClickListener {
-            val gameTitle = gameTitleEditText.text.toString()
-            val description = descriptionEditText.text.toString()
-            val selectedCompanyText = companyTitle.text.toString()
-            val selectedSequenceText = sequenceTitle.text.toString()
-            val selectedGenreTexts = genreTitle.text.toString().split(", ")
-            val selectedPlatformTexts = platformTitle.text.toString().split(", ")
-            val selectedPegiInfo = pegiAdapter.getSelectedPosition().takeIf { it != -1 }?.let {
-                val pegiInfo = pegiInfoValues[it]
-                val pegiValue = pegiInfo.substringAfter(":").trim()
-                pegiValue.toIntOrNull() ?: 0
-            } ?: 0
-            val isFree = isFreeCheckBox.isChecked
-            var selectedCompanyId: Int? = null
-            var selectedSequenceId: Int? = null
-            val selectedGenreIds = mutableListOf<Int>()
-            val selectedPlatformIds = mutableListOf<Int>()
+            if (isNetworkAvailable()) {
+                val gameTitle = gameTitleEditText.text.toString()
+                val description = descriptionEditText.text.toString()
+                val selectedCompanyText = companyTitle.text.toString()
+                val selectedSequenceText = sequenceTitle.text.toString()
+                val selectedGenreTexts = genreTitle.text.toString().split(", ")
+                val selectedPlatformTexts = platformTitle.text.toString().split(", ")
+                val selectedPegiInfo = pegiAdapter.getSelectedPosition().takeIf { it != -1 }?.let {
+                    val pegiInfo = pegiInfoValues[it]
+                    val pegiValue = pegiInfo.substringAfter(":").trim()
+                    pegiValue.toIntOrNull() ?: 0
+                } ?: 0
+                val isFree = isFreeCheckBox.isChecked
+                var selectedCompanyId: Int? = null
+                var selectedSequenceId: Int? = null
+                val selectedGenreIds = mutableListOf<Int>()
+                val selectedPlatformIds = mutableListOf<Int>()
 
-            for (company in companies) {
-                if (company.name == selectedCompanyText) {
-                    selectedCompanyId = company.id
-                    break
+                for (company in companies) {
+                    if (company.name == selectedCompanyText) {
+                        selectedCompanyId = company.id
+                        break
+                    }
                 }
-            }
 
-            for (sequence in sequences) {
-                if (sequence.name == selectedSequenceText) {
-                    selectedSequenceId = sequence.id
-                    break
+                for (sequence in sequences) {
+                    if (sequence.name == selectedSequenceText) {
+                        selectedSequenceId = sequence.id
+                        break
+                    }
                 }
-            }
 
-            for (genre in genres) {
-                if (selectedGenreTexts.contains(genre.name)) {
-                    selectedGenreIds.add(genre.id)
+                for (genre in genres) {
+                    if (selectedGenreTexts.contains(genre.name)) {
+                        selectedGenreIds.add(genre.id)
+                    }
                 }
-            }
 
-            for (platform in platforms) {
-                if (selectedPlatformTexts.contains(platform.name)) {
-                    selectedPlatformIds.add(platform.id)
+                for (platform in platforms) {
+                    if (selectedPlatformTexts.contains(platform.name)) {
+                        selectedPlatformIds.add(platform.id)
+                    }
                 }
-            }
 
 
-            if (gameTitle.isEmpty()) {
-                Toast.makeText(requireContext(), getString(R.string.game_name_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (gameTitle.isEmpty()) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.game_name_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (description.length <= 6) {
-                Toast.makeText(requireContext(), getString(R.string.description_too_short), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (description.length <= 6) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.description_too_short),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (selectedGenreIds.isEmpty()) {
-                Toast.makeText(requireContext(), getString(R.string.genre_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedGenreIds.isEmpty()) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.genre_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (selectedPlatformIds.isEmpty()) {
-                Toast.makeText(requireContext(), getString(R.string.platform_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedPlatformIds.isEmpty()) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.platform_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (selectedCompanyId == null) {
-                Toast.makeText(requireContext(), getString(R.string.company_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedCompanyId == null) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.company_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (selectedPegiInfo == 0) {
-                Toast.makeText(requireContext(), getString(R.string.pegi_info_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedPegiInfo == 0) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.pegi_info_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (selectedImageUri == null) {
-                Toast.makeText(requireContext(), getString(R.string.image_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedImageUri == null) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.image_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
 
-            val context = requireContext()
+                val context = requireContext()
 
-            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
-            val file = bitmapToFile(context, bitmap)
+                val bitmap =
+                    MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
+                val file = bitmapToFile(context, bitmap)
 
-            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+                val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-            val call = ApiManager.apiService.uploadImage(imagePart)
-            call.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                    if (response.isSuccessful) {
-                        val imageUrl = response.body()?.string()
-                        imageUrl?.let {
-                            val pattern = Regex("\"url\":\"(\\S+)\"")
-                            val matchResult = pattern.find(it)
+                val call = ApiManager.apiService.uploadImage(imagePart)
+                call.enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        if (response.isSuccessful) {
+                            val imageUrl = response.body()?.string()
+                            imageUrl?.let {
+                                val pattern = Regex("\"url\":\"(\\S+)\"")
+                                val matchResult = pattern.find(it)
 
-                            matchResult?.let { result ->
-                                val coverImageUrl = result.groupValues[1]
+                                matchResult?.let { result ->
+                                    val coverImageUrl = result.groupValues[1]
 
-                                val newGame = Game(
-                                    id = null,
-                                    name = gameTitle,
-                                    description = description,
-                                    isFree = isFree,
-                                    releaseDate = "2024-04-24T00:00:00Z",
-                                    pegiInfo = selectedPegiInfo,
-                                    coverImage = coverImageUrl,
-                                    sequenceId = selectedSequenceId,
-                                    companyId = selectedCompanyId,
-                                )
+                                    val newGame = Game(
+                                        id = null,
+                                        name = gameTitle,
+                                        description = description,
+                                        isFree = isFree,
+                                        releaseDate = "2024-04-24T00:00:00Z",
+                                        pegiInfo = selectedPegiInfo,
+                                        coverImage = coverImageUrl,
+                                        sequenceId = selectedSequenceId,
+                                        companyId = selectedCompanyId,
+                                    )
 
-                                ApiManager.apiService.createGame(newGame)
-                                    .enqueue(object : Callback<Game> {
-                                        override fun onResponse(call: Call<Game>, response: Response<Game>) {
-                                            if (response.isSuccessful) {
-                                                val createdGame = response.body()
-                                                createdGame?.let { game ->
-                                                    Log.d("AddNewGame", "Jogo criado com sucesso: $game")
+                                    ApiManager.apiService.createGame(newGame)
+                                        .enqueue(object : Callback<Game> {
+                                            override fun onResponse(
+                                                call: Call<Game>,
+                                                response: Response<Game>
+                                            ) {
+                                                if (response.isSuccessful) {
+                                                    val createdGame = response.body()
+                                                    createdGame?.let { game ->
+                                                        Log.d(
+                                                            "AddNewGame",
+                                                            "Jogo criado com sucesso: $game"
+                                                        )
 
-                                                    // Associação de gêneros
-                                                    for (genreId in selectedGenreIds) {
-                                                        val gameToGenreAssociation = GameGenre(gameId = game.id, genreId = genreId)
-                                                        ApiManager.apiService.addGenresToGame(gameToGenreAssociation)
-                                                            .enqueue(object : Callback<GameGenre> {
-                                                                override fun onResponse(call: Call<GameGenre>, response: Response<GameGenre>) {
-                                                                    if (response.isSuccessful) {
-                                                                        Log.d("AddNewGame", "Gênero associado com sucesso: $gameToGenreAssociation")
-                                                                    } else {
-                                                                        Log.e("AddNewGame", "Erro ao associar gênero: ${response.message()}")
+                                                        // Associação de gêneros
+                                                        for (genreId in selectedGenreIds) {
+                                                            val gameToGenreAssociation = GameGenre(
+                                                                gameId = game.id,
+                                                                genreId = genreId
+                                                            )
+                                                            ApiManager.apiService.addGenresToGame(
+                                                                gameToGenreAssociation
+                                                            )
+                                                                .enqueue(object :
+                                                                    Callback<GameGenre> {
+                                                                    override fun onResponse(
+                                                                        call: Call<GameGenre>,
+                                                                        response: Response<GameGenre>
+                                                                    ) {
+                                                                        if (response.isSuccessful) {
+                                                                            Log.d(
+                                                                                "AddNewGame",
+                                                                                "Gênero associado com sucesso: $gameToGenreAssociation"
+                                                                            )
+                                                                        } else {
+                                                                            Log.e(
+                                                                                "AddNewGame",
+                                                                                "Erro ao associar gênero: ${response.message()}"
+                                                                            )
+                                                                        }
                                                                     }
-                                                                }
 
-                                                                override fun onFailure(call: Call<GameGenre>, t: Throwable) {
-                                                                    Log.e("AddNewGame", "Falha na requisição de associação de gênero: ${t.message}")
-                                                                }
-                                                            })
-                                                    }
-
-                                                    // Associação de plataformas
-                                                    for (platformId in selectedPlatformIds) {
-                                                        val gameToPlatformAssociation = GamePlatform(gameId = game.id, platformId = platformId)
-                                                        ApiManager.apiService.addPlatformsToGame(gameToPlatformAssociation)
-                                                            .enqueue(object : Callback<GamePlatform> {
-                                                                override fun onResponse(call: Call<GamePlatform>, response: Response<GamePlatform>) {
-                                                                    if (response.isSuccessful) {
-                                                                        Log.d("AddNewGame", "Plataforma associada com sucesso: $gameToPlatformAssociation")
-                                                                    } else {
-                                                                        Log.e("AddNewGame", "Erro ao associar plataforma: ${response.message()}")
+                                                                    override fun onFailure(
+                                                                        call: Call<GameGenre>,
+                                                                        t: Throwable
+                                                                    ) {
+                                                                        Log.e(
+                                                                            "AddNewGame",
+                                                                            "Falha na requisição de associação de gênero: ${t.message}"
+                                                                        )
                                                                     }
-                                                                }
+                                                                })
+                                                        }
 
-                                                                override fun onFailure(call: Call<GamePlatform>, t: Throwable) {
-                                                                    Log.e("AddNewGame", "Falha na requisição de associação de plataforma: ${t.message}")
-                                                                }
-                                                            })
+                                                        // Associação de plataformas
+                                                        for (platformId in selectedPlatformIds) {
+                                                            val gameToPlatformAssociation =
+                                                                GamePlatform(
+                                                                    gameId = game.id,
+                                                                    platformId = platformId
+                                                                )
+                                                            ApiManager.apiService.addPlatformsToGame(
+                                                                gameToPlatformAssociation
+                                                            )
+                                                                .enqueue(object :
+                                                                    Callback<GamePlatform> {
+                                                                    override fun onResponse(
+                                                                        call: Call<GamePlatform>,
+                                                                        response: Response<GamePlatform>
+                                                                    ) {
+                                                                        if (response.isSuccessful) {
+                                                                            Log.d(
+                                                                                "AddNewGame",
+                                                                                "Plataforma associada com sucesso: $gameToPlatformAssociation"
+                                                                            )
+                                                                        } else {
+                                                                            Log.e(
+                                                                                "AddNewGame",
+                                                                                "Erro ao associar plataforma: ${response.message()}"
+                                                                            )
+                                                                        }
+                                                                    }
+
+                                                                    override fun onFailure(
+                                                                        call: Call<GamePlatform>,
+                                                                        t: Throwable
+                                                                    ) {
+                                                                        Log.e(
+                                                                            "AddNewGame",
+                                                                            "Falha na requisição de associação de plataforma: ${t.message}"
+                                                                        )
+                                                                    }
+                                                                })
+                                                        }
+
+                                                        // Verifica se o estado não foi salvo antes de realizar a transação
+                                                        if (!requireActivity().supportFragmentManager.isStateSaved) {
+                                                            // Redirecionar para View_Game_Fragment
+                                                            val platforms = arrayListOf<String>()
+                                                            Toast.makeText(
+                                                                requireContext(),
+                                                                getString(R.string.game_added_success),
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                            val viewGameFragment =
+                                                                View_Game_Fragment.newInstance(
+                                                                    game.id!!,
+                                                                    platforms
+                                                                )
+                                                            gameTitleEditText.text = null
+                                                            descriptionEditText.text = null
+                                                            isFreeCheckBox.isChecked = false
+                                                            navigationViewModel.addToStack(
+                                                                viewGameFragment
+                                                            )
+                                                            requireActivity().supportFragmentManager.beginTransaction()
+                                                                .replace(
+                                                                    R.id.layout,
+                                                                    viewGameFragment
+                                                                )
+                                                                .addToBackStack(null)
+                                                                .commit()
+                                                        } else {
+                                                            // Lidar com o caso onde o estado já foi salvo
+                                                            Toast.makeText(
+                                                                requireContext(),
+                                                                getString(R.string.activity_state_saved),
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+
+                                                        }
+
+                                                    } ?: run {
+                                                        Log.e(
+                                                            "AddNewGame",
+                                                            "Erro: Corpo da resposta nulo."
+                                                        )
                                                     }
-
-                                                    // Verifica se o estado não foi salvo antes de realizar a transação
-                                                    if (!requireActivity().supportFragmentManager.isStateSaved) {
-                                                        // Redirecionar para View_Game_Fragment
-                                                        val platforms = arrayListOf<String>()
-                                                        val viewGameFragment = View_Game_Fragment.newInstance(game.id!!, platforms)
-                                                        navigationViewModel.addToStack(viewGameFragment)
-                                                        requireActivity().supportFragmentManager.beginTransaction()
-                                                            .replace(R.id.layout, viewGameFragment)
-                                                            .addToBackStack(null)
-                                                            .commit()
-                                                    } else {
-                                                        // Lidar com o caso onde o estado já foi salvo
-                                                        Toast.makeText(requireContext(), getString(R.string.activity_state_saved), Toast.LENGTH_SHORT).show()
-
-                                                    }
-
-                                                } ?: run {
-                                                    Log.e("AddNewGame", "Erro: Corpo da resposta nulo.")
+                                                } else {
+                                                    Log.e(
+                                                        "AddNewGame",
+                                                        "Erro ao criar jogo: ${response.message()}"
+                                                    )
                                                 }
-                                            } else {
-                                                Log.e("AddNewGame", "Erro ao criar jogo: ${response.message()}")
                                             }
-                                        }
 
-                                        override fun onFailure(call: Call<Game>, t: Throwable) {
-                                            Log.e("AddNewGame", "Falha na requisição: ${t.message}")
-                                        }
-                                    })
+                                            override fun onFailure(call: Call<Game>, t: Throwable) {
+                                                Log.e(
+                                                    "AddNewGame",
+                                                    "Falha na requisição: ${t.message}"
+                                                )
+                                            }
+                                        })
+                                }
                             }
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.error_upload_image),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    } else {
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.error_upload_image),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }
+                })
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.error_upload_image),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            })
+
+            }
+            else{
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.error_add_game),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
         }
 
 
@@ -449,7 +574,6 @@ class Add_New_Game_Fragment : Fragment() {
                     }
                 } else {
                     Log.e("AddNewGame", "Erro ao carregar gêneros: ${response.message()}")
-                    Toast.makeText(requireContext(), getString(R.string.image_shorter), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -466,7 +590,12 @@ class Add_New_Game_Fragment : Fragment() {
         adjustListViewHeight(pegiList)
     }
 
-
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 
     private fun toggleListVisibility(listView: ListView, titleView: TextView, iconResource: Int) {
         val isExpanded = listView.visibility == View.VISIBLE
