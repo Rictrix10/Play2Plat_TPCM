@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.activity.viewModels
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var isAdmin: IsAdmin
@@ -23,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private val SELECTED_TAB_ID_KEY = "selected_tab_id"
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        applyLocaleFromPreferences()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -240,4 +243,33 @@ class MainActivity : AppCompatActivity() {
         val adminLayout = findViewById<View>(R.id.new_game_lay)
         adminLayout.visibility = if (isAdmin.isAdmin()) View.VISIBLE else View.GONE
     }
+
+    private fun applyLocaleFromPreferences() {
+        val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val localeTag = sharedPreferences.getString("selected_locale", null)
+        Log.d("Idioma Recebido", "$localeTag")
+
+        if (localeTag == null || localeTag == "auto") {
+            val systemLocale = resources.configuration.locale
+            updateLocale(this, systemLocale)
+        } else if (localeTag == "en") {
+            updateLocale(this, Locale.ENGLISH)
+        } else {
+            val locale = Locale.forLanguageTag(localeTag)
+            updateLocale(this, locale)
+        }
+    }
+
+    private fun updateLocale(context: Context, locale: Locale) {
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(locale)
+        val newContext = context.createConfigurationContext(configuration)
+        context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+        Locale.setDefault(locale)
+
+        // Exemplo de uso para verificar se a mudança foi aplicada corretamente
+        val message = newContext.getString(R.string.account_deleted_success)
+        Log.d("Texto", message)
+    }
 }
+

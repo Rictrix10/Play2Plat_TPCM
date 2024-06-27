@@ -46,16 +46,16 @@
     <string name="save">Save</string>
 
     <string name="view_games">View games</string>
-    <string name="favorites">Favourites</string>
+    <string name="favorites">Favorites</string>
     <string name="games">Games</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
-    <string name="no_favorite_games">Looks like you still dont have any favourited games</string>
+    <string name="no_favorite_games">Looks like you still dont have any favorited games</string>
     <string name="no_collection_games">Looks like you still dont have any games in collection %1$s</string>
     <string name="no_playing_games_user">You don\'t have any games in collection Playing</string>
-    <string name="no_favorite_games_user">You don\'t have any favourited games</string>
+    <string name="no_favorite_games_user">You don\'t have any favorited games</string>
     <string name="no_playing_games_other">This user doesn\'t have any games in collection Playing</string>
-    <string name="no_favorite_games_other">This user doesn\'t have any favourited games</string>
+    <string name="no_favorite_games_other">This user doesn\'t have any favorited games</string>
     <string name="more_games_future">More games in the future</string>
     <string name="paramaters_games">%1$s Games</string>
     <string name="paramaters_games2">%1$s Games</string>
@@ -105,7 +105,7 @@
     <string name="no_games_found">No Games found</string>
     <string name="from">From</string>
     <string name="recent_games">Recent Games</string>
-    <string name="favourite_games">Favourite Games</string>
+    <string name="favourite_games">Favorite Games</string>
     <string name="playing_games">Playing Games</string>
     <string name="founded_games">Founded Games</string>
     <string name="error_upload_image">Error uploading image, choose another</string>
@@ -118,6 +118,10 @@
     <string name="account_deleted">Account successfully deleted</string>
 
     <string name="remember_me">Remember Me</string>
+    <string name="customize">Appearence</string>
+
+    <string name="app_theme">Theme:</string>
+    <string name="app_language">Language:</string>
 
 
     <string name="confirm_title">Confirmation</string>
@@ -138,6 +142,13 @@
 
     <string name="search_games_title">Search Games</string>
 
+    <string name="light_mode">Light</string>
+    <string name="dark_mode">Dark</string>
+    <string name="system_default_mode">Auto</string>
+
+    <string name="english_language">English</string>
+    <string name="portuguese_language">Portuguese</string>
+    <string name="system_default_language">Auto</string>
 
 
     <string name="reset">Reset</string>
@@ -222,7 +233,7 @@
 
     <string name="image_shorter">Insert a smaller image</string>
     <string name="need_online_edit_game">You need to be online to edit a game</string>
-    <string name="error_favoriting">Error favouriting, please check your internet connection</string>
+    <string name="error_favoriting">Error favoriting, please check your internet connection</string>
     <string name="need_online_delete_account">You need to be online to delete your account</string>
     <string name="need_online_delete_game">You need to be online to delete a game</string>
     <string name="need_online_edit_platforms">You need to be online to edit platforms</string>
