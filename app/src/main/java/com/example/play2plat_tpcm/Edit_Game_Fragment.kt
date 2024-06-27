@@ -140,7 +140,12 @@ class Edit_Game_Fragment : Fragment() {
         }
 
         backButton.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            if(isNetworkAvailable()){
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+            else{
+                redirectToNoConnectionFragment()
+            }
         }
 
 
@@ -469,6 +474,15 @@ class Edit_Game_Fragment : Fragment() {
         return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+    private fun redirectToNoConnectionFragment() {
+        val noConnectionFragment= NoConnectionFragment()
+        navigationViewModel.addToStack(noConnectionFragment)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, noConnectionFragment)
+            .addToBackStack(null)
+            .commit()
+
+    }
 
     private fun populateFields() {
         if(gameInfo != null){

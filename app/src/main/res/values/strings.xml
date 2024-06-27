@@ -53,7 +53,7 @@
     <string name="no_favorite_games_user">You don\'t have any favourited games</string>
     <string name="no_playing_games_other">This user doesn\'t have any games in collection Playing</string>
     <string name="no_favorite_games_other">This user doesn\'t have any favourited games</string>
-    <string name="more_games_future">Mais jogos no futuro</string>
+    <string name="more_games_future">More games in the future</string>
     <string name="paramaters_games">%1$s Games</string>
     <string name="paramaters_games2">%1$s Games</string>
 
@@ -232,6 +232,8 @@
     <string name="edit_game_fail">Error editing game</string>
     <string name="delete_game_fail">Error deleting game</string>
     <string name="game_edited_success">Game edited successfully</string>
+    <string name="game_added_success">Game added successfully</string>
+    <string name="no_net_collections">You need to be online to change collection</string>
 
     <string name="edit">Edit</string>
     <string name="apagar">Delete</string>
@@ -245,6 +247,8 @@
     <string name="switch_theme">Switch Theme</string>
 
     <string name="laguage">Defined Language:English</string>
+    <string name="passwords_not_empty">Password fields must not be empty.</string>
+    <string name="passwords_do_not_match">The passwords don´t match </string>
 
 
 

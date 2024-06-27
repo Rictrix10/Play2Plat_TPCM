@@ -157,7 +157,7 @@
     <string name="edit_game">Editar Jogo</string>
     <string name="click_marker_to_see_comment">Clique num marcador para ver o comentário</string>
 
-    <string name="profile_updated_successfully">Perfil atualizado com sucesso!</string>
+    <string name="profile_updated_successfully">Perfil editado com sucesso!</string>
 
     <string name="game_name_empty">Por favor, insira um nome para o jogo.</string>
     <string name="description_too_short">A descrição deve ter mais de 6 caracteres.</string>
@@ -181,8 +181,8 @@
     <string name="comment_empty_error">Comentário não pode ficar vazio</string>
     <string name="comment_post_success">Comentário publicado com sucesso!</string>
     <string name="error_posting_comment">Erro ao publicar comentário</string>
-    <string name="comment_update_success">Comentário atualizado com sucesso!</string>
-    <string name="error_update_comment">Erro ao atualizar comentário</string>
+    <string name="comment_update_success">Comentário editado com sucesso!</string>
+    <string name="error_update_comment">Erro ao editar comentário</string>
     <string name="edit_comment_error">Erro ao editar comentário, verifique a sua internet</string>
     <string name="error_get_comment_details">Erro ao obter detalhes do comentário</string>
     <string name="request_comment_details_failure">Falha na requisição para obter detalhes do comentário</string>
@@ -195,7 +195,7 @@
     <string name="rate_error_internet">Erro ao avaliar, verifique a sua internet</string>
     <string name="remove_rating_success">Avaliação removida com sucesso</string>
     <string name="add_rating_success">Avaliação adicionada com sucesso</string>
-    <string name="update_rating_success">Avaliação atualizada com sucesso</string>
+    <string name="update_rating_success">Avaliação editada com sucesso</string>
 
     <string name="user_id_null">User ID está nulo</string>
     <string name="platform_added">Plataforma adicionada</string>
@@ -224,6 +224,8 @@
     <string name="edit_game_fail">Erro ao editar jogo</string>
     <string name="delete_game_fail">Error ao eliminar jogo</string>
     <string name="game_edited_success">Jogo editado com sucesso</string>
+    <string name="game_added_success">Jogo adicionado com sucesso</string>
+    <string name="no_net_collections">Precisa estar online para mudar de coleção</string>
 
     <string name="edit">Editar</string>
     <string name="apagar">Apagar</string>
@@ -237,6 +239,8 @@
 
     <string name="switch_theme">Mudar Tema</string>
     <string name="laguage">Linguagem Definida:Português</string>
+    <string name="passwords_not_empty">Os campos de palavra-passe não podem estar vazios.</string>
+    <string name="passwords_do_not_match">As palavra-passes não coincidem.</string>
 
 
 

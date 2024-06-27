@@ -95,9 +95,9 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
         arrowRight = view.findViewById(R.id.iconArrowRight)
 
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this, filterType, otherUser)
-        recyclerView.adapter = gameCoverAdapter
+        //recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        //gameCoverAdapter = Games_List_Horizontal_Adapter(emptyList(), this, filterType, otherUser)
+        //recyclerView.adapter = gameCoverAdapter
         titleText = view.findViewById(R.id.text_view)
 
         if (filterType == "Companies" || filterType == "SameCompany") {
@@ -170,6 +170,12 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         }
     }
 
+    private fun setupRecyclerView(games: List<Game>) {
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        gameCoverAdapter = Games_List_Horizontal_Adapter(games, this, filterType, otherUser)
+        recyclerView.adapter = gameCoverAdapter
+    }
+
     private fun getStateCollection(state: String) {
         //val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         //val userId = sharedPreferences.getInt("user_id", 0)
@@ -181,7 +187,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -202,7 +209,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.game.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -223,7 +231,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -244,7 +253,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -265,7 +275,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -286,7 +297,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -307,7 +319,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -328,7 +341,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                 } else {
                     Log.e("Games_List_Grid_Fragment", "Erro na resposta: ${response.errorBody()}")
                 }
@@ -350,7 +364,8 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
                 if (response.isSuccessful) {
                     val games = response.body()?.map { it.toGame() } ?: emptyList()
                     Log.d("Games_List_Grid_Fragment", "Resposta da API: $games")
-                    gameCoverAdapter.updateGames(games)
+                    //gameCoverAdapter.updateGames(games)
+                    setupRecyclerView(games)
                     if (games.isEmpty()) {
                         Log.d("empty", "empty")
                         emptyListListener?.onListEmpty()

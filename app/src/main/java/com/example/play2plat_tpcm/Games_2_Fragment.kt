@@ -2,6 +2,8 @@ package com.example.play2plat_tpcm
 
 import android.content.Context
 import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,6 +32,7 @@ import retrofit2.Response
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.FrameLayout
+import android.widget.Toast
 
 class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
@@ -74,7 +77,17 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         showFilteredGames(collectionTitle.text.toString())
 
         collectionAccordion.setOnClickListener {
-            toggleListVisibility(collectionList, collectionTitle)
+            if(isNetworkAvailable()){
+                toggleListVisibility(collectionList, collectionTitle)
+            }
+            else{
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.no_net_collections),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
         }
 
         collectionTitle.addTextChangedListener(object : TextWatcher {
@@ -172,6 +185,13 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private fun Int.dpToPx(): Int {
         val scale = resources.displayMetrics.density
         return (this * scale + 0.5f).toInt()
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun redirectToViewGame(gameId: Int) {

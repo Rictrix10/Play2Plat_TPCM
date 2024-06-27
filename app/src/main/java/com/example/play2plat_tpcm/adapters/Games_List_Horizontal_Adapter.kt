@@ -3,6 +3,8 @@ package com.example.play2plat_tpcm.adapters
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,15 +60,36 @@ class Games_List_Horizontal_Adapter(
         val otherUser = otherUser
         if (position < games.size) {
             holder.bind(games[position])
-            holder.binding.moreGamesView!!.visibility = View.GONE // Hide 'more_games_view'
+            holder.binding.moreGamesView.visibility = View.GONE // Hide 'more_games_view'
+            holder.binding.moreGamesImage.visibility = View.GONE
+            holder.binding.moreGamesText.visibility = View.GONE
         } else if (position == games.size) {
 
             if(games.size != 0 && (currentFilterType == "Playing" || currentFilterType == "Favorite")){
-                holder.binding.moreGamesView!!.visibility = View.GONE
+                holder.binding.moreGamesView.visibility = View.GONE
+                holder.binding.moreGamesImage.visibility = View.GONE
+                holder.binding.moreGamesText.visibility = View.GONE
             }
             else{
-                holder.binding.moreGamesView!!.visibility = View.VISIBLE
 
+                //Handler(Looper.getMainLooper()).postDelayed({
+
+
+                // /*
+                holder.binding.moreGamesView.visibility = View.VISIBLE
+                holder.binding.moreGamesImage.visibility = View.VISIBLE
+                holder.binding.moreGamesText.visibility = View.VISIBLE
+
+                // */
+
+                 /*
+                holder.binding.moreGamesView.visibility = View.GONE
+                holder.binding.moreGamesImage.visibility = View.GONE
+                holder.binding.moreGamesText.visibility = View.GONE
+
+                  */
+
+                //}, 1000)
                 if (currentFilterType == "Playing" && otherUser == false) {
                     val showText = context.getString(R.string.no_playing_games_user)
                     holder.binding.moreGamesText!!.text = showText
@@ -83,17 +106,15 @@ class Games_List_Horizontal_Adapter(
                     val showText = context.getString(R.string.no_favorite_games_other)
                     holder.binding.moreGamesText!!.text = showText
                 }
-                else if(isNetworkAvailable() == false){
-
-                }
                 else{
                     val showText = context.getString(R.string.more_games_future)
                     holder.binding.moreGamesText!!.text = showText
                 }
 
+
             }
 
-            //holder.binding.moreGamesText!!.text = currentFilterType
+
         }
 
         // Apply left margin of 8dp only to the first item
