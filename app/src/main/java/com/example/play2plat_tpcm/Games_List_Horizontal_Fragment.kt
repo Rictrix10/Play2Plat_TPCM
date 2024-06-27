@@ -101,9 +101,26 @@ class Games_List_Horizontal_Fragment : Fragment(), Games_List_Horizontal_Adapter
         titleText = view.findViewById(R.id.text_view)
 
         if (filterType == "Companies" || filterType == "SameCompany") {
-            titleText.text = "From $paramater"
-        } else {
-            titleText.text = "$paramater Games"
+            //titleText.text = "From $paramater"
+            val fromText = context?.getString(R.string.from)
+            val parameter = paramater
+            titleText.text = "$fromText $parameter"
+        }
+        else if(filterType == "Recent"){
+            val recentGames = getString(R.string.recent_games)
+            titleText.text = recentGames
+        }
+        else if(filterType == "Favorite"){
+            val favouriteGames = getString(R.string.favourite_games)
+            titleText.text = favouriteGames
+        }
+        else if(filterType == "Playing"){
+            val playingGames = getString(R.string.playing_games)
+            titleText.text = playingGames
+        }
+        else {
+            val parameterGames = getString(R.string.paramaters_games, paramater)
+            titleText.text = parameterGames
         }
 
         loadGames()

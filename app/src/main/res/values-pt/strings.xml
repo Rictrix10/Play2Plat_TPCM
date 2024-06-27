@@ -94,9 +94,22 @@
     <string name="login_successful">Login bem-sucedido</string>
     <string name="please_fill_all_fields">Por favor, preencha todos os campos</string>
     <string name="error_response_from_server">Resposta inválida do servidor</string>
+    <string name="no_games_found">Nenhum jogo encontrado</string>
+    <string name="from">Da</string>
+    <string name="paramaters_games">Jogos de %1$s</string>
+    <string name="paramaters_games2">Jogos %1$s</string>
+    <string name="recent_games">Jogos Recentes</string>
+    <string name="favourite_games">Jogos Favoritos</string>
+    <string name="playing_games">Jogos Atuais</string>
+    <string name="founded_games">Jogos Encontrados</string>
+    <string name="error_upload_image">Erro ao carregar a imagem, escolha outra</string>
+    <string name="email_not_null">O email não pode estar vazio</string>
+    <string name="username_not_null">O nome de utilizador não pode estar vazio</string>
+    <string name="unknown_error">Erro desconhecido</string>
 
-    <string name="delete_account">Você realmente deseja eliminar a conta?</string>
+    <string name="delete_account">Você realmente deseja apagar a conta?</string>
     <string name="digite_pass">Digite a sua password</string>
+    <string name="account_deleted">Conta apagada com sucesso</string>
 
     <string name="remember_me">Relembrar-me</string>
 
@@ -132,6 +145,7 @@
     <string name="name">Nome</string>
     <string name="recent">Recente</string>
     <string name="rating">Avaliação</string>
+
 
     <string name="logout">Sair</string>
     <string name="delete_accountt">Apagar Conta</string>
@@ -173,7 +187,7 @@
     <string name="error_get_comment_details">Erro ao obter detalhes do comentário</string>
     <string name="request_comment_details_failure">Falha na requisição para obter detalhes do comentário</string>
     <string name="comment_delete_success">Comentário eliminado com sucesso</string>
-    <string name="delete_comment_failure">Falha ao eliminar o comentário</string>
+    <string name="delete_comment_failure">Erro ao eliminar o comentário</string>
 
 
     <string name="insert_three_characters">Por favor, insira pelo menos três caracteres.</string>
@@ -189,15 +203,27 @@
     <string name="platform_removed">Plataforma removida</string>
     <string name="failed_to_remove_platform">Falha ao remover plataforma</string>
 
-    <string name="account_deleted_success">Conta eliminada com sucesso</string>
-    <string name="failed_to_delete_account">Falha ao eliminar a conta</string>
+    <string name="account_deleted_success">Conta apagada com sucesso</string>
+    <string name="failed_to_delete_account">Erro ao apagar a conta</string>
 
-    <string name="invalid_username">Username inválido</string>
+    <string name="invalid_username">Nome de utilizador inválido</string>
 
     <string name="image_shorter">Insira uma imagem mais pequena</string>
 
-    <string name="need_online_edit_game">Preciso estar online para editar um jogo</string>
+    <string name="need_online_edit_game">Precisa estar online para editar um jogo</string>
     <string name="error_favoriting">Erro ao favoritar, verifique a sua internet</string>
+    <string name="need_online_delete_account">Precisa estar online para apagar a sua conta</string>
+    <string name="need_online_delete_game">Precisa estar online para apagar um jogo</string>
+    <string name="need_online_edit_platforms">Precisa estar online para editar plataformas</string>
+    <string name="error_add_game">Erro ao adicionar jogo, verifique a sua internet</string>
+    <string name="error_edit_game">Erro ao editar jogo, verifique a sua internet</string>
+    <string name="error_delete_game">Erro ao apagar jogo, verifique a sua internet</string>
+    <string name="cancel">Cancelar</string>
+    <string name="type_fatality">Escreva \'Fatality\' para confirmar</string>
+    <string name="game_deleted_success">Jogo apagado com sucesso</string>
+    <string name="edit_game_fail">Erro ao editar jogo</string>
+    <string name="delete_game_fail">Error ao eliminar jogo</string>
+    <string name="game_edited_success">Jogo editado com sucesso</string>
 
     <string name="edit">Editar</string>
     <string name="apagar">Apagar</string>

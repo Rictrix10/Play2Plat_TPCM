@@ -82,11 +82,32 @@ class ViewMoreGames_Fragment : Fragment(), FavoritesAdapter.OnGamePictureClickLi
             }
         }
 
+
         if (filterType == "Companies" || filterType == "SameCompany") {
-            titleTextView.text = "From $paramater"
+            //titleText.text = "From $paramater"
+            val fromText = context?.getString(R.string.from)
+            val parameter = paramater
+            titleTextView.text = "$fromText $parameter"
+        }
+        else if(filterType == "Recent"){
+            val recentGames = getString(R.string.recent_games)
+            titleTextView.text = recentGames
+        }
+        else if(filterType == "Favorite"){
+            val favouriteGames = getString(R.string.favourite_games)
+            titleTextView.text = favouriteGames
+        }
+        else if(filterType == "Playing"){
+            val playingGames = getString(R.string.playing_games)
+            titleTextView.text = playingGames
+        }
+        else if(filterType == "Filtered"){
+            val foundedGames = getString(R.string.founded_games)
+            titleTextView.text = foundedGames
         }
         else {
-            titleTextView.text = "$paramater Games"
+            val parameterGames = getString(R.string.paramaters_games, paramater)
+            titleTextView.text = parameterGames
         }
 
 //        val textViewHeight = TitleLayout.layoutParams.height

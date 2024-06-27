@@ -348,6 +348,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                                     } else {
                                         val errorBody = response.errorBody()?.string() ?: "Unknown error"
                                         Log.e("AddNewComment", "Erro no upload: $errorBody")
+                                        Toast.makeText(
+                                            requireContext(),
+                                            getString(R.string.error_upload_image),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
 
@@ -405,6 +410,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                                     } else {
                                         val errorBody = response.errorBody()?.string() ?: "Unknown error"
                                         Log.e("AddNewComment", "Erro no upload: $errorBody")
+                                        Toast.makeText(
+                                            requireContext(),
+                                            getString(R.string.error_upload_image),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
 
@@ -449,7 +459,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                             }
                         }
                     } else {
-                        Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.error_upload_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
@@ -484,7 +498,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
                             }
                         }
                     } else {
-                        Log.e("AddNewComment", "Erro no upload: ${response.message()}")
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.error_upload_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
