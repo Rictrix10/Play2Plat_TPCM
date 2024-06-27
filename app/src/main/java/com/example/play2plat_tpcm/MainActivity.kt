@@ -35,16 +35,41 @@ class MainActivity : AppCompatActivity() {
             ?: sharedPreferences.getInt(SELECTED_TAB_ID_KEY, R.id.games_lay)
         updateTabSelection(selectedTabId)
 
+
         if (savedInstanceState == null) {
+            if(isNetworkAvailable()){
+                val initialFragment = getFragmentFromTabId(selectedTabId)
+                navigationViewModel.addToStack(initialFragment)
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.layout, initialFragment)
+                    .commit()
+            }
+            else{
+                val initialFragment = NoConnectionFragment()
+                navigationViewModel.addToStack(initialFragment)
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.layout, initialFragment)
+                    .commit()
+            }
             // Adicionar o fragmento inicial se não houver estado salvo (primeira criação da activity)
-            val initialFragment = Games_2_Fragment()
-            navigationViewModel.addToStack(initialFragment)
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.layout, initialFragment)
-                .commit()
         }
 
         updateAdminIconVisibility()
+    }
+
+    private fun getFragmentFromTabId(selectedTabId: Int): Fragment {
+        return when (selectedTabId) {
+            R.id.games_lay -> Games_2_Fragment()
+            R.id.favorites_lay -> Favorites_Fragment()
+            R.id.profile_lay -> {
+                val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
+                val userId = sharedPreferences.getInt("user_id", 0)
+                Profile_Fragment.newInstance(userId)
+            }
+            R.id.search_lay -> Search_Fragment()
+            R.id.new_game_lay -> Add_New_Game_Fragment()
+            else -> throw IllegalArgumentException("Unknown tab id: $selectedTabId")
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

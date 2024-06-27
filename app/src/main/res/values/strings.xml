@@ -240,6 +240,9 @@
 
     <string name="edit">Edit</string>
     <string name="apagar">Delete</string>
+    <string name="editing">Editing</string>
+    <string name="type_here">Type here</string>
+    <string name="type_fatality_confirm">Type \'Fatality\' to confirm deletion</string>
 
     <string name="delete_comment">Do you really want to delete this comment?</string>
     <string name="confirm">Confirmation</string>

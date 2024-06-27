@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Type 'Fatality' to confirm deletion"
+        android:text="@string/type_fatality_confirm"
         android:textSize="16sp"
         android:textColor="@color/white"
         android:layout_marginBottom="8dp"/>
@@ -17,7 +17,7 @@
         android:id="@+id/confirmation_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Type here"
+        android:hint="@string/type_here"
         android:textColor="#393657"
         android:textColorHint="@color/HintColor"
         android:paddingVertical="5dp"
