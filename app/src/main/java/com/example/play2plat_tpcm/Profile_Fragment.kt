@@ -602,7 +602,7 @@ class Profile_Fragment : Fragment() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(context, "Erro: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
 
