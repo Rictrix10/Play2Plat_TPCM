@@ -254,7 +254,6 @@ class View_Game_Fragment : Fragment() {
                                         tabLayout.addTab(tabLayout.newTab().setText("About"))
                                         tabLayout.addTab(tabLayout.newTab().setText("Interact"))
 
-                                        // Inicialmente, mostra o primeiro fragmento
                                         tabLayout.getTabAt(0)?.select()
 
                                         Log.d("View_Game_Fragment", "Calculated Colors for Gradient: $dominantColor and $vibrantColor")
@@ -397,10 +396,11 @@ class View_Game_Fragment : Fragment() {
     }
 
     private fun replaceFragment(fragment: Fragment, tag: String) {
-        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.frame, fragment, tag)
         transaction.commit()  // Remove `addToBackStack(tag)`
     }
+
 
 
     override fun onDestroy() {
@@ -412,9 +412,9 @@ class View_Game_Fragment : Fragment() {
 
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        val networkInfo = connectivityManager.activeNetworkInfo
+
+        return networkInfo != null && networkInfo.isConnected
     }
 
     private fun redirectToNoConnectionFragment() {
