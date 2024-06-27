@@ -58,6 +58,7 @@ class Profile_Fragment : Fragment() {
     private lateinit var gameSections: LinearLayout
     private lateinit var gameSections2: LinearLayout
     private lateinit var logoutButton: Button
+    private lateinit var logoutButton2: Button
     private lateinit var deleteButton: Button
     private lateinit var noConnectionImageView: ImageView
     private lateinit var noConnectionTextView: TextView
@@ -89,12 +90,14 @@ class Profile_Fragment : Fragment() {
         containerLayout = view.findViewById(R.id.container_layout)
         backIconImageView = view.findViewById(R.id.back_icon)
         logoutButton = view.findViewById(R.id.logout_button)
+        logoutButton2 = view.findViewById(R.id.logout_button2)
         deleteButton = view.findViewById(R.id.delete_button)
         platformsTextView = view.findViewById(R.id.platforms)
         gameSections = view.findViewById(R.id.game_sections)
         gameSections2 = view.findViewById(R.id.game_sections2)
         noConnectionImageView = view.findViewById(R.id.no_connection_image)
         noConnectionTextView = view.findViewById(R.id.no_connection_text)
+
 
         if(isNetworkAvailable()){
             platformsTextView.visibility = View.VISIBLE
@@ -170,6 +173,9 @@ class Profile_Fragment : Fragment() {
         }
 
         logoutButton.setOnClickListener {
+            logout()
+        }
+        logoutButton2.setOnClickListener {
             logout()
         }
 
@@ -819,8 +825,37 @@ class Profile_Fragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_profile_, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile_, container, false)
+
+        // Referência aos botões e outros elementos
+        val logoutButton = view.findViewById<Button>(R.id.logout_button)
+        val logoutButton2 = view.findViewById<Button>(R.id.logout_button2)
+        val deleteButton = view.findViewById<Button>(R.id.delete_button)
+        val noConnectionImage = view.findViewById<ImageView>(R.id.no_connection_image)
+        val noConnectionText = view.findViewById<TextView>(R.id.no_connection_text)
+
+        // Verificar conexão com a internet
+        if (isNetworkAvailable()) {
+            logoutButton.visibility = View.VISIBLE
+            deleteButton.visibility = View.VISIBLE
+            noConnectionImage.visibility = View.GONE
+            noConnectionText.visibility = View.GONE
+            // Ocultar logout_button2 se há conexão com a internet
+            logoutButton2?.visibility = View.GONE
+        } else {
+            logoutButton.visibility = View.GONE
+            deleteButton.visibility = View.GONE
+            noConnectionImage.visibility = View.VISIBLE
+            noConnectionText.visibility = View.VISIBLE
+            // Tornar logout_button2 visível se não há conexão com a internet
+            logoutButton2?.visibility = View.VISIBLE
+        }
+
+        return view
     }
+
+
+
 
     companion object {
         @JvmStatic
