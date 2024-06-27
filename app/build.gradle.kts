@@ -87,15 +87,8 @@ dependencies {
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
-
-
-
     implementation ("androidx.palette:palette-ktx:1.0.0")
     implementation ("com.google.android.material:material:1.4.0")
-
-
-
-
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.room:room-runtime:2.6.1")
