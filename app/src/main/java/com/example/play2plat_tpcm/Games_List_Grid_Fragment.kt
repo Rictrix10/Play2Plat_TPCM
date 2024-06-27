@@ -2,6 +2,7 @@ package com.example.play2plat_tpcm
 
 import android.content.res.Configuration
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
@@ -32,6 +33,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
     private lateinit var recyclerView: RecyclerView
     private lateinit var noGamesImageView: ImageView
     private lateinit var noGamesTextView: TextView
+    private lateinit var viewGamesTextView: TextView
     private lateinit var gameCoverAdapter: Games_List_Grid_Adapter
     private var filterType: String? = null
     private var paramater: String? = null
@@ -86,6 +88,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         recyclerView = view.findViewById(R.id.recycler_view_game_covers)
         noGamesImageView = view.findViewById(R.id.no_games_image)
         noGamesTextView = view.findViewById(R.id.no_games_text)
+        viewGamesTextView = view.findViewById(R.id.view_games)
         updateGridLayoutManager()
 
         gameCoverAdapter = Games_List_Grid_Adapter(emptyList(), this)
@@ -108,7 +111,10 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             noGamesTextView.text = getString(R.string.no_games_found)
         }
 
+        viewGamesTextView.setOnClickListener{
+            redirectToSearchFragment()
 
+        }
         //noGamesTextView.text = "From $paramater"
         /*
         else {
@@ -147,13 +153,25 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
         }
     }
 
+    private fun redirectToSearchFragment() {
+        val search_Fragment= Search_Fragment()
+        navigationViewModel.addToStack(search_Fragment)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.layout, search_Fragment)
+            .addToBackStack(null)
+            .commit()
+
+    }
+
     private fun updateUI(games: List<Game>) {
         if (games.isEmpty()) {
             noGamesImageView.visibility = View.VISIBLE
             noGamesTextView.visibility = View.VISIBLE
+            viewGamesTextView.visibility = View.VISIBLE
         } else {
             noGamesImageView.visibility = View.GONE
             noGamesTextView.visibility = View.GONE
+            viewGamesTextView.visibility = View.GONE
         }
         gameCoverAdapter.updateGames(games)
     }

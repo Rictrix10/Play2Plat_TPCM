@@ -44,7 +44,7 @@
     <string name="free">Grátis</string>
     <string name="save">Guardar</string>
 
-
+    <string name="view_games">Ver jogos</string>
     <string name="favorites">Favoritos</string>
     <string name="games">Jogos</string>
     <string name="search">Pesquisar</string>
@@ -56,6 +56,7 @@
     <string name="no_playing_games_other">Este utilizador não tem nenhum jogo na coleção A jogar</string>
     <string name="no_favorite_games_other">Este utilizador não tem nenhum jogo favorito</string>
     <string name="more_games_future">Mais jogos no futuro</string>
+
 
     <string name="action_games">Jogos de Ação:</string>
     <string name="free_games">Jogos Grátis:</string>
