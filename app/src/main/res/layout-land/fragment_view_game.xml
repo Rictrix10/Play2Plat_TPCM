@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
+    android:orientation="horizontal"
     android:background="@drawable/bg_border"
     tools:context=".View_Game_Fragment">
 
@@ -111,7 +112,6 @@
                     app:layout_constraintBottom_toTopOf="@id/game"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
-
 
 
                 <TextView

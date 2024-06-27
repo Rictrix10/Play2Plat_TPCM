@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
+    android:orientation="vertical"
     android:background="@drawable/bg_border"
     tools:context=".View_Game_Fragment">
 
@@ -224,7 +225,7 @@
                 android:layout_marginHorizontal="3dp"
                 android:background="@drawable/button_bd_4"
                 app:tabIndicatorColor="@color/black"
-                app:tabSelectedTextColor="@color/WHITE"
+                app:tabSelectedTextColor="@color/white"
                 app:tabTextColor="@color/gray_600"
                 app:layout_constraintTop_toBottomOf="@id/container"
                 app:layout_constraintStart_toStartOf="parent"
@@ -235,7 +236,6 @@
                 app:layout_constraintTop_toBottomOf="@id/tab_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-
                 android:layout_width="match_parent"
                 android:layout_height="0dp">
 

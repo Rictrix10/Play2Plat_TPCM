@@ -22,11 +22,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,7 +61,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     private lateinit var commentEditTextView: EditText
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
-    private lateinit var seeMapButton: Button
+    private lateinit var seeMapButton: LinearLayout
     private lateinit var iconCrossView: ImageView
     private lateinit var editButton: Button
     private lateinit var deleteButton: Button
@@ -246,10 +248,11 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
 
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        val networkInfo = connectivityManager.activeNetworkInfo
+
+        return networkInfo != null && networkInfo.isConnected
     }
+
 
     private fun redirectToNoConnectionFragment() {
         val noConnectionFragment= NoConnectionFragment()
@@ -721,7 +724,7 @@ class GamePostsFragment : Fragment(), GamePostsAdapter.OnProfilePictureClickList
     }
 
     private fun redirectToMapsFragment() {
-        val mapsFragment = MapsFragment.newInstance(gameId)
+        val mapsFragment = MapsFragment.newInstance(gameId, gameName!!, primaryColor, secondaryColor)
         navigationViewModel.addToStack(mapsFragment)
         if (!requireActivity().supportFragmentManager.isStateSaved()) {
             requireActivity().supportFragmentManager.beginTransaction()

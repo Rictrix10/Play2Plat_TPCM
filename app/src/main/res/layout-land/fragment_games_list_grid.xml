@@ -19,7 +19,7 @@
         android:padding="8dp"
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="5"
+        app:spanCount="7"
         tools:listitem="@layout/item_game_grid"/>
 
     <View

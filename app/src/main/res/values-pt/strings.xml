@@ -16,6 +16,9 @@
         <item>Pausado</item>
         <item>Concluído</item>
     </string-array>
+
+    <string name="PostsLabel">Comentários:</string>
+    <string name="VerMapa">Ver Mapa</string>
     <string name="hello_blank_fragment">Olá fragmento em branco</string>
     <string name="sign_up_prompt">Novo aqui? <font color="#D10341">Registe-se</font></string>
     <string name="sign_in_prompt">Tens conta? <font color="#D10341">Faz login</font></string>
@@ -207,7 +210,7 @@
     <string name="confirm">Confirmação</string>
 
     <string name="no_posts_on_game">Ninguém postou sobre o jogo ainda. Seja o primeiro, compartilhe sua experiência</string>
-    <string name="see_more_posts">Ver mais posts</string>
+    <string name="see_more_posts">Ver mais comentários</string>
 
     <string name="switch_theme">Mudar Tema</string>
     <string name="laguage">Linguagem Definida:Português</string>

@@ -38,9 +38,10 @@
                 android:drawablePadding="8dp"
                 android:fontFamily="@font/m_plus_rounded_1c_medium"
                 android:hint="@string/username"
+                android:textColorHint="@color/HintColor"
                 android:inputType="text"
                 android:paddingStart="5dp"
-                android:textColor="#000000" />
+                android:textColor="#393657"/>
 
             <RelativeLayout
                 android:layout_width="250dp"
@@ -57,9 +58,10 @@
                     android:drawablePadding="8dp"
                     android:fontFamily="@font/m_plus_rounded_1c_medium"
                     android:hint="@string/password"
+                    android:textColorHint="@color/HintColor"
                     android:inputType="textPassword"
                     android:paddingStart="5dp"
-                    android:textColor="#000000"
+                    android:textColor="#393657"
                     android:paddingEnd="40dp" />
 
                 <ImageView
