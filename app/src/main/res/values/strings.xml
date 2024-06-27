@@ -246,6 +246,11 @@
 
     <string name="laguage">Defined Language:English</string>
 
+    <string name="passwords_not_empty">Password fields must not be empty.</string>
+    <string name="passwords_do_not_match">The passwords don´t match </string>
+
+
+
 
 
 </resources>

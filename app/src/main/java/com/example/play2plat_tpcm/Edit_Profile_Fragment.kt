@@ -477,6 +477,34 @@ class Edit_Profile_Fragment : Fragment() {
 
 
     private fun uploadImageAndSaveProfile() {
+        val newPasswordEditTextView = view?.findViewById<EditText>(R.id.new_password)
+        val confirmPasswordEditTextView = view?.findViewById<EditText>(R.id.confirm_password)
+
+        // Obter os textos dos campos
+        val newPassword = newPasswordEditTextView?.text.toString()
+        val confirmPassword = confirmPasswordEditTextView?.text.toString()
+
+        // Verificação se os campos de senha estão visíveis
+        if (newPasswordEditTextView?.visibility == View.VISIBLE && confirmPasswordEditTextView?.visibility == View.VISIBLE) {
+            // Verificação se os campos de senha não estão vazios
+            if (newPassword.isNotEmpty() || confirmPassword.isNotEmpty()) {
+                // Verifique se algum dos campos de senha está vazio
+                if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
+                    Toast.makeText(requireContext(), getString(R.string.passwords_not_empty), Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                // Verifique se as senhas não coincidem
+                if (newPassword != confirmPassword) {
+                    Toast.makeText(requireContext(), getString(R.string.passwords_do_not_match), Toast.LENGTH_SHORT).show()
+                    return
+                }
+            } else {
+                // Se os campos estão visíveis, mas estão vazios
+                Toast.makeText(requireContext(), getString(R.string.passwords_not_empty), Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
         if (selectedImageUri != null) {
             // YES IMAGE
             uploadImageAndSaveProfileWithNewAvatar()
