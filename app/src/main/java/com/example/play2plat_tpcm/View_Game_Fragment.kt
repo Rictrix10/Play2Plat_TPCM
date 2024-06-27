@@ -251,8 +251,8 @@ class View_Game_Fragment : Fragment() {
                                             }
                                         })
 
-                                        tabLayout.addTab(tabLayout.newTab().setText("About"))
-                                        tabLayout.addTab(tabLayout.newTab().setText("Interact"))
+                                        tabLayout.addTab(tabLayout.newTab().setText(R.string.about))
+                                        tabLayout.addTab(tabLayout.newTab().setText(R.string.interact))
 
                                         tabLayout.getTabAt(0)?.select()
 
