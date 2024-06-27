@@ -65,7 +65,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         filtersButton = view.findViewById(R.id.black_square)
 
         // Verificação `isStateSaved` para fragmentos
-        if (!parentFragmentManager.isStateSaved()) {
+        if (!parentFragmentManager.isStateSaved) {
             val fragment = Games_List_Horizontal_Fragment.newInstance("Recent", "Recent", 0, false, 0)
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -94,7 +94,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         val sequenceValue = sharedPreferences.getString("sequence", null)
 
         // Verificação `isStateSaved` para fragmentos adicionais
-        if (!parentFragmentManager.isStateSaved()) {
+        if (!parentFragmentManager.isStateSaved) {
             val fragment2 = if (genreValue != null) {
                 Games_List_Horizontal_Fragment.newInstance("Genres", genreValue, 0, false, 0)
             } else {
@@ -107,7 +107,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        if (!parentFragmentManager.isStateSaved()) {
+        if (!parentFragmentManager.isStateSaved) {
             val fragment3 = if (companyValue != null) {
                 Games_List_Horizontal_Fragment.newInstance("Companies", companyValue, 0, false, 0)
             } else {
@@ -120,7 +120,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        if (!parentFragmentManager.isStateSaved()) {
+        if (!parentFragmentManager.isStateSaved) {
             val fragment4 = if (genreValue2 != null) {
                 Games_List_Horizontal_Fragment.newInstance("Genres", genreValue2, 0, false, 0)
             } else {
@@ -133,7 +133,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        if (!parentFragmentManager.isStateSaved()) {
+        if (!parentFragmentManager.isStateSaved) {
             val fragment5 = if (platformValue != null) {
                 Games_List_Horizontal_Fragment.newInstance("Platforms", platformValue, 0, false, 0)
             } else {
@@ -146,7 +146,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        if (!parentFragmentManager.isStateSaved()) {
+        if (!parentFragmentManager.isStateSaved) {
             val fragment6 = if (genreValue3 != null) {
                 Games_List_Horizontal_Fragment.newInstance("Genres", genreValue3, 0, false, 0)
             } else {
@@ -159,7 +159,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
 
-        if (!parentFragmentManager.isStateSaved()) {
+        if (!parentFragmentManager.isStateSaved) {
             val fragment7 = if (sequenceValue != null) {
                 Games_List_Horizontal_Fragment.newInstance("Sequences", sequenceValue, 0, false, 0)
             } else {
@@ -178,60 +178,70 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
     override fun onResume() {
         super.onResume()
-        countValue++
-        sharedPreferences.edit().putInt("countValue", countValue).apply()
 
-        // Verificar se countValue é um divisor de 10
-        if (countValue % 10 == 0) {
+        if (!parentFragmentManager.isStateSaved) {
+            countValue++
+            sharedPreferences.edit().putInt("countValue", countValue).apply()
 
-            getRandomNames { genres ->
-                genres.take(3).forEachIndexed { index, genre ->
-                    when (index) {
-                        0 -> sharedPreferences.edit().putString("genre", genre).apply()
-                        1 -> sharedPreferences.edit().putString("genre2", genre).apply()
-                        2 -> sharedPreferences.edit().putString("genre3", genre).apply()
+            // Verificar se countValue é um divisor de 10
+            if (countValue % 10 == 0) {
+                getRandomNames { genres ->
+                    genres.take(3).forEachIndexed { index, genre ->
+                        when (index) {
+                            0 -> sharedPreferences.edit().putString("genre", genre).apply()
+                            1 -> sharedPreferences.edit().putString("genre2", genre).apply()
+                            2 -> sharedPreferences.edit().putString("genre3", genre).apply()
+                        }
+                        Log.d("Search_Fragment", "Novo valor de genre${index + 1}: $genre")
                     }
-                    Log.d("Search_Fragment", "Novo valor de genre${index + 1}: $genre")
+                }
+
+                getRandomCompany { company ->
+                    sharedPreferences.edit().putString("company", company).apply()
+                    Log.d("Search_Fragment", "Novo valor de company: $company")
+                }
+
+                getRandomPlatform { platform ->
+                    sharedPreferences.edit().putString("platform", platform).apply()
+                    Log.d("Search_Fragment", "Novo valor de platform: $platform")
+                }
+
+                getRandomSequence { sequence ->
+                    sharedPreferences.edit().putString("sequence", sequence).apply()
+                    Log.d("Search_Fragment", "Novo valor de sequence: $sequence")
                 }
             }
-
-            getRandomCompany { company ->
-                sharedPreferences.edit().putString("company", company).apply()
-                Log.d("Search_Fragment", "Novo valor de company: $company")
-            }
-
-            getRandomPlatform { platform ->
-                sharedPreferences.edit().putString("platform", platform).apply()
-                Log.d("Search_Fragment", "Novo valor de platform: $platform")
-            }
-
-            getRandomSequence { sequence ->
-                sharedPreferences.edit().putString("sequence", sequence).apply()
-                Log.d("Search_Fragment", "Novo valor de sequence: $sequence")
-            }
+        } else {
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, operações no onResume() adiadas.")
         }
     }
 
-    private fun getRandomNames(onGenresReceived: (List<String>) -> Unit) {
-        ApiManager.apiService.getRandomNames().enqueue(object : Callback<RandomGenresResponse> {
-            override fun onResponse(call: Call<RandomGenresResponse>, response: Response<RandomGenresResponse>) {
-                if (response.isSuccessful) {
-                    val genreResponse = response.body()
-                    if (genreResponse != null) {
-                        onGenresReceived(genreResponse.names)
-                    } else {
-                        Log.e("Search_Fragment", "Resposta de gêneros ou nomes de gêneros é nula")
-                    }
-                } else {
-                    Log.e("Search_Fragment", "Falha ao obter nomes de gêneros aleatórios: ${response.errorBody()}")
-                }
-            }
 
-            override fun onFailure(call: Call<RandomGenresResponse>, t: Throwable) {
-                Log.e("Search_Fragment", "Falha na chamada da API para obter nomes de gêneros aleatórios: ${t.message}")
-            }
-        })
+    private fun getRandomNames(onGenresReceived: (List<String>) -> Unit) {
+        if (!parentFragmentManager.isStateSaved) {
+            ApiManager.apiService.getRandomNames().enqueue(object : Callback<RandomGenresResponse> {
+                override fun onResponse(call: Call<RandomGenresResponse>, response: Response<RandomGenresResponse>) {
+                    if (response.isSuccessful) {
+                        val genreResponse = response.body()
+                        if (genreResponse != null) {
+                            onGenresReceived(genreResponse.names)
+                        } else {
+                            Log.e("Search_Fragment", "Resposta de gêneros ou nomes de gêneros é nula")
+                        }
+                    } else {
+                        Log.e("Search_Fragment", "Falha ao obter nomes de gêneros aleatórios: ${response.errorBody()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<RandomGenresResponse>, t: Throwable) {
+                    Log.e("Search_Fragment", "Falha na chamada da API para obter nomes de gêneros aleatórios: ${t.message}")
+                }
+            })
+        } else {
+            Log.d("Search_Fragment", "O estado da instância já foi salvo, chamada da API adiada.")
+        }
     }
+
 
     private fun getRandomGenre(onGenreReceived: (String) -> Unit) {
         ApiManager.apiService.getRandomGenre().enqueue(object : Callback<Paramater> {
@@ -322,7 +332,8 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
         val viewGameFragment = View_Game_Fragment.newInstance(gameId, platforms)
         navigationViewModel.addToStack(viewGameFragment)
-        if (!requireActivity().supportFragmentManager.isStateSaved()) {
+
+        if (!requireActivity().supportFragmentManager.isStateSaved) {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.layout, viewGameFragment)
                 .addToBackStack(null)
@@ -331,6 +342,7 @@ class Search_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
             Log.d("Search_Fragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
         }
     }
+
 
 
     private fun Int.dpToPx(): Int {
