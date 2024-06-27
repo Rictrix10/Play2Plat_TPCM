@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -45,6 +46,9 @@ import java.util.Date
 import java.util.Locale
 import androidx.appcompat.app.AppCompatDelegate
 import android.content.res.Configuration
+import android.content.res.Resources
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import java.util.*
 
@@ -68,6 +72,11 @@ class Edit_Profile_Fragment : Fragment() {
     private lateinit var ivToggleConfirmPasswordVisibility: ImageView
     private var isNewPasswordVisible: Boolean = false
     private var isConfirmPasswordVisible: Boolean = false
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var customizeButton: Button
+    private lateinit var customizeLayout: View
+    private lateinit var PassText: TextView
+    private lateinit var CFPassText: TextView
 
     private val userViewModel: UserViewModel by viewModels()
     private val navigationViewModel: FragmentNavigationViewModel by viewModels()
@@ -98,6 +107,8 @@ class Edit_Profile_Fragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
     }
 
     override fun onCreateView(
@@ -121,6 +132,14 @@ class Edit_Profile_Fragment : Fragment() {
         selectImageView = view.findViewById(R.id.select_picture)
         backImageView = view.findViewById(R.id.back_icon)
         containerLayout = view.findViewById(R.id.container_layout)
+        customizeButton = view.findViewById(R.id.customize_button)
+        customizeLayout = view.findViewById(R.id.radiogroup)
+        PassText = view.findViewById(R.id.password_label)
+        CFPassText = view.findViewById(R.id.cf_password_label)
+
+        customizeButton.setOnClickListener {
+            toggleCustomizeLayoutVisibility()
+        }
 
         // Adicionando os ícones de visibilidade da senha
         ivToggleNewPasswordVisibility = view.findViewById(R.id.ivToggleNewPasswordVisibility)
@@ -164,57 +183,87 @@ class Edit_Profile_Fragment : Fragment() {
             uploadImageAndSaveProfile()
         }
 
-        // Configuração inicial do tema com base nas preferências ou no modo do sistema
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val toggleTheme = view.findViewById<SwitchCompat>(R.id.toggle_theme) // Inicialização do SwitchCompat
-        toggleTheme.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES
-
-        toggleTheme.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                // Mudar para o tema Dark
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                // Mudar para o tema Light
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-            // Recreate the activity to apply theme changes
-            requireActivity().recreate()
-        }
-
-        // Switch para alternar o idioma
-        val toggleLanguage = view.findViewById<SwitchCompat>(R.id.toggle_language)
-
-// Verifica a preferência do usuário para o idioma e ajusta o switch de acordo
-        val sharedPreferences = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
-
-// Verifica se o usuário já escolheu um idioma
-        val isEnglishSelected = sharedPreferences.getBoolean("is_english_selected", Locale.getDefault() == Locale.ENGLISH)
-        toggleLanguage.isChecked = isEnglishSelected
-
-        toggleLanguage.setOnCheckedChangeListener { _, isChecked ->
-            // Lógica para alternar o idioma aqui
-            val newLocale = if (isChecked) {
-                Locale.ENGLISH // Altera para inglês
-            } else {
-                Locale("pt", "PT") // Altera para português
-            }
-
-            // Atualiza a configuração do aplicativo com o novo idioma
-            updateLocale(requireContext(), newLocale)
-
-            // Salva a preferência do usuário para o idioma
-            sharedPreferences.edit().putBoolean("is_english_selected", isChecked).apply()
-
-            // Reinicia a atividade (ou fragmento) para aplicar as alterações
-            requireActivity().recreate()
-        }
-
-        // Carregamento do perfil do usuário
         val userId = sharedPreferences.getInt("user_id", 0)
+
+        val themeRadioGroup = view.findViewById<RadioGroup>(R.id.theme_radio_group)
+        val languageRadioGroup = view.findViewById<RadioGroup>(R.id.language_radio_group)
+
+        // Set initial state based on saved preferences or system settings
+        setupThemeRadioButtons(themeRadioGroup)
+        setupLanguageRadioButtons(languageRadioGroup)
+
+        themeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.light_mode_button -> setThemeMode(AppCompatDelegate.MODE_NIGHT_NO)
+                R.id.dark_mode_button -> setThemeMode(AppCompatDelegate.MODE_NIGHT_YES)
+                R.id.system_mode_button -> setThemeMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
+        }
+
+        languageRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.english_button -> setLocale(Locale.ENGLISH)
+                R.id.portuguese_button -> setLocale(Locale("pt", "PT"))
+                R.id.system_language_button -> setLocaleToSystem()
+            }
+        }
 
         lifecycleScope.launch {
             loadUserProfile(userId)
         }
+    }
+
+    private fun setupThemeRadioButtons(themeRadioGroup: RadioGroup) {
+        val selectedTheme = sharedPreferences.getInt("selected_theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val selectedThemeId = when (selectedTheme) {
+            AppCompatDelegate.MODE_NIGHT_NO -> R.id.light_mode_button
+            AppCompatDelegate.MODE_NIGHT_YES -> R.id.dark_mode_button
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> R.id.system_mode_button
+            else -> R.id.system_mode_button // Caso padrão para evitar problemas
+        }
+        themeRadioGroup.check(selectedThemeId)
+    }
+
+    private fun setupLanguageRadioButtons(languageRadioGroup: RadioGroup) {
+        val selectedLocaleTag = sharedPreferences.getString("selected_locale", "system")
+        val selectedLanguageId = when (selectedLocaleTag) {
+            "en" -> R.id.english_button
+            "pt" -> R.id.portuguese_button
+            else -> R.id.system_language_button
+        }
+        languageRadioGroup.check(selectedLanguageId)
+    }
+
+    private fun setThemeMode(mode: Int) {
+        if (AppCompatDelegate.getDefaultNightMode() != mode) {
+            AppCompatDelegate.setDefaultNightMode(mode)
+            sharedPreferences.edit().putInt("selected_theme", mode).apply()
+            // Não chame requireActivity().recreate() aqui
+        }
+    }
+
+    private fun setLocale(locale: Locale) {
+        if (!isCurrentLocale(locale)) {
+            sharedPreferences.edit().putString("selected_locale", locale.language).apply()
+            updateLocale(requireContext(), locale)
+            requireActivity().recreate() // Recrea a atividade apenas quando o idioma for alterado
+        }
+    }
+
+    private fun setLocaleToSystem() {
+        val systemLocale = Resources.getSystem().getConfiguration().locale;
+        Log.d("SystemLocale", "System language: ${systemLocale.language}")
+
+            sharedPreferences.edit().putString("selected_locale", "auto").apply()
+            updateLocale(requireContext(), systemLocale)
+            requireActivity().recreate() // Recrea a atividade apenas quando o idioma for alterado
+
+    }
+
+
+    private fun isCurrentLocale(locale: Locale): Boolean {
+        val currentLocaleTag = sharedPreferences.getString("selected_locale", "system")
+        return currentLocaleTag == locale.language
     }
 
     private fun updateLocale(context: Context, locale: Locale) {
@@ -222,10 +271,8 @@ class Edit_Profile_Fragment : Fragment() {
         configuration.setLocale(locale)
         context.createConfigurationContext(configuration)
         context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+        Locale.setDefault(locale)
     }
-
-
-
 
     private fun togglePasswordVisibility(editText: EditText, imageView: ImageView, isVisible: Boolean) {
         if (isVisible) {
@@ -236,6 +283,14 @@ class Edit_Profile_Fragment : Fragment() {
             imageView.setImageResource(R.drawable.icon_eye)
         }
         editText.setSelection(editText.text.length)
+    }
+
+    private fun toggleCustomizeLayoutVisibility() {
+        if (customizeLayout.visibility == View.VISIBLE) {
+            customizeLayout.visibility = View.GONE
+        } else {
+            customizeLayout.visibility = View.VISIBLE
+        }
     }
 
 
@@ -255,6 +310,9 @@ class Edit_Profile_Fragment : Fragment() {
 
         ivToggleNewPasswordVisibility.visibility = visibility
         ivToggleConfirmPasswordVisibility.visibility = visibility
+
+        CFPassText.visibility = visibility
+        PassText.visibility = visibility
     }
 
 

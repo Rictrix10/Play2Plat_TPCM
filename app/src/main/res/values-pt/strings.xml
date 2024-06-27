@@ -137,6 +137,18 @@
 
     <string name="search_games_title">Pesquisar Jogos</string>
 
+
+    <string name="light_mode">Claro</string>
+    <string name="dark_mode">Escuro</string>
+    <string name="customize">Aparência</string>
+
+    <string name="app_theme">Tema:</string>
+    <string name="app_language">Idioma:</string>
+
+    <string name="english_language">Inglês</string>
+    <string name="portuguese_language">Português</string>
+    <string name="system_default_language">Auto</string>
+
     <string name="reset">Apagar</string>
     <string name="filters">Filtros</string>
     <string name="order_type">Tipo de Ordem:</string>
