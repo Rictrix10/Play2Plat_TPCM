@@ -36,7 +36,7 @@
             app:layout_constraintEnd_toStartOf="@id/black_square"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="20dp"
-            android:queryHint="Search Games"
+            android:queryHint="@string/search_games_title"
             android:background="@drawable/text_input" />
 
         <ImageView

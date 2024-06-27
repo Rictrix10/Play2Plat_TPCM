@@ -1,6 +1,8 @@
 package com.example.play2plat_tpcm
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -125,35 +127,47 @@ class Platforms_List_Fragment : Fragment() {
                         layout.alpha = 0.5f // Torna opaco
                     }
                     // Configura o clique para alternar entre opaco e não opaco
-                    layout.setOnClickListener {
-                        if (userId != null) {
-                            if (layout.alpha == 1.0f) {
-                                layout.alpha = 0.5f
-                                if (isUserPlatforms) {
-                                    // Remove platform from user
-                                    deletePlatformFromUser(userId!!.toInt(), platformToId(platform))
-                                }else{
-                                    deletePlatformFromGame(userId!!.toInt(), platformToId(platform))
-                                }
-                            } else {
-                                layout.alpha = 1.0f
-                                if (isUserPlatforms) {
-                                    // Add platform to user
-                                    addPlatformToUser(userId!!.toInt(), platformToId(platform))
-                                }
-                                else{
-                                    addPlatformToGame(userId!!.toInt(), platformToId(platform))
+
+                        layout.setOnClickListener {
+                            if(isNetworkAvailable()){
+                                if (userId != null) {
+                                    if (layout.alpha == 1.0f) {
+                                        layout.alpha = 0.5f
+                                        if (isUserPlatforms) {
+                                            // Remove platform from user
+                                            deletePlatformFromUser(userId!!.toInt(), platformToId(platform))
+                                        }else{
+                                            deletePlatformFromGame(userId!!.toInt(), platformToId(platform))
+                                        }
+                                    } else {
+                                        layout.alpha = 1.0f
+                                        if (isUserPlatforms) {
+                                            // Add platform to user
+                                            addPlatformToUser(userId!!.toInt(), platformToId(platform))
+                                        }
+                                        else{
+                                            addPlatformToGame(userId!!.toInt(), platformToId(platform))
+                                        }
+                                    }
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        getString(R.string.user_id_null),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
                                 }
                             }
-                        } else {
-                            Toast.makeText(
-                                context,
-                                getString(R.string.user_id_null),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            else{
+                                Toast.makeText(
+                                    context,
+                                    getString(R.string.need_online_edit_platforms),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
 
                         }
-                    }
+
                 }
             }
         }
@@ -162,6 +176,13 @@ class Platforms_List_Fragment : Fragment() {
     private fun sendSelectedPlatforms(platformLayouts: Map<String, LinearLayout>) {
         val selectedPlatforms = platformLayouts.filter { it.value.alpha == 1.0f }.keys.toList()
         listener?.onPlatformsSelected(selectedPlatforms)
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     interface OnPlatformsSelectedListener {
@@ -273,7 +294,7 @@ class Platforms_List_Fragment : Fragment() {
     private fun platformToId(platform: String): Int {
         return when (platform) {
             "PC" -> 2
-            "Xbox" -> 3
+            "XBox" -> 3
             "PlayStation" -> 4
             "Switch" -> 5
             "Android" -> 6

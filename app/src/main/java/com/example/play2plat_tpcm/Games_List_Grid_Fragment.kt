@@ -105,7 +105,7 @@ class Games_List_Grid_Fragment : Fragment(), Games_List_Grid_Adapter.OnGameClick
             val noCollectionGames = getString(R.string.no_collection_games, collectionName)
             noGamesTextView.text = noCollectionGames
         } else {
-            noGamesTextView.text = "No Games found"
+            noGamesTextView.text = getString(R.string.no_games_found)
         }
 
 

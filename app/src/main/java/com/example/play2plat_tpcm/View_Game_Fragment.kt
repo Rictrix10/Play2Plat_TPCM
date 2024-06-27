@@ -115,8 +115,10 @@ class View_Game_Fragment : Fragment() {
         // Show or hide edit icon based on user type
         if (currentUserType == 1) {
             editIcon.visibility = View.VISIBLE
+            deleteIcon.visibility = View.VISIBLE
         } else {
             editIcon.visibility = View.GONE
+            deleteIcon.visibility = View.GONE
         }
 
         backButton.setOnClickListener {
@@ -169,7 +171,17 @@ class View_Game_Fragment : Fragment() {
                             }
 
                             deleteIcon.setOnClickListener {
-                                showDeleteConfirmationDialog(gameId)
+                                if(isNetworkAvailable()){
+                                    showDeleteConfirmationDialog(gameId)
+                                }
+                                else{
+                                    Toast.makeText(
+                                        requireContext(),
+                                        getString(R.string.need_online_delete_game),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
                             }
 
                             nameTextView.text = game.name
@@ -276,17 +288,23 @@ class View_Game_Fragment : Fragment() {
 
         val editText = dialogView.findViewById<EditText>(R.id.confirmation_text)
 
-        alertDialogBuilder.setPositiveButton("Delete") { dialog, _ ->
+        alertDialogBuilder.setPositiveButton(R.string.apagar) { dialog, _ ->
             val confirmationText = editText.text.toString()
-            if (confirmationText == "Fatality") {
-                deleteGame(gameId)
-                dialog.dismiss()
-            } else {
-                Toast.makeText(requireContext(), "Type 'Fatality' to confirm", Toast.LENGTH_SHORT).show()
+            if(isNetworkAvailable()){
+                if (confirmationText == "Fatality") {
+                    deleteGame(gameId)
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), R.string.type_fatality, Toast.LENGTH_SHORT).show()
+                }
             }
+            else{
+                Toast.makeText(requireContext(), R.string.error_delete_game, Toast.LENGTH_SHORT).show()
+            }
+
         }
 
-        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+        alertDialogBuilder.setNegativeButton(R.string.cancel) { dialog, _ ->
             dialog.dismiss()
         }
 
@@ -309,16 +327,16 @@ class View_Game_Fragment : Fragment() {
         ApiManager.apiService.deleteGame(gameId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Game deleted successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.game_deleted_success, Toast.LENGTH_SHORT).show()
                     // Voltar à tela anterior ou atualizar a UI conforme necessário
                     requireActivity().onBackPressed()
                 } else {
-                    Toast.makeText(requireContext(), "Failed to delete game", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.delete_game_fail, Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(requireContext(), "Failed to delete game", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "Failed to delete game", Toast.LENGTH_SHORT).show()
             }
         })
     }

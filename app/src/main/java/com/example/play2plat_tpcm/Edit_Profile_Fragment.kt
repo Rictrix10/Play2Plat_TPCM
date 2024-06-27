@@ -553,7 +553,11 @@ class Edit_Profile_Fragment : Fragment() {
                             }
                         }
                     } else {
-                        Log.e("EditProfile", "Erro no upload: ${response.message()}")
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.error_upload_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
@@ -606,14 +610,14 @@ class Edit_Profile_Fragment : Fragment() {
         if(updatedUsername.isEmpty()){
             Toast.makeText(
                 requireContext(),
-                "Username não pode estar vazio",
+                getString(R.string.username_not_null),
                 Toast.LENGTH_SHORT
             ).show()
         }
         else if(updatedEmail.isEmpty()){
             Toast.makeText(
                 requireContext(),
-                "Email não pode estar vazio",
+                getString(R.string.email_not_null),
                 Toast.LENGTH_SHORT
             ).show()
         }

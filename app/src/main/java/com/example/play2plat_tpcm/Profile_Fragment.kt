@@ -173,9 +173,22 @@ class Profile_Fragment : Fragment() {
             logout()
         }
 
-        deleteButton.setOnClickListener {
-            deleteAccountWithConfirmation()
-        }
+
+            deleteButton.setOnClickListener {
+                if(isNetworkAvailable()){
+                    deleteAccountWithConfirmation()
+                }
+                else{
+                    Toast.makeText(
+                        context,
+                        getString(R.string.need_online_delete_account),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
+
+            }
+
     }
 
     private fun uploadAvatar(avatarFilePath: String, callback: (String?) -> Unit) {
@@ -538,7 +551,11 @@ class Profile_Fragment : Fragment() {
                 } else if (response.code() == 400) {
                     callback.onVerificationFailure()
                 } else {
-                    Toast.makeText(context, "Erro desconhecido: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.unknown_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -557,7 +574,7 @@ class Profile_Fragment : Fragment() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
 
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Conta eliminada com sucesso", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.account_deleted), Toast.LENGTH_SHORT).show()
                     // Redirecionar para a tela de login após deletar a conta
 
                     userViewModel.getUserByIdUser(userId).observe(viewLifecycleOwner) { user ->

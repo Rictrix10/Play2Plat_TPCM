@@ -5,6 +5,8 @@ import android.animation.AnimatorInflater
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -170,111 +172,170 @@ class Edit_Game_Fragment : Fragment() {
 
 
         saveButton.setOnClickListener {
-            val gameTitle = gameTitleEditText.text.toString()
-            val description = descriptionEditText.text.toString()
-            val selectedCompanyText = companyTitle.text.toString()
-            val selectedSequenceText = sequenceTitle.text.toString()
-            val selectedGenreTexts = genreTitle.text.toString().split(", ")
-            val selectedPegiInfo = pegiAdapter.getSelectedPosition().takeIf { it != -1 }?.let {
-                val pegiInfo = pegiInfoValues[it]
-                val pegiValue = pegiInfo.substringAfter(":").trim()
-                pegiValue.toIntOrNull() ?: 0
-            } ?: 0
-            val isFree = isFreeCheckBox.isChecked
-            var selectedCompanyId: Int? = null
-            var selectedSequenceId: Int? = null
-            val selectedGenreIds = mutableListOf<Int>()
+            if (isNetworkAvailable()) {
+                val gameTitle = gameTitleEditText.text.toString()
+                val description = descriptionEditText.text.toString()
+                val selectedCompanyText = companyTitle.text.toString()
+                val selectedSequenceText = sequenceTitle.text.toString()
+                val selectedGenreTexts = genreTitle.text.toString().split(", ")
+                val selectedPegiInfo = pegiAdapter.getSelectedPosition().takeIf { it != -1 }?.let {
+                    val pegiInfo = pegiInfoValues[it]
+                    val pegiValue = pegiInfo.substringAfter(":").trim()
+                    pegiValue.toIntOrNull() ?: 0
+                } ?: 0
+                val isFree = isFreeCheckBox.isChecked
+                var selectedCompanyId: Int? = null
+                var selectedSequenceId: Int? = null
+                val selectedGenreIds = mutableListOf<Int>()
 
-            for (company in companies) {
-                if (company.name == selectedCompanyText) {
-                    selectedCompanyId = company.id
-                    break
+                for (company in companies) {
+                    if (company.name == selectedCompanyText) {
+                        selectedCompanyId = company.id
+                        break
+                    }
                 }
-            }
 
-            for (sequence in sequences) {
-                if (sequence.name == selectedSequenceText) {
-                    selectedSequenceId = sequence.id
-                    break
+                for (sequence in sequences) {
+                    if (sequence.name == selectedSequenceText) {
+                        selectedSequenceId = sequence.id
+                        break
+                    }
                 }
-            }
 
-            for (genre in genres) {
-                if (selectedGenreTexts.contains(genre.name)) {
-                    selectedGenreIds.add(genre.id)
+                for (genre in genres) {
+                    if (selectedGenreTexts.contains(genre.name)) {
+                        selectedGenreIds.add(genre.id)
+                    }
                 }
-            }
 
-            if (gameTitle.isEmpty()) {
-                Toast.makeText(requireContext(), getString(R.string.game_name_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (gameTitle.isEmpty()) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.game_name_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (description.length <= 6) {
-                Toast.makeText(requireContext(), getString(R.string.description_too_short), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (description.length <= 6) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.description_too_short),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (selectedGenreIds.isEmpty()) {
-                Toast.makeText(requireContext(), getString(R.string.genre_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedGenreIds.isEmpty()) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.genre_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
-            if (selectedCompanyId == null) {
-                Toast.makeText(requireContext(), getString(R.string.company_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedCompanyId == null) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.company_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
 
-            if (selectedPegiInfo == 0) {
-                Toast.makeText(requireContext(), getString(R.string.pegi_info_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                if (selectedPegiInfo == 0) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.pegi_info_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
 
 
-            val context = requireContext()
+                val context = requireContext()
 
-            // Verifica se uma nova imagem foi selecionada
-            if (selectedImageUri == null) {
-                // Se não houve seleção de nova imagem, utilizar a imagem existente (gameInfo.coverImage)
-                editGame(gameInfo!!.coverImage!!, gameTitle, description, isFree, selectedPegiInfo, selectedSequenceId, selectedCompanyId, selectedGenreIds)
-            } else {
-                // Se houve seleção de nova imagem, fazer upload da nova imagem
-                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
-                val file = bitmapToFile(context, bitmap)
+                // Verifica se uma nova imagem foi selecionada
+                if (selectedImageUri == null) {
+                    // Se não houve seleção de nova imagem, utilizar a imagem existente (gameInfo.coverImage)
+                    editGame(
+                        gameInfo!!.coverImage!!,
+                        gameTitle,
+                        description,
+                        isFree,
+                        selectedPegiInfo,
+                        selectedSequenceId,
+                        selectedCompanyId,
+                        selectedGenreIds
+                    )
+                } else {
+                    // Se houve seleção de nova imagem, fazer upload da nova imagem
+                    val bitmap =
+                        MediaStore.Images.Media.getBitmap(context.contentResolver, selectedImageUri)
+                    val file = bitmapToFile(context, bitmap)
 
-                val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
+                    val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                    val imagePart =
+                        MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
 
-                val call = ApiManager.apiService.uploadImage(imagePart)
-                call.enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        if (response.isSuccessful) {
-                            val imageUrl = response.body()?.string()
-                            imageUrl?.let {
-                                val pattern = Regex("\"url\":\"(\\S+)\"")
-                                val matchResult = pattern.find(it)
+                    val call = ApiManager.apiService.uploadImage(imagePart)
+                    call.enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(
+                            call: Call<ResponseBody>,
+                            response: Response<ResponseBody>
+                        ) {
+                            if (response.isSuccessful) {
+                                val imageUrl = response.body()?.string()
+                                imageUrl?.let {
+                                    val pattern = Regex("\"url\":\"(\\S+)\"")
+                                    val matchResult = pattern.find(it)
 
-                                matchResult?.let { result ->
-                                    val coverImageUrl = result.groupValues[1]
+                                    matchResult?.let { result ->
+                                        val coverImageUrl = result.groupValues[1]
 
-                                    // Editar o jogo utilizando a nova imagem
-                                    editGame(coverImageUrl, gameTitle, description, isFree, selectedPegiInfo, selectedSequenceId, selectedCompanyId, selectedGenreIds)
+                                        // Editar o jogo utilizando a nova imagem
+                                        editGame(
+                                            coverImageUrl,
+                                            gameTitle,
+                                            description,
+                                            isFree,
+                                            selectedPegiInfo,
+                                            selectedSequenceId,
+                                            selectedCompanyId,
+                                            selectedGenreIds
+                                        )
+                                    }
                                 }
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.error_upload_image),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                        } else {
-                            Log.e("AddNewGame", "Erro ao fazer upload da imagem: ${response.message()}")
                         }
-                    }
 
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Log.e("AddNewGame", "Falha na requisição de upload: ${t.message}")
-                    }
-                })
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.error_upload_image),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+                }
             }
+            else{
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.error_edit_game),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
         }
-
-
 
         return view
     }
@@ -326,6 +387,11 @@ class Edit_Game_Fragment : Fragment() {
                                                                 Log.d("AddNewGame", "Gênero associado com sucesso: $gameToGenreAssociation")
                                                                 successfulAssociations++
                                                                 if (successfulAssociations == totalAssociations) {
+                                                                    Toast.makeText(
+                                                                        requireContext(),
+                                                                        getString(R.string.game_edited_success),
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
                                                                     navigateBack()
                                                                 }
                                                             } else {
@@ -396,7 +462,12 @@ class Edit_Game_Fragment : Fragment() {
         }
     }
 
-
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 
 
     private fun populateFields() {

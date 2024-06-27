@@ -351,12 +351,20 @@ class Add_New_Game_Fragment : Fragment() {
                             }
                         }
                     } else {
-                        Log.e("AddNewGame", "Erro ao fazer upload da imagem: ${response.message()}")
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.error_upload_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("AddNewGame", "Falha na requisição de upload: ${t.message}")
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.error_upload_image),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
         }
