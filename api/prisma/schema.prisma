@@ -25,6 +25,11 @@ model user {
   games             game[]
   userGames         userGame[]
   userGameComments  userGameComment[]
+  sentRequests      friendRequest[]  @relation("SentUser")
+  receivedRequests  friendRequest[]  @relation("ReceivedUser")
+  userOnes          message[]  @relation("UserOne")
+  userTwos          message[]  @relation("UserTwo")
+
 }
 
 model userType {
@@ -119,6 +124,17 @@ model userGame {
   @@unique([userId, gameId])
 }
 
+model friendRequest {
+  id                      Int        @id @default(autoincrement())
+  isAccepted              Boolean
+  sentUser       user     @relation("SentUser", fields: [sentUserId], references: [id], onDelete: Cascade)
+  receivedUser   user     @relation("ReceivedUser", fields: [receivedUserId], references: [id], onDelete: Cascade)
+  sentUserId              Int
+  receivedUserId          Int
+
+  @@unique([sentUserId, receivedUserId])
+}
+
 model gameGenre {
   id         Int        @id @default(autoincrement())
   game       game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
@@ -161,6 +177,19 @@ model userGameComment {
   latitude      Float?
   longitude     Float?
   location      String?
+
+}
+
+model message {
+  id             Int         @id @default(autoincrement())
+  message        String
+  image          String?
+  isAnswer       Int?
+  userOne        user       @relation("UserOne", fields: [userOneId], references: [id], onDelete: Cascade)
+  userTwo        user       @relation("UserTwo", fields: [userTwoId], references: [id], onDelete: Cascade)
+  userOneId                 Int
+  userTwoId                 Int
+  date           DateTime?
 
 }
 
