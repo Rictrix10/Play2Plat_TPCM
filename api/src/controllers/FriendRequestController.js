@@ -186,6 +186,22 @@ const FriendRequestController = {
             }
         },
 
+getFriendRequestStatusByUsers: async (req, res) => {
+    try {
+        const sentUserId = parseInt(req.params.sentUserId);
+        const receivedUserId = parseInt(req.params.receivedUserId);
+
+        const friendRequest = await FriendRequestModel.getFriendRequestStatusByUsers(sentUserId, receivedUserId);
+
+        if (friendRequest) {
+            res.json({ isAccepted: friendRequest.isAccepted });
+        } else {
+            res.status(404).json({ error: 'Friend Request não encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar Friend Request' });
+    }
+}
 
 };
 

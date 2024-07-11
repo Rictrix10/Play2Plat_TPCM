@@ -21,4 +21,6 @@ router.get('/friend-request/sent-user/:sentUserId/received-user/:receivedUserId'
 
 router.patch('/friend-request/sent-user/:sentUserId/received-user/:receivedUserId', FriendRequestController.updateFriendRequestBySentUserIdAndReceivedUserId);
 router.put('/friend-request/:id', FriendRequestController.updateFriendRequestAccepted);
+
+router.get('/friend-request/status/:sentUserId/:receivedUserId', FriendRequestController.getFriendRequestStatusByUsers);
 module.exports = router;

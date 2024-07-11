@@ -126,6 +126,20 @@ deleteFriendRequestBySentUserIdAndReceivedUserId: async (sentUserId, receivedUse
         });
     },
 
+getFriendRequestStatusByUsers: async (sentUserId, receivedUserId) => {
+    return await prisma.friendRequest.findUnique({
+        where: {
+            sentUserId_receivedUserId: {
+                sentUserId: sentUserId,
+                receivedUserId: receivedUserId
+            }
+        },
+        select: {
+            isAccepted: true
+        }
+    });
+}
+
 };
 
 module.exports = FriendRequestModel;
