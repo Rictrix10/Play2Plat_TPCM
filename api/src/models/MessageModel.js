@@ -147,66 +147,68 @@ const MessageModel = {
 
     // ENDPOINT DE LISTAR USERS QUE SE ENVIOU MENSAGENS
 
-        getUsersByMessageId: async (userId) => {
-            const messages = await prisma.message.findMany({
-                where: {
-                    OR: [
-                        { userOneId: userId },
-                        { userTwoId: userId }
-                    ]
-                },
-                orderBy: {
-                    id: 'desc'
-                },
-                include: {
-                    userOne: {
-                        select: {
-                            id: true,
-                            username: true,
-                            avatar: true
-                        }
+            getUsersByMessageId: async (userId) => {
+                // Passo 1: Obter mensagens com usuários associados ordenadas por ID da mensagem decrescente
+                const messages = await prisma.message.findMany({
+                    where: {
+                        OR: [
+                            { userOneId: userId },
+                            { userTwoId: userId }
+                        ]
                     },
-                    userTwo: {
-                        select: {
-                            id: true,
-                            username: true,
-                            avatar: true
+                    orderBy: {
+                        id: 'desc'
+                    },
+                    include: {
+                        userOne: {
+                            select: {
+                                id: true,
+                                username: true,
+                                avatar: true
+                            }
+                        },
+                        userTwo: {
+                            select: {
+                                id: true,
+                                username: true,
+                                avatar: true
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            const userIds = new Set();
+                // Passo 2: Armazenar os usuários únicos com o ID da mensagem mais recente
+                const userMap = new Map();
 
-            // Adiciona usuários ao conjunto para evitar duplicados
-            messages.forEach(message => {
-                if (message.userOneId !== userId && !userIds.has(message.userOneId)) {
-                    userIds.add(message.userOneId);
-                }
-                if (message.userTwoId !== userId && !userIds.has(message.userTwoId)) {
-                    userIds.add(message.userTwoId);
-                }
-            });
-
-            // Converte o conjunto em array e busca detalhes dos usuários
-            const users = await prisma.user.findMany({
-                where: {
-                    id: {
-                        in: Array.from(userIds)
+                messages.forEach(message => {
+                    if (message.userOneId !== userId && !userMap.has(message.userOneId)) {
+                        userMap.set(message.userOneId, {
+                            id: message.userOne.id,
+                            username: message.userOne.username,
+                            avatar: message.userOne.avatar,
+                            messageId: message.id
+                        });
                     }
-                },
-                select: {
-                    id: true,
-                    username: true,
-                    avatar: true
-                },
-                orderBy: {
-                    id: 'desc'
-                }
-            });
+                    if (message.userTwoId !== userId && !userMap.has(message.userTwoId)) {
+                        userMap.set(message.userTwoId, {
+                            id: message.userTwo.id,
+                            username: message.userTwo.username,
+                            avatar: message.userTwo.avatar,
+                            messageId: message.id
+                        });
+                    }
+                });
 
-            return users;
-        }
+                // Passo 3: Converter o mapa para um array e ordenar pelo ID da mensagem
+                const users = Array.from(userMap.values()).sort((a, b) => b.messageId - a.messageId);
+
+                // Remover o campo messageId antes de retornar
+                return users.map(user => ({
+                    id: user.id,
+                    username: user.username,
+                    avatar: user.avatar
+                }));
+            }
 
     };
 
