@@ -17,6 +17,7 @@ const platformGameRoute = require('./src/routes/PlatformGameRoute');
 const userPlatformRoute = require('./src/routes/UserPlatformRoute');
 const uploadRoute = require('./src/routes/UploadRoute');
 const friendRequestRoute = require('./src/routes/FriendRequestRoute');
+const messageRoute = require('./src/routes/MessageRoute');
 
 const app = express();
 
@@ -44,6 +45,7 @@ apiRouter.use(platformGameRoute);
 apiRouter.use(userPlatformRoute);
 apiRouter.use(uploadRoute);
 apiRouter.use(friendRequestRoute);
+apiRouter.use(messageRoute);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
