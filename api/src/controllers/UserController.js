@@ -195,6 +195,20 @@ const UserController = {
                     res.status(500).json({ error: 'Erro ao verificar senha' });
                 }
             },
+
+    getUsersByPartialName: async (req, res) => {
+                try {
+                    const { name } = req.params;
+                    if (!name) {
+                        return res.status(400).json({ error: 'O parâmetro name é obrigatório' });
+                    }
+
+                    const users = await UserModel.getUsersByPartialName(name);
+                    res.json(users);
+                } catch (error) {
+                    res.status(500).json({ error: 'Erro ao buscar users por nome parcial' });
+                }
+            },
 };
 
 module.exports = UserController;

@@ -116,6 +116,29 @@ const UserModel = {
                     throw error;
                 }
             },
+
+    getUsersByPartialName: async (partialName) => {
+                        try {
+                            const users = await prisma.user.findMany({
+                                where: {
+                                    username: {
+                                        contains: partialName,
+                                        mode: 'insensitive', // Faz a busca ser case-insensitive
+                                    },
+                                    isDeleted: false,
+                                },
+                                select: {
+                                    id: true,
+                                    username: true,
+                                    avatar: true,
+                                },
+                            });
+                            return users;
+                        } catch (error) {
+                            console.error('Erro ao buscar users por nome parcial:', error);
+                            throw error;
+                        }
+                    },
 };
 
 module.exports = UserModel;

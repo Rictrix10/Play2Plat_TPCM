@@ -17,4 +17,6 @@ router.post('/users/login', UserController.loginUser);
 router.delete('/users/soft-delete/:id', UserController.softDeleteUser);
 
 router.post('/users/verify-password/:id', UserController.verifyPassword);
+
+router.get('/users/searchByName/:name', UserController.getUsersByPartialName);
 module.exports = router;
