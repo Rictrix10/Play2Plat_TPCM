@@ -142,5 +142,5 @@ const MessageController = {
         }
     };
 
-module.exports = UserGameCommentsController;
+module.exports = MessageController;
 

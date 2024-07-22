@@ -210,5 +210,5 @@ const MessageModel = {
 
     };
 
-module.exports = UserGameCommentsModel;
+module.exports = MessageModel;
 
