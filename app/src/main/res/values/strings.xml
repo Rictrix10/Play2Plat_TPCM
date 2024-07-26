@@ -133,7 +133,6 @@
     <string name="replying">Replying to </string>
 
 
-
     <string name="confirm_delete_message">Are you sure you want to delete your account?</string>
     <string name="password_incorrect">Incorrect password</string>
     <string name="password_empty">Password cannot be empty</string>
@@ -165,17 +164,15 @@
     <string name="rating">Rating</string>
 
 
-
     <string name="logout">Logout</string>
     <string name="delete_accountt">Delete Account</string>
-
 
 
     <string name="game_rating">Game Rating:</string>
     <string name="platformss">Platforms:</string>
 
 
-        <string name="no_internet_message">No internet connection.\nCheck your connection or try again later</string>
+    <string name="no_internet_message">No internet connection.\nCheck your connection or try again later</string>
     <string name="edit_game">Edit Game</string>
 
 
@@ -268,11 +265,6 @@
     <string name="laguage">Defined Language:English</string>
     <string name="passwords_not_empty">Password fields must not be empty.</string>
     <string name="passwords_do_not_match">The passwords don´t match </string>
-
-   
-
-
-
 
 
 </resources>
