@@ -141,6 +141,7 @@
     <string name="light_mode">Claro</string>
     <string name="dark_mode">Escuro</string>
     <string name="customize">Aparência</string>
+    <string name="system_default_mode">Auto</string>
 
     <string name="app_theme">Tema:</string>
     <string name="app_language">Idioma:</string>

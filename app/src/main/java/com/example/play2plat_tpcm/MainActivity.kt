@@ -63,7 +63,8 @@ class MainActivity : AppCompatActivity() {
     private fun getFragmentFromTabId(selectedTabId: Int): Fragment {
         return when (selectedTabId) {
             R.id.games_lay -> Games_2_Fragment()
-            R.id.favorites_lay -> Favorites_Fragment()
+            //R.id.favorites_lay -> Favorites_Fragment()   // FAZER ALTERAÇÕES
+            R.id.favorites_lay -> MessagesFragment()
             R.id.profile_lay -> {
                 val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
                 val userId = sharedPreferences.getInt("user_id", 0)
@@ -97,7 +98,8 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.favorites_lay -> {
                 if (isNetworkAvailable()) {
-                    replaceFragment(Favorites_Fragment())
+                    //replaceFragment(Favorites_Fragment())    FAZER ALTERAÇÕES
+                    replaceFragment(MessagesFragment())
                 }
                 else{
                     redirectToNoConnectionFragment()

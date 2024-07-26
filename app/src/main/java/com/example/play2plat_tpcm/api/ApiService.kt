@@ -241,4 +241,8 @@ interface ApiService {
 
     @DELETE("games/{id}")
     fun deleteGame(@Path("id") id: Int): Call<Void>
+
+    @GET("users-by-message/{userId}")
+    fun getUsersByMessage(@Path("userId") userId: Int): Call<List<UserMessage>>
+
 }
