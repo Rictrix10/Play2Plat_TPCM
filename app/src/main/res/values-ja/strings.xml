@@ -1,0 +1,261 @@
+<resources>
+    <string name="app_name">Play2Plat</string>
+    <string name="title_activity_main_page">メインページ</string>
+    <string name="tv_description_text">play2platでゲームの冒険をこれまで以上に楽しもう - 記録、共有、接続のための究極のアプリ。</string>
+    <string name="btn_get_started_text">今すぐ始める</string>
+    <string-array name="pegi_info_values">
+        <item>3</item>
+        <item>7</item>
+        <item>12</item>
+        <item>16</item>
+        <item>18</item>
+    </string-array>
+    <string-array name="collections_names">
+        <item>ウィッシュリスト</item>
+        <item>進行中</item>
+        <item>一時停止</item>
+        <item>完了</item>
+    </string-array>
+
+    <string name="PostsLabel">コメント：</string>
+    <string name="VerMapa">マップを見る</string>
+    <string name="hello_blank_fragment">空白のフラグメントにこんにちは</string>
+    <string name="sign_up_prompt">初めてですか？ <font color="#D10341">登録する</font></string>
+    <string name="sign_in_prompt">アカウントを持っていますか？ <font color="#D10341">サインイン</font></string>
+    <string name="playing">進行中</string>
+
+    <string name="sign_in">サインイン</string>
+    <string name="username">ユーザー名</string>
+    <string name="password">パスワード</string>
+    <string name="sign_up">登録する</string>
+    <string name="email">メール</string>
+    <string name="confirm_password">パスワード確認</string>
+    <string name="no_connection_login">接続エラー、接続を確認してください</string>
+    <string name="no_connection_register">登録エラー、接続を確認してください</string>
+
+    <string name="upload_cover">カバーをアップロード</string>
+    <string name="enter_description">説明</string>
+    <string name="enter_game_title">ゲームタイトル</string>
+    <string name="genres">ジャンル</string>
+    <string name="platforms">プラットフォーム</string>
+    <string name="companies">開発者</string>
+    <string name="sequencess">続編</string>
+    <string name="pegi_information">PEGI情報</string>
+    <string name="free">無料</string>
+    <string name="save">保存する</string>
+
+    <string name="view_games">ゲームを見る</string>
+    <string name="favorites">お気に入り</string>
+    <string name="games">ゲーム</string>
+    <string name="search">検索</string>
+    <string name="profile">プロフィール</string>
+    <string name="no_favorite_games">お気に入りのゲームがありません</string>
+    <string name="no_collection_games">コレクション%1$sにゲームがありません</string>
+    <string name="no_playing_games_user">進行中のゲームがありません</string>
+    <string name="no_favorite_games_user">お気に入りのゲームがありません</string>
+    <string name="no_playing_games_other">このユーザーは進行中のゲームがありません</string>
+    <string name="no_favorite_games_other">このユーザーにはお気に入りのゲームがありません</string>
+    <string name="more_games_future">今後さらに多くのゲームが登場予定</string>
+
+    <string name="action_games">アクションゲーム：</string>
+    <string name="free_games">無料ゲーム：</string>
+    <string name="mobile_games">モバイルゲーム：</string>
+
+    <string name="hello">こんにちは,</string>
+
+    <string name="description">説明：</string>
+    <string name="rate_this_game">このゲームを評価する：</string>
+    <string name="posts">コメント：</string>
+
+    <string name="edit_profile">プロフィールを編集</string>
+    <string name="new_pass">新しいパスワード</string>
+    <string name="confirm_pass">パスワード確認</string>
+    <string name="change_pass">パスワードを変更</string>
+
+    <string name="new_post">新しい投稿を書く</string>
+
+    <string name="collections">コレクション</string>
+    <string name="platforms2">プラットフォーム：</string>
+
+    <string name="bad">悪い</string>
+    <string name="ok">普通</string>
+    <string name="good">良い</string>
+    <string name="great">素晴らしい</string>
+    <string name="wow">すごい</string>
+
+    <string name="email_invalid">無効なメールアドレス</string>
+    <string name="password_invalid">パスワードは8文字以上、大文字、特殊文字、数字を含む必要があります</string>
+    <string name="email_in_use">メールアドレスは既に使用されています</string>
+    <string name="username_in_use">ユーザー名は既に使用されています</string>
+    <string name="registration_failed">登録エラー</string>
+    <string name="password_mismatch">パスワードが一致しません</string>
+    <string name="user_registered_successfully">ユーザーが正常に登録されました</string>
+
+    <string name="user_not_found">ユーザーが見つかりません</string>
+    <string name="invalid_credentials">無効な資格情報</string>
+    <string name="login_failed">サインインエラー</string>
+    <string name="login_successful">サインイン成功</string>
+    <string name="please_fill_all_fields">すべてのフィールドを記入してください</string>
+    <string name="error_response_from_server">無効なサーバー応答</string>
+    <string name="no_games_found">ゲームが見つかりません</string>
+    <string name="from">から</string>
+    <string name="paramaters_games">%1$sのゲーム</string>
+    <string name="paramaters_games2">%1$sゲーム</string>
+    <string name="recent_games">最近のゲーム</string>
+    <string name="favourite_games">お気に入りのゲーム</string>
+    <string name="playing_games">進行中のゲーム</string>
+    <string name="founded_games">見つかったゲーム</string>
+    <string name="error_upload_image">画像のアップロードエラー、別の画像を選択してください</string>
+    <string name="email_not_null">メールアドレスは空にできません</string>
+    <string name="username_not_null">ユーザー名は空にできません</string>
+    <string name="unknown_error">不明なエラー</string>
+
+    <string name="delete_account">本当にアカウントを削除しますか？</string>
+    <string name="digite_pass">パスワードを入力してください</string>
+    <string name="account_deleted">アカウントが正常に削除されました</string>
+
+    <string name="remember_me">ログイン状態を保持する</string>
+
+    <string name="confirm_title">確認</string>
+    <string name="confirm_message">本当にサインアウトしますか？</string>
+    <string name="confirm_yes">はい</string>
+    <string name="confirm_no">いいえ</string>
+    <string name="error_delete_account">アカウントの削除エラー、接続を確認してください</string>
+    <string name="deleted_user">削除されたユーザー</string>
+    <string name="replying">返信先 </string>
+
+    <string name="confirm_delete_message">本当にアカウントを削除しますか？</string>
+    <string name="password_incorrect">パスワードが間違っています</string>
+    <string name="password_empty">パスワードは空にできません</string>
+
+    <string name="your_collections_title">あなたのコレクション：</string>
+
+    <string name="search_games_title">ゲーム検索</string>
+
+    <string name="light_mode">ライトモード</string>
+    <string name="dark_mode">ダークモード</string>
+    <string name="customize">外観</string>
+    <string name="system_default_mode">自動</string>
+
+    <string name="app_theme">テーマ：</string>
+    <string name="app_language">言語：</string>
+
+    <string name="english_language">英語</string>
+    <string name="portuguese_language">ポルトガル語</string>
+    <string name="spanish_language">スペイン語</string>
+    <string name="french_language">フランス語</string>
+    <string name="german_language">ドイツ語</string>
+    <string name="japanese_language">日本語</string>
+    <string name="system_default_language">自動</string>
+
+    <string name="reset">リセット</string>
+    <string name="filters">フィルター</string>
+    <string name="order_type">並べ替え：</string>
+    <string name="free_game">無料ゲーム：</string>
+    <string name="only_free_games">無料ゲームのみ</string>
+    <string name="order_preference">並べ替え：</string>
+    <string name="submit_filter">フィルターを適用</string>
+    <string name="ascending">昇順</string>
+    <string name="descending">降順</string>
+    <string name="name">名前</string>
+    <string name="recent">最近</string>
+    <string name="rating">評価</string>
+
+    <string name="logout">サインアウト</string>
+    <string name="delete_accountt">アカウント削除</string>
+
+    <string name="game_rating">ゲーム評価：</string>
+    <string name="platformss">プラットフォーム：</string>
+
+    <string name="no_internet_message">インターネットに接続されていません。\n接続を確認するか、後で再試行してください</string>
+    <string name="edit_game">ゲームを編集</string>
+    <string name="click_marker_to_see_comment">コメントを見るにはマーカーをクリックしてください</string>
+
+    <string name="profile_updated_successfully">プロフィールが正常に変更されました！</string>
+
+    <string name="game_name_empty">ゲームの名前を入力してください。</string>
+    <string name="description_too_short">説明は6文字以上である必要があります。</string>
+    <string name="genre_empty">少なくとも1つのジャンルを選択してください。</string>
+    <string name="platform_empty">少なくとも1つのプラットフォームを選択してください。</string>
+    <string name="company_empty">フランチャイズを選択してください。</string>
+    <string name="pegi_info_empty">PEGI情報を選択してください。</string>
+    <string name="image_empty">画像を選択してください。</string>
+    <string name="activity_state_saved">アクティビティの状態が既に保存されています。再試行してください。</string>
+
+    <string name="username_empty">ユーザー名は空にできません</string>
+    <string name="email_empty">メールアドレスは空にできません</string>
+
+    <string name="filters_reset_success">フィルターが正常にリセットされました</string>
+
+    <string name="selected_platforms">選択されたプラットフォーム：%s</string>
+
+    <string name="location_permission_denied">位置情報の許可が拒否されました</string>
+    <string name="comment_post_error">コメントの投稿エラー、接続を確認してください</string>
+    <string name="delete_comment_error">コメントの削除エラー、接続を確認してください</string>
+    <string name="comment_empty_error">コメントは空にできません</string>
+    <string name="comment_post_success">コメントが正常に投稿されました！</string>
+    <string name="error_posting_comment">コメントの投稿エラー</string>
+    <string name="comment_update_success">コメントが正常に変更されました！</string>
+    <string name="error_update_comment">コメントの変更エラー</string>
+    <string name="edit_comment_error">コメントの変更エラー、接続を確認してください</string>
+    <string name="error_get_comment_details">コメントの詳細を取得するエラー</string>
+    <string name="request_comment_details_failure">コメントの詳細を取得するリクエスト失敗</string>
+    <string name="comment_delete_success">コメントが正常に削除されました</string>
+    <string name="delete_comment_failure">コメントの削除エラー</string>
+
+    <string name="insert_three_characters">少なくとも3文字を入力してください。</string>
+
+    <string name="rate_error_internet">評価エラー、接続を確認してください</string>
+    <string name="remove_rating_success">評価が正常に削除されました</string>
+    <string name="add_rating_success">評価が正常に追加されました</string>
+    <string name="update_rating_success">評価が正常に変更されました</string>
+
+    <string name="user_id_null">ユーザーIDがnullです</string>
+    <string name="platform_added">プラットフォームが追加されました</string>
+    <string name="failed_to_add_platform">プラットフォームの追加エラー</string>
+    <string name="platform_removed">プラットフォームが削除されました</string>
+    <string name="failed_to_remove_platform">プラットフォームの削除エラー</string>
+
+    <string name="account_deleted_success">アカウントが正常に削除されました</string>
+    <string name="failed_to_delete_account">アカウントの削除エラー</string>
+
+    <string name="invalid_username">無効なユーザー名</string>
+
+    <string name="image_shorter">より小さい画像を入力してください</string>
+
+    <string name="need_online_edit_game">ゲームを編集するにはオンラインである必要があります</string>
+    <string name="error_favoriting">お気に入り追加エラー、接続を確認してください</string>
+    <string name="need_online_delete_account">アカウントを削除するにはオンラインである必要があります</string>
+    <string name="need_online_delete_game">ゲームを削除するにはオンラインである必要があります</string>
+    <string name="need_online_edit_platforms">プラットフォームを編集するにはオンラインである必要があります</string>
+    <string name="error_add_game">ゲームの追加エラー、接続を確認してください</string>
+    <string name="error_edit_game">ゲームの変更エラー、接続を確認してください</string>
+    <string name="error_delete_game">ゲームの削除エラー、接続を確認してください</string>
+    <string name="cancel">キャンセル</string>
+    <string name="type_fatality">確認のために「Fatality」と入力してください</string>
+    <string name="game_deleted_success">ゲームが正常に削除されました</string>
+    <string name="edit_game_fail">ゲームの変更エラー</string>
+    <string name="delete_game_fail">ゲームの削除エラー</string>
+    <string name="game_edited_success">ゲームが正常に変更されました</string>
+    <string name="game_added_success">ゲームが正常に追加されました</string>
+    <string name="no_net_collections">コレクションを変更するにはオンラインである必要があります</string>
+
+    <string name="edit">編集</string>
+    <string name="apagar">削除</string>
+    <string name="editing">編集</string>
+    <string name="type_here">ここに入力</string>
+    <string name="type_fatality_confirm">削除を確認するために「Fatality」と入力してください</string>
+    <string name="about">約</string>
+    <string name="interact">対話</string>
+
+    <string name="delete_comment">本当にこのコメントを削除しますか？</string>
+    <string name="confirm">確認</string>
+
+    <string name="no_posts_on_game">このゲームについての投稿はまだありません。最初に経験を共有しましょう</string>
+    <string name="see_more_posts">さらにコメントを見る</string>
+
+    <string name="switch_theme">テーマを切り替える</string>
+    <string name="laguage">定義された言語：スペイン語</string>
+    <string name="passwords_not_empty">パスワードフィールドは空にできません。</string>
+    <string name="passwords_do_not_match">パスワードが一致しません。</string>
+</resources>

@@ -148,6 +148,10 @@
 
     <string name="english_language">Inglês</string>
     <string name="portuguese_language">Português</string>
+    <string name="spanish_language">Espanhol</string>
+    <string name="french_language">Francês</string>
+    <string name="german_language">Alemão</string>
+    <string name="japanese_language">Japonês</string>
     <string name="system_default_language">Auto</string>
 
     <string name="reset">Apagar</string>
