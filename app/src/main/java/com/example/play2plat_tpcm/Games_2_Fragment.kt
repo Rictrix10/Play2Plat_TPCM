@@ -142,9 +142,29 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         collectionAdapter = Collections_2_Adapter(context, collectionInfoValues, collectionTitle)
         collectionList.adapter = collectionAdapter
 
-        // Define o título inicial como "Playing" (ou a última coleção visualizada)
-        collectionTitle.text = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
-            .getString("last_collection", "Playing") ?: "Playing"
+        // Retrieve SharedPreferences
+        val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+
+// Get the last collection ID and selected locale
+        val lastCollectionId = sharedPreferences.getInt("last_collection_id", 1) // Default to 1 if not found
+        val selectedLocale = sharedPreferences.getString("selected_locale", "en") ?: "en"
+
+// Determine the string array resource based on the selected locale
+        val collectionNamesArray = when (selectedLocale) {
+            "pt" -> context.resources.getStringArray(R.array.collections_names) // Portuguese
+            else -> context.resources.getStringArray(R.array.collections_names) // Default to English
+        }
+
+// Check if the ID is within bounds and retrieve the collection name
+        val collectionName = if (lastCollectionId in collectionNamesArray.indices) {
+            collectionNamesArray[lastCollectionId]
+        } else {
+            // Handle out of bounds or default case if necessary
+            collectionNamesArray.getOrElse(0) { "Unknown" } // Default to the first item or another fallback
+        }
+
+// Set the text of the collectionTitle
+        collectionTitle.text = collectionName
 
         setListViewHeightBasedOnItems(collectionList)
     }

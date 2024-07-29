@@ -2,6 +2,7 @@ package com.example.play2plat_tpcm
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
@@ -428,11 +429,13 @@ class View_Game_Fragment : Fragment() {
     }
 
 
-    private val gameStateTranslationMap = mapOf(
-        "Wish List" to "Lista de Desejos",
-        "Playing" to "A jogar",
-        "Paused" to "Pausado",
-        "Concluded" to "Concluído"
+
+
+    val gameStateIdMap = mapOf(
+        "Wish List" to 0,
+        "Playing" to 1,
+        "Paused" to 2,
+        "Concluded" to 3
     )
 
 
@@ -463,16 +466,39 @@ class View_Game_Fragment : Fragment() {
 
 
     private fun selectOptionInAccordion(gameState: String?) {
-        val translatedGameState = gameStateTranslationMap[gameState] ?: gameState
+        // Get the shared preferences
+        val sharedPreferences = context?.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val selectedLocale = sharedPreferences?.getString("selected_locale", "en") ?: "en"
 
-        val selectedPosition = collectionInfoValues.indexOf(translatedGameState)
-        if (selectedPosition != -1) {
-            collectionAdapter.updateSelectedPosition(selectedPosition)
-            collectionTitle.text = translatedGameState
+        // Map the game state to its ID
+        val gameStateId = gameStateIdMap[gameState] ?: -1
+
+        if (gameStateId != -1) {
+            // Retrieve the collection name using the gameStateId and selectedLocale
+            val collectionName = getCollectionNameById(gameStateId, selectedLocale)
+            val selectedPosition = collectionInfoValues.indexOf(collectionName)
+
+            if (selectedPosition != -1) {
+                collectionAdapter.updateSelectedPosition(selectedPosition)
+                collectionTitle.text = collectionName
+            } else {
+                collectionTitle.text = getString(R.string.collections)
+            }
         } else {
             collectionTitle.text = getString(R.string.collections)
         }
     }
+
+    private fun getCollectionNameById(collectionId: Int, locale: String): String {
+        val res = context?.resources
+        val collections = when (locale) {
+            "pt" -> res?.getStringArray(R.array.collections_names)
+            else -> res?.getStringArray(R.array.collections_names)
+        }
+        return collections?.getOrNull(collectionId) ?: context?.getString(R.string.collections) ?: "Unknown Collection"
+    }
+
+
 
 
 

@@ -1,6 +1,7 @@
 package com.example.play2plat_tpcm.adapters
 
 import android.content.Context
+import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,14 +17,13 @@ class Collections_2_Adapter(
 ) : ArrayAdapter<String>(context, 0, values) {
 
     private var selectedPosition: Int = -1
-
+    private val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
 
     init {
-        // Carregar a última coleção visualizada do SharedPreferences
-        val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
-        val lastCollection = sharedPreferences.getString("last_collection", "Playing")
-        selectedPosition = values.indexOf(lastCollection)
-        collectionTitle.text = lastCollection
+        val lastCollectionId = sharedPreferences.getInt("last_collection_id", 1)
+        val translatedLastCollection = getCollectionNameById(lastCollectionId)
+        selectedPosition = values.indexOf(translatedLastCollection)
+        collectionTitle.text = translatedLastCollection
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -33,42 +33,37 @@ class Collections_2_Adapter(
 
         textView.text = values[position]
 
-        // Verifica se a posição atual é a posição selecionada
         val isSelected = position == selectedPosition
-
-        // Atualiza a cor de fundo do LinearLayout com base na seleção
         val backgroundColor = if (isSelected) {
-            context.getColor(R.color.opaque_WHITE) // Define a cor de fundo para branco opaco se estiver selecionado
+            context.getColor(R.color.opaque_WHITE)
         } else {
-            // Se não estiver selecionado, define a cor de fundo como transparente
             context.getColor(android.R.color.transparent)
         }
         linearLayout.setBackgroundColor(backgroundColor)
 
-        // Definir um ouvinte de clique no item da lista inteira
         view.setOnClickListener {
-            if (selectedPosition == position) {
-                // Se a posição já estiver selecionada, não faz nada
-                return@setOnClickListener
-            } else {
-                // Atualiza a posição selecionada
+            if (selectedPosition != position) {
                 selectedPosition = position
-                // Atualiza o título da coleção na tela principal
-                collectionTitle.text = "${values[position]}"
+                collectionTitle.text = values[position]
 
-                // Salvar a última coleção visualizada no SharedPreferences
-                val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
-                sharedPreferences.edit().putString("last_collection", values[position]).apply()
+                // Save the last collection ID
+                val collectionId = values.indexOf(values[position])
+                sharedPreferences.edit().putInt("last_collection_id", collectionId).apply()
+
+                notifyDataSetChanged()
             }
-            // Notifica o adaptador sobre a alteração para atualizar a interface do usuário
-            notifyDataSetChanged()
         }
 
         return view
+    }
+
+    private fun getCollectionNameById(collectionId: Int): String {
+        val res: Resources = context.resources
+        val collections = res.getStringArray(R.array.collections_names)
+        return collections.getOrNull(collectionId) ?: ""
     }
 
     fun getSelectedPosition(): Int {
         return selectedPosition
     }
 }
-
