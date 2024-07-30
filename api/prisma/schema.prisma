@@ -29,6 +29,8 @@ model user {
   receivedRequests  friendRequest[]  @relation("ReceivedUser")
   userOnes          message[]  @relation("UserOne")
   userTwos          message[]  @relation("UserTwo")
+  resetToken        String?
+  resetTokenExpiry  DateTime?
 
 }
 

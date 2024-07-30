@@ -1,6 +1,17 @@
 const UserModel = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // ou outro serviço de email
+  auth: {
+    user: 'ddkricplay2plat@gmail.com',
+    pass: 'PletoPl@to03',
+  },
+});
+
+
 
 const UserController = {
     createUser: async (req, res) => {
@@ -209,6 +220,60 @@ const UserController = {
                     res.status(500).json({ error: 'Erro ao buscar users por nome parcial' });
                 }
             },
+
+        requestPasswordReset: async (req, res) => {
+            try {
+                const { email } = req.body;
+
+                const result = await UserModel.createPasswordResetToken(email);
+                if (!result) {
+                    return res.status(404).json({ error: 'Usuário não encontrado' });
+                }
+
+                const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;
+
+                const mailOptions = {
+                    from: 'your-email@gmail.com',
+                    to: email,
+                    subject: 'Recuperação de Senha',
+                    text: `Você solicitou a recuperação de senha. Clique no link para redefinir sua senha: ${resetUrl}`,
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Erro ao enviar o email' });
+                    }
+                    res.status(200).json({ message: 'Email enviado com sucesso' });
+                });
+            } catch (error) {
+                console.error('Erro ao solicitar recuperação de senha:', error);
+                res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
+            }
+        },
+
+        resetPassword: async (req, res) => {
+            try {
+                const { token, newPassword } = req.body;
+
+                const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+                if (!passwordRegex.test(newPassword)) {
+                    return res.status(442).json({
+                        error: 'A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial',
+                    });
+                }
+
+                const user = await UserModel.resetPassword(token, newPassword);
+                if (!user) {
+                    return res.status(400).json({ error: 'Token inválido ou expirado' });
+                }
+
+                res.status(200).json({ message: 'Senha redefinida com sucesso' });
+            } catch (error) {
+                console.error('Erro ao redefinir senha:', error);
+                res.status(500).json({ error: 'Erro ao redefinir senha' });
+            }
+        },
+
 };
 
 module.exports = UserController;
