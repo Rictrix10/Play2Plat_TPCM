@@ -204,6 +204,10 @@ class Edit_Profile_Fragment : Fragment() {
             when (checkedId) {
                 R.id.english_button -> setLocale(Locale.ENGLISH)
                 R.id.portuguese_button -> setLocale(Locale("pt", "PT"))
+                R.id.spanish_button -> setLocale(Locale("es", "ES"))
+                R.id.french_button -> setLocale(Locale("fr", "FR"))
+                R.id.german_button -> setLocale(Locale("de", "DE"))
+                R.id.japanese_button -> setLocale(Locale("ja", "JA"))
                 R.id.system_language_button -> setLocaleToSystem()
             }
         }
@@ -229,6 +233,10 @@ class Edit_Profile_Fragment : Fragment() {
         val selectedLanguageId = when (selectedLocaleTag) {
             "en" -> R.id.english_button
             "pt" -> R.id.portuguese_button
+            "es" -> R.id.spanish_button
+            "fr" -> R.id.french_button
+            "de" -> R.id.german_button
+            "ja" -> R.id.japanese_button
             else -> R.id.system_language_button
         }
         languageRadioGroup.check(selectedLanguageId)

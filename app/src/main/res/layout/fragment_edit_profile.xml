@@ -351,6 +351,38 @@
                             app:buttonTint="@color/checkbox_color"/>
 
                         <RadioButton
+                            android:id="@+id/spanish_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/spanish_language"
+                            android:textColor="@color/white"
+                            app:buttonTint="@color/checkbox_color"/>
+
+                        <RadioButton
+                            android:id="@+id/french_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/french_language"
+                            android:textColor="@color/white"
+                            app:buttonTint="@color/checkbox_color"/>
+
+                        <RadioButton
+                            android:id="@+id/german_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/german_language"
+                            android:textColor="@color/white"
+                            app:buttonTint="@color/checkbox_color"/>
+
+                        <RadioButton
+                            android:id="@+id/japanese_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/japanese_language"
+                            android:textColor="@color/white"
+                            app:buttonTint="@color/checkbox_color"/>
+
+                        <RadioButton
                             android:id="@+id/system_language_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

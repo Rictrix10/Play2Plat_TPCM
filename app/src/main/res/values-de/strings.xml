@@ -1,0 +1,261 @@
+<resources>
+    <string name="app_name">Play2Plat</string>
+    <string name="title_activity_main_page">Startseite</string>
+    <string name="tv_description_text">Entdecken Sie Ihre Videospielabenteuer wie nie zuvor mit Play2Plat - der echten App zum Aufzeichnen, Teilen und Verbinden.</string>
+    <string name="btn_get_started_text">Jetzt starten</string>
+    <string-array name="pegi_info_values">
+        <item>3</item>
+        <item>7</item>
+        <item>12</item>
+        <item>16</item>
+        <item>18</item>
+    </string-array>
+    <string-array name="collections_names">
+        <item>Wunschliste</item>
+        <item>In Spiel</item>
+        <item>Pause</item>
+        <item>Abgeschlossen</item>
+    </string-array>
+
+    <string name="PostsLabel">Kommentare:</string>
+    <string name="VerMapa">Karte anzeigen</string>
+    <string name="hello_blank_fragment">Hallo leeres Fragment</string>
+    <string name="sign_up_prompt">Neu hier? <font color="#D10341">Registrieren</font></string>
+    <string name="sign_in_prompt">Haben Sie ein Konto? <font color="#D10341">Einloggen</font></string>
+    <string name="playing">In Spiel</string>
+
+    <string name="sign_in">Einloggen</string>
+    <string name="username">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="sign_up">Registrieren</string>
+    <string name="email">E-Mail</string>
+    <string name="confirm_password">Passwort bestätigen</string>
+    <string name="no_connection_login">Fehler beim Einloggen, überprüfen Sie Ihre Verbindung</string>
+    <string name="no_connection_register">Fehler bei der Registrierung, überprüfen Sie Ihre Verbindung</string>
+
+    <string name="upload_cover">Cover hochladen</string>
+    <string name="enter_description">Beschreibung</string>
+    <string name="enter_game_title">Spieltitel</string>
+    <string name="genres">Genres</string>
+    <string name="platforms">Plattformen</string>
+    <string name="companies">Entwickler</string>
+    <string name="sequencess">Sequenzen</string>
+    <string name="pegi_information">PEGI-Informationen</string>
+    <string name="free">Kostenlos</string>
+    <string name="save">Speichern</string>
+
+    <string name="view_games">Spiele anzeigen</string>
+    <string name="favorites">Favoriten</string>
+    <string name="games">Spiele</string>
+    <string name="search">Suche</string>
+    <string name="profile">Profil</string>
+    <string name="no_favorite_games">Es scheint, dass Sie noch kein Lieblingsspiel haben</string>
+    <string name="no_collection_games">Es scheint, dass Sie noch kein Spiel in der Sammlung %1$s haben</string>
+    <string name="no_playing_games_user">Sie haben kein Spiel in der Sammlung In Spiel</string>
+    <string name="no_favorite_games_user">Sie haben kein Lieblingsspiel</string>
+    <string name="no_playing_games_other">Dieser Benutzer hat kein Spiel in der Sammlung In Spiel</string>
+    <string name="no_favorite_games_other">Dieser Benutzer hat kein Lieblingsspiel</string>
+    <string name="more_games_future">Weitere Spiele in Zukunft</string>
+
+    <string name="action_games">Action-Spiele:</string>
+    <string name="free_games">Kostenlose Spiele:</string>
+    <string name="mobile_games">Handyspiele:</string>
+
+    <string name="hello">Hallo,</string>
+
+    <string name="description">Beschreibung:</string>
+    <string name="rate_this_game">Bewerten Sie dieses Spiel:</string>
+    <string name="posts">Kommentare:</string>
+
+    <string name="edit_profile">Profil bearbeiten</string>
+    <string name="new_pass">Neues Passwort</string>
+    <string name="confirm_pass">Passwort bestätigen</string>
+    <string name="change_pass">Passwort ändern</string>
+
+    <string name="new_post">Neuen Beitrag schreiben</string>
+
+    <string name="collections">Sammlungen</string>
+    <string name="platforms2">Plattformen:</string>
+
+    <string name="bad">schlecht</string>
+    <string name="ok">ok</string>
+    <string name="good">gut</string>
+    <string name="great">großartig</string>
+    <string name="wow">wow</string>
+
+    <string name="email_invalid">Ungültige E-Mail-Adresse</string>
+    <string name="password_invalid">Das Passwort muss mindestens 8 Zeichen lang sein, Großbuchstaben, Sonderzeichen und Zahlen enthalten</string>
+    <string name="email_in_use">E-Mail-Adresse wird bereits verwendet</string>
+    <string name="username_in_use">Benutzername wird bereits verwendet</string>
+    <string name="registration_failed">Registrierung fehlgeschlagen</string>
+    <string name="password_mismatch">Die Passwörter stimmen nicht überein</string>
+    <string name="user_registered_successfully">Benutzer erfolgreich registriert</string>
+
+    <string name="user_not_found">Benutzer nicht gefunden</string>
+    <string name="invalid_credentials">Ungültige Anmeldedaten</string>
+    <string name="login_failed">Anmeldung fehlgeschlagen</string>
+    <string name="login_successful">Anmeldung erfolgreich</string>
+    <string name="please_fill_all_fields">Bitte füllen Sie alle Felder aus</string>
+    <string name="error_response_from_server">Ungültige Serverantwort</string>
+    <string name="no_games_found">Keine Spiele gefunden</string>
+    <string name="from">Von</string>
+    <string name="paramaters_games">Spiele von %1$s</string>
+    <string name="paramaters_games2">Spiele %1$s</string>
+    <string name="recent_games">Aktuelle Spiele</string>
+    <string name="favourite_games">Lieblingsspiele</string>
+    <string name="playing_games">Aktuelle Spiele</string>
+    <string name="founded_games">Gefundene Spiele</string>
+    <string name="error_upload_image">Fehler beim Hochladen des Bildes, wählen Sie ein anderes Bild aus</string>
+    <string name="email_not_null">Die E-Mail-Adresse darf nicht leer sein</string>
+    <string name="username_not_null">Der Benutzername darf nicht leer sein</string>
+    <string name="unknown_error">Unbekannter Fehler</string>
+
+    <string name="delete_account">Möchten Sie Ihr Konto wirklich löschen?</string>
+    <string name="digite_pass">Geben Sie Ihr Passwort ein</string>
+    <string name="account_deleted">Konto erfolgreich gelöscht</string>
+
+    <string name="remember_me">Angemeldet bleiben</string>
+
+    <string name="confirm_title">Bestätigung</string>
+    <string name="confirm_message">Möchten Sie sich wirklich abmelden?</string>
+    <string name="confirm_yes">Ja</string>
+    <string name="confirm_no">Nein</string>
+    <string name="error_delete_account">Fehler beim Löschen des Kontos, überprüfen Sie Ihre Verbindung</string>
+    <string name="deleted_user">Benutzer gelöscht</string>
+    <string name="replying">Antworten auf </string>
+
+    <string name="confirm_delete_message">Sind Sie sicher, dass Sie Ihr Konto löschen möchten?</string>
+    <string name="password_incorrect">Passwort falsch</string>
+    <string name="password_empty">Das Passwort darf nicht leer sein</string>
+
+    <string name="your_collections_title">Ihre Sammlungen:</string>
+
+    <string name="search_games_title">Spiele suchen</string>
+
+    <string name="light_mode">Hell</string>
+    <string name="dark_mode">Dunkel</string>
+    <string name="customize">Anpassen</string>
+    <string name="system_default_mode">Systemstandard</string>
+
+    <string name="app_theme">Thema:</string>
+    <string name="app_language">Sprache:</string>
+
+    <string name="english_language">Englisch</string>
+    <string name="portuguese_language">Portugiesisch</string>
+    <string name="spanish_language">Spanisch</string>
+    <string name="french_language">French</string>
+    <string name="german_language">Französisch</string>
+    <string name="japanese_language">Japanisch</string>
+    <string name="system_default_language">Systemstandard</string>
+
+    <string name="reset">Zurücksetzen</string>
+    <string name="filters">Filter</string>
+    <string name="order_type">Sortierart:</string>
+    <string name="free_game">Kostenlose Spiele:</string>
+    <string name="only_free_games">Nur kostenlose Spiele</string>
+    <string name="order_preference">Reihenfolge:</string>
+    <string name="submit_filter">Filter anwenden</string>
+    <string name="ascending">Aufsteigend</string>
+    <string name="descending">Absteigend</string>
+    <string name="name">Name</string>
+    <string name="recent">Neueste</string>
+    <string name="rating">Bewertung</string>
+
+    <string name="logout">Abmelden</string>
+    <string name="delete_accountt">Konto löschen</string>
+
+    <string name="game_rating">Spielbewertung:</string>
+    <string name="platformss">Plattformen:</string>
+
+    <string name="no_internet_message">Keine Internetverbindung.\nÜberprüfen Sie Ihre Verbindung oder versuchen Sie es später erneut</string>
+    <string name="edit_game">Spiel bearbeiten</string>
+    <string name="click_marker_to_see_comment">Klicken Sie auf einen Marker, um den Kommentar zu sehen</string>
+
+    <string name="profile_updated_successfully">Profil erfolgreich aktualisiert!</string>
+
+    <string name="game_name_empty">Bitte geben Sie einen Namen für das Spiel ein.</string>
+    <string name="description_too_short">Die Beschreibung muss mehr als 6 Zeichen lang sein.</string>
+    <string name="genre_empty">Bitte wählen Sie mindestens ein Genre aus.</string>
+    <string name="platform_empty">Bitte wählen Sie mindestens eine Plattform aus.</string>
+    <string name="company_empty">Bitte wählen Sie ein Unternehmen aus.</string>
+    <string name="pegi_info_empty">Bitte wählen Sie PEGI-Informationen aus.</string>
+    <string name="image_empty">Bitte wählen Sie ein Bild aus.</string>
+    <string name="activity_state_saved">Der Zustand der Aktivität wurde bereits gespeichert. Bitte versuchen Sie es erneut.</string>
+
+    <string name="username_empty">Benutzername darf nicht leer sein</string>
+    <string name="email_empty">E-Mail darf nicht leer sein</string>
+
+    <string name="filters_reset_success">Filter erfolgreich zurückgesetzt</string>
+
+    <string name="selected_platforms">Ausgewählte Plattformen: %s</string>
+
+    <string name="location_permission_denied">Standortberechtigung verweigert</string>
+    <string name="comment_post_error">Fehler beim Posten des Kommentars, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="delete_comment_error">Fehler beim Löschen des Kommentars, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="comment_empty_error">Kommentar darf nicht leer sein</string>
+    <string name="comment_post_success">Kommentar erfolgreich gepostet!</string>
+    <string name="error_posting_comment">Fehler beim Posten des Kommentars</string>
+    <string name="comment_update_success">Kommentar erfolgreich aktualisiert!</string>
+    <string name="error_update_comment">Fehler beim Aktualisieren des Kommentars</string>
+    <string name="edit_comment_error">Fehler beim Bearbeiten des Kommentars, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="error_get_comment_details">Fehler beim Abrufen der Kommentardetails</string>
+    <string name="request_comment_details_failure">Fehler bei der Anfrage der Kommentardetails</string>
+    <string name="comment_delete_success">Kommentar erfolgreich gelöscht</string>
+    <string name="delete_comment_failure">Fehler beim Löschen des Kommentars</string>
+
+    <string name="insert_three_characters">Bitte geben Sie mindestens drei Zeichen ein.</string>
+
+    <string name="rate_error_internet">Fehler beim Bewerten, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="remove_rating_success">Bewertung erfolgreich entfernt</string>
+    <string name="add_rating_success">Bewertung erfolgreich hinzugefügt</string>
+    <string name="update_rating_success">Bewertung erfolgreich aktualisiert</string>
+
+    <string name="user_id_null">Benutzer-ID ist null</string>
+    <string name="platform_added">Plattform hinzugefügt</string>
+    <string name="failed_to_add_platform">Fehler beim Hinzufügen der Plattform</string>
+    <string name="platform_removed">Plattform entfernt</string>
+    <string name="failed_to_remove_platform">Fehler beim Entfernen der Plattform</string>
+
+    <string name="account_deleted_success">Konto erfolgreich gelöscht</string>
+    <string name="failed_to_delete_account">Fehler beim Löschen des Kontos</string>
+
+    <string name="invalid_username">Ungültiger Benutzername</string>
+
+    <string name="image_shorter">Bitte ein kleineres Bild hochladen</string>
+
+    <string name="need_online_edit_game">Sie müssen online sein, um ein Spiel zu bearbeiten</string>
+    <string name="error_favoriting">Fehler beim Hinzufügen zu den Favoriten, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="need_online_delete_account">Sie müssen online sein, um Ihr Konto zu löschen</string>
+    <string name="need_online_delete_game">Sie müssen online sein, um ein Spiel zu löschen</string>
+    <string name="need_online_edit_platforms">Sie müssen online sein, um Plattformen zu bearbeiten</string>
+    <string name="error_add_game">Fehler beim Hinzufügen des Spiels, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="error_edit_game">Fehler beim Bearbeiten des Spiels, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="error_delete_game">Fehler beim Löschen des Spiels, überprüfen Sie Ihre Internetverbindung</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="type_fatality">Geben Sie \'Fatality\' ein, um zu bestätigen</string>
+    <string name="game_deleted_success">Spiel erfolgreich gelöscht</string>
+    <string name="edit_game_fail">Fehler beim Bearbeiten des Spiels</string>
+    <string name="delete_game_fail">Fehler beim Löschen des Spiels</string>
+    <string name="game_edited_success">Spiel erfolgreich bearbeitet</string>
+    <string name="game_added_success">Spiel erfolgreich hinzugefügt</string>
+    <string name="no_net_collections">Sie müssen online sein, um die Sammlung zu ändern</string>
+
+    <string name="edit">Bearbeiten</string>
+    <string name="apagar">Löschen</string>
+    <string name="editing">Bearbeiten</string>
+    <string name="type_here">Hier eingeben</string>
+    <string name="type_fatality_confirm">Geben Sie \'Fatality\' ein, um die Löschung zu bestätigen</string>
+    <string name="about">Über</string>
+    <string name="interact">Interagieren</string>
+
+    <string name="delete_comment">Möchten Sie diesen Kommentar wirklich löschen?</string>
+    <string name="confirm">Bestätigung</string>
+
+    <string name="no_posts_on_game">Niemand hat bisher über das Spiel gepostet. Seien Sie der Erste, teilen Sie Ihre Erfahrungen</string>
+    <string name="see_more_posts">Weitere Kommentare anzeigen</string>
+
+    <string name="switch_theme">Thema wechseln</string>
+    <string name="laguage">Eingestellte Sprache: Deutsch</string>
+    <string name="passwords_not_empty">Die Passwortfelder dürfen nicht leer sein.</string>
+    <string name="passwords_do_not_match">Die Passwörter stimmen nicht überein.</string>
+</resources>
