@@ -4,7 +4,7 @@ const validator = require('validator');
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: 'gmail', // ou outro serviço de email
   auth: {
     user: 'ddkricplay2plat@gmail.com',
     pass: 'PletoPl@to03',
@@ -221,40 +221,58 @@ const UserController = {
                 }
             },
 
-           createPasswordResetToken: async (req, res) => {
-                try {
-                    const { email } = req.body;
-                    const result = await UserModel.createPasswordResetToken(email);
-                    if (!result) {
-                        return res.status(404).json({ error: 'Email não encontrado' });
-                    }
-                    const { token } = result;
-                    const mailOptions = {
-                        from: 'ddkricplay2plat@gmail.com',
-                        to: email,
-                        subject: 'Recuperação de Password',
-                        text: `Use este token para redefinir sua password: ${token}`,
-                    };
-                    await transporter.sendMail(mailOptions);
-                    res.json({ message: 'Token de recuperação enviado por email' });
-                } catch (error) {
-                    console.error('Erro ao gerar token de recuperação:', error);
-                    res.status(500).json({ error: 'Erro ao gerar token de recuperação' });
+        requestPasswordReset: async (req, res) => {
+            try {
+                const { email } = req.body;
+
+                const result = await UserModel.createPasswordResetToken(email);
+                if (!result) {
+                    return res.status(404).json({ error: 'Usuário não encontrado' });
                 }
-            },
-            resetPassword: async (req, res) => {
-                try {
-                    const { token, newPassword } = req.body;
-                    const user = await UserModel.resetPassword(token, newPassword);
-                    if (!user) {
-                        return res.status(400).json({ error: 'Token inválido ou expirado' });
+
+                const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;
+
+                const mailOptions = {
+                    from: 'your-email@gmail.com',
+                    to: email,
+                    subject: 'Recuperação de Senha',
+                    text: `Você solicitou a recuperação de senha. Clique no link para redefinir sua senha: ${resetUrl}`,
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Erro ao enviar o email' });
                     }
-                    res.json({ message: 'Password redefinida com sucesso' });
-                } catch (error) {
-                    console.error('Erro ao redefinir password:', error);
-                    res.status(500).json({ error: 'Erro ao redefinir password' });
+                    res.status(200).json({ message: 'Email enviado com sucesso' });
+                });
+            } catch (error) {
+                console.error('Erro ao solicitar recuperação de senha:', error);
+                res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
+            }
+        },
+
+        resetPassword: async (req, res) => {
+            try {
+                const { token, newPassword } = req.body;
+
+                const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+                if (!passwordRegex.test(newPassword)) {
+                    return res.status(442).json({
+                        error: 'A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial',
+                    });
                 }
-            },
+
+                const user = await UserModel.resetPassword(token, newPassword);
+                if (!user) {
+                    return res.status(400).json({ error: 'Token inválido ou expirado' });
+                }
+
+                res.status(200).json({ message: 'Senha redefinida com sucesso' });
+            } catch (error) {
+                console.error('Erro ao redefinir senha:', error);
+                res.status(500).json({ error: 'Erro ao redefinir senha' });
+            }
+        },
 
 };
 
