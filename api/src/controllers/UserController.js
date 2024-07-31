@@ -230,10 +230,10 @@ const UserController = {
                     return res.status(404).json({ error: 'Usuário não encontrado' });
                 }
 
-                const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;
+                const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;    // ALTERAR
 
                 const mailOptions = {
-                    from: 'your-email@gmail.com',
+                    from: 'ddkricplay2plat@gmail.com',
                     to: email,
                     subject: 'Recuperação de Senha',
                     text: `Você solicitou a recuperação de senha. Clique no link para redefinir sua senha: ${resetUrl}`,
