@@ -272,7 +272,14 @@ const UserController = {
        forgotPassword: asyncErrorHandler(async (req, res, next) => {
            // 1. GET USER BASED ON POSTED EMAIL
            const { email } = req.body;
-           const user = await prisma.user.findUnique({ where: { email } });
+
+               // Use UserModel to find the user by email
+               const user = await UserModel.findUserByEmail(email);
+
+               if (!user) {
+                   return res.status(404).json({ error: 'Utilizador não encontrado' });
+               }
+
            const result = await UserModel.createPasswordResetToken(email);
            if (!result) {
                return res.status(404).json({ error: 'Utilizador não encontrado' });
