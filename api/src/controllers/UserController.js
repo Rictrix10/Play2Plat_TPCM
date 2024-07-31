@@ -247,7 +247,7 @@ const UserController = {
 
                 const mailOptions = {
                     from: 'ddkricplay2plat@gmail.com',
-                    to: option.email,
+                    to: email,
                     subject: 'Password Reset',
                     text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
                 };
