@@ -273,12 +273,12 @@ const UserController = {
            // 1. GET USER BASED ON POSTED EMAIL
            const { email } = req.body;
 
-               // Use UserModel to find the user by email
-               const user = await UserModel.findUserByEmail(email);
+           // Use UserModel to find the user by email
+           const user = await UserModel.findUserByEmail(email);
 
-               if (!user) {
-                   return res.status(404).json({ error: 'Utilizador não encontrado' });
-               }
+           if (!user) {
+               return res.status(404).json({ error: 'Utilizador não encontrado' });
+           }
 
            const result = await UserModel.createPasswordResetToken(email);
            if (!result) {
@@ -288,7 +288,6 @@ const UserController = {
            const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;  // ALTERAR
            const message = `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`;
 
-           /*
            try {
                await sendEmail({
                    email: user.email,
@@ -298,18 +297,11 @@ const UserController = {
 
                res.status(200).json({ message: 'Email sent successfully' });
            } catch (err) {
+               // Handle the case where sending the email fails
                user.resetToken = null;
                user.resetTokenExpiry = null;
                res.status(500).json({ error: 'Error sending password reset email' });
            }
-           */
-                          await sendEmail({
-                              email: user.email,
-                              subject: 'Password change request received',
-                              message: message
-                          });
-
-
        }),
 
 
