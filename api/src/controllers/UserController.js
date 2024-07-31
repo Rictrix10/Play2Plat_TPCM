@@ -3,6 +3,18 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const nodemailer = require('nodemailer');
 
+const sendEmail = (option) => {
+    const transporter = nodemailer.createTransport({
+        service: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+          auth: {
+            user: process.env.EMAIL_USER,
+            password: process.env.EMAIL_PASSWORD,
+          }
+    })
+}
+
+/*
 const transporter = nodemailer.createTransport({
   service: 'gmail', // ou outro serviço de email
   auth: {
@@ -10,6 +22,7 @@ const transporter = nodemailer.createTransport({
     pass: 'PletoPl@to03',
   },
 });
+*/
 
 
 
@@ -234,9 +247,9 @@ const UserController = {
 
                 const mailOptions = {
                     from: 'ddkricplay2plat@gmail.com',
-                    to: email,
-                    subject: 'Recuperação de Senha',
-                    text: `Você solicitou a recuperação de senha. Clique no link para redefinir sua senha: ${resetUrl}`,
+                    to: option.email,
+                    subject: 'Password Reset',
+                    text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
