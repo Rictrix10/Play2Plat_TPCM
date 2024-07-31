@@ -265,37 +265,32 @@ const UserController = {
 
     */
 
-    exports.forgotPassword = asyncErrorHandler(async (req, res, next) => {
-        // 1. GET USER BASED ON POSTED EMAIL
-        //const user = await User.findOne({ email: req.body.email });
-             const { email } = req.body;
-             const user = await prisma.user.findUnique({ where: { email } });
-             const result = await UserModel.createPasswordResetToken(email);
-             if (!result) {
-                 return res.status(404).json({ error: 'Utilizador não encontrado' });
-             }
+       forgotPassword: asyncErrorHandler(async (req, res, next) => {
+           // 1. GET USER BASED ON POSTED EMAIL
+           const { email } = req.body;
+           const user = await prisma.user.findUnique({ where: { email } });
+           const result = await UserModel.createPasswordResetToken(email);
+           if (!result) {
+               return res.status(404).json({ error: 'Utilizador não encontrado' });
+           }
 
-        const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;  // ALTERAR
-        const message = `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`
+           const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;  // ALTERAR
+           const message = `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`;
 
-        try{
-            await sendEmail({
-                  email: user.email,
-                  subject: 'Password change request received',
-                  message: message
-                 });
+           try {
+               await sendEmail({
+                   email: user.email,
+                   subject: 'Password change request received',
+                   message: message
+               });
 
-            res.status(200).json({ message: 'Email sent sucessfully' });
-        }catch(err){
-            user.resetToken = null,
-            user.resetTokenExpiry = null
-            res.status(500).json({ error: 'Error sending password reset email' });
-        }
-
-
-        // 3. SEND THE TOKEN BACK TO THE USER EMAIL
-        // (A lógica para enviar o email deve ser adicionada aqui)
-    });
+               res.status(200).json({ message: 'Email sent successfully' });
+           } catch (err) {
+               user.resetToken = null;
+               user.resetTokenExpiry = null;
+               res.status(500).json({ error: 'Error sending password reset email' });
+           }
+       }),
 
 
 
