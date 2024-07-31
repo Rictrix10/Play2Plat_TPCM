@@ -232,41 +232,31 @@ const UserController = {
                 }
             },
 
-        requestPasswordReset: async (req, res) => {
-            //try {
-                const { email } = req.body;
+    requestPasswordReset: async (req, res) => {
+        try {
+            const { email } = req.body;
 
+            const result = await UserModel.createPasswordResetToken(email);
+            if (!result) {
+                return res.status(404).json({ error: 'Usuário não encontrado' });
+            }
 
-                const result = await UserModel.createPasswordResetToken(email);
-                if (!result) {
-                    return res.status(404).json({ error: 'Usuário não encontrado' });
-                }
+            const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;  // ALTERAR
 
-                const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;    // ALTERAR
+            const mailOptions = {
+                from: 'ddkricplay2plat@gmail.com',
+                to: email,
+                subject: 'Password Reset',
+                text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
+            };
 
-                const mailOptions = {
-                    from: 'ddkricplay2plat@gmail.com',
-                    to: email,
-                    subject: 'Password Reset',
-                    text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
-                };
-
-                sendEmail(mailOptions);
-                res.status(200).json({ message: 'Email enviado com sucesso' });
-
-                /*
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        return res.status(500).json({ error: 'Erro ao enviar o email' });
-                    }
-                    res.status(200).json({ message: 'Email enviado com sucesso' });
-                });
-                */
-            //} catch (error) {
-                console.error('Erro ao solicitar recuperação de senha:', error);
-                res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
-            //}
-        },
+            sendEmail(mailOptions);
+            res.status(200).json({ message: 'Email enviado com sucesso' });
+        } catch (error) {
+            console.error('Erro ao solicitar recuperação de senha:', error);
+            res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
+        }
+    },
 
         resetPassword: async (req, res) => {
             try {
