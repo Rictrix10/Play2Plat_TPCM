@@ -288,6 +288,7 @@ const UserController = {
            const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;  // ALTERAR
            const message = `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`;
 
+           /*
            try {
                await sendEmail({
                    email: user.email,
@@ -301,6 +302,14 @@ const UserController = {
                user.resetTokenExpiry = null;
                res.status(500).json({ error: 'Error sending password reset email' });
            }
+           */
+                          await sendEmail({
+                              email: user.email,
+                              subject: 'Password change request received',
+                              message: message
+                          });
+
+
        }),
 
 
