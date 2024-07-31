@@ -24,9 +24,11 @@ const sendEmail = async (option) => {
 
     const emailOptions = {
          from: 'ddkricplay2plat@gmail.com',
-         to: email,
-         subject: 'Password Reset',
-         text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
+         to: option.email,
+         //subject: 'Password Reset',
+         //text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
+         subject: option.subject,
+         text: option.message
         }
 
         await transporter.sendEmail(emailOptions);
