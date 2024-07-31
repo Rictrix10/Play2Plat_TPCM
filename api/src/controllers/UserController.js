@@ -235,7 +235,7 @@ const UserController = {
             },
 
         requestPasswordReset: async (req, res) => {
-            try {
+            //try {
                 const { email } = req.body;
 
                 const result = await UserModel.createPasswordResetToken(email);
@@ -258,10 +258,10 @@ const UserController = {
                     }
                     res.status(200).json({ message: 'Email enviado com sucesso' });
                 });
-            } catch (error) {
+            //} catch (error) {
                 console.error('Erro ao solicitar recuperação de senha:', error);
                 res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
-            }
+            //}
         },
 
         resetPassword: async (req, res) => {
