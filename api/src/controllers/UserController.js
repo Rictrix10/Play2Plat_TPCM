@@ -3,26 +3,24 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const nodemailer = require('nodemailer');
 
-const sendEmail = (option) => {
-    const transporter = nodemailer.createTransport({
-        service: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-          }
-    })
-}
-
-/*
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // ou outro serviço de email
-  auth: {
-    user: 'ddkricplay2plat@gmail.com',
-    pass: 'PletoPl@to03',
-  },
+    service: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+    }
 });
-*/
+
+const sendEmail = (options) => {
+    transporter.sendMail(options, (error, info) => {
+        if (error) {
+            console.error('Erro ao enviar o email:', error);
+            throw new Error('Erro ao enviar o email');
+        }
+        console.log('Email enviado:', info.response);
+    });
+};
 
 
 
@@ -238,6 +236,7 @@ const UserController = {
             //try {
                 const { email } = req.body;
 
+
                 const result = await UserModel.createPasswordResetToken(email);
                 if (!result) {
                     return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -252,12 +251,17 @@ const UserController = {
                     text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
                 };
 
+                sendEmail(mailOptions);
+                res.status(200).json({ message: 'Email enviado com sucesso' });
+
+                /*
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
                         return res.status(500).json({ error: 'Erro ao enviar o email' });
                     }
                     res.status(200).json({ message: 'Email enviado com sucesso' });
                 });
+                */
             //} catch (error) {
                 console.error('Erro ao solicitar recuperação de senha:', error);
                 res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
