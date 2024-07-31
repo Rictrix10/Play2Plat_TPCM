@@ -251,7 +251,7 @@ const UserController = {
             };
 
             sendEmail(mailOptions);
-            res.status(200).json({ message: 'Email enviado com sucesso' });
+
         } catch (error) {
             console.error('Erro ao solicitar recuperação de senha:', error);
             res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
