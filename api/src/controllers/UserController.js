@@ -2,8 +2,6 @@ const UserModel = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
 const nodemailer = require('nodemailer');
-const util = require('util');
-const sendEmail = require('../utils/email')
 
 /*
 const transporter = nodemailer.createTransport({
