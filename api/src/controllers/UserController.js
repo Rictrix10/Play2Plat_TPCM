@@ -240,92 +240,25 @@ const UserController = {
                 }
             },
 
-/*
-    requestPasswordReset: async (req, res) => {
-        try {
-            const { email } = req.body;
-
-            const result = await UserModel.createPasswordResetToken(email);
-            if (!result) {
-                return res.status(404).json({ error: 'Usuário não encontrado' });
-            }
-
-            const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;  // ALTERAR
-
-            const mailOptions = {
-                from: 'ddkricplay2plat@gmail.com',
-                to: email,
-                subject: 'Password Reset',
-                text: `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`,
-            };
-
-            sendEmail(mailOptions);
-            res.status(200).json({ message: 'Email enviado com sucesso' });
-        } catch (error) {
-            console.error('Erro ao solicitar recuperação de senha:', error);
-            res.status(500).json({ error: 'Erro ao solicitar recuperação de senha' });
-        }
-    },
-
-    */
-
-       forgotPassword: asyncErrorHandler(async (req, res, next) => {
-           // 1. GET USER BASED ON POSTED EMAIL
-           const { email } = req.body;
-
-           // Use UserModel to find the user by email
-           const user = await UserModel.findUserByEmail(email);
-
-           if (!user) {
-               return res.status(404).json({ error: 'Utilizador não encontrado' });
-           }
-
-           const result = await UserModel.createPasswordResetToken(email);
-           if (!result) {
-               return res.status(404).json({ error: 'Utilizador não encontrado' });
-           }
-
-           const resetUrl = `https://your-app.vercel.app/reset-password?token=${result.token}`;  // ALTERAR
-           const message = `You have requested password recovery. Click on the link to reset your password: ${resetUrl}`;
-
-           try {
-               await sendEmail({
-                   email: user.email,
-                   subject: 'Password change request received',
-                   message: message
-               });
-
-               res.status(200).json({ message: 'Email sent successfully' });
-           } catch (err) {
-               // Handle the case where sending the email fails
-               user.resetToken = null;
-               user.resetTokenExpiry = null;
-               res.status(500).json({ error: 'Error sending password reset email' });
-           }
-       }),
-
-
-
-        resetPassword: async (req, res) => {
+        getUserIdByEmail: async (req, res) => {
             try {
-                const { token, newPassword } = req.body;
+                const { email } = req.body;
 
-                const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-                if (!passwordRegex.test(newPassword)) {
-                    return res.status(442).json({
-                        error: 'A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, um número e um caractere especial',
-                    });
+                // Verificar se o email é válido
+                if (!validator.isEmail(email)) {
+                    return res.status(443).json({ error: 'Email inválido' });
                 }
 
-                const user = await UserModel.resetPassword(token, newPassword);
+                const user = await UserModel.findUserByEmail(email);
+
                 if (!user) {
-                    return res.status(400).json({ error: 'Token inválido ou expirado' });
+                    return res.status(404).json({ error: 'Utilizador não encontrado' });
                 }
 
-                res.status(200).json({ message: 'Senha redefinida com sucesso' });
+                res.json({ id: user.id });
             } catch (error) {
-                console.error('Erro ao redefinir senha:', error);
-                res.status(500).json({ error: 'Erro ao redefinir senha' });
+                console.error('Erro ao buscar usuário por email:', error);
+                res.status(500).json({ error: 'Erro ao buscar usuário por email' });
             }
         },
 

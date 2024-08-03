@@ -141,61 +141,6 @@ const UserModel = {
                         }
                     },
 
-        // Gera um token de recuperação e salva no banco de dados
-        createPasswordResetToken: async (email) => {
-            try {
-                const user = await prisma.user.findUnique({ where: { email } });
-                if (!user) return null;
-
-                const token = crypto.randomBytes(32).toString('hex');
-                const expiry = new Date();
-                expiry.setHours(expiry.getHours() + 1);  // Token expira em 1 hora
-
-                await prisma.user.update({
-                    where: { email },
-                    data: {
-                        resetToken: token,
-                        resetTokenExpiry: expiry,
-                    },
-                });
-
-                return { token, email };
-            } catch (error) {
-                console.error('Erro ao gerar token de recuperação:', error);
-                throw error;
-            }
-        },
-
-        // Valida o token de recuperação e atualiza a senha
-        resetPassword: async (token, newPassword) => {
-            try {
-                const user = await prisma.user.findFirst({
-                    where: {
-                        resetToken: token,
-                        resetTokenExpiry: {
-                            gte: new Date(),
-                        },
-                    },
-                });
-                if (!user) return null;
-
-                const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-                await prisma.user.update({
-                    where: { id: user.id },
-                    data: {
-                        password: hashedPassword,
-                        resetToken: null,
-                        resetTokenExpiry: null,
-                    },
-                });
-
-                return user;
-            } catch (error) {
-                console.error('Erro ao redefinir password:', error);
-                throw error;
-            }
-        },
 };
 
 module.exports = UserModel;

@@ -20,7 +20,6 @@ router.post('/users/verify-password/:id', UserController.verifyPassword);
 
 router.get('/users/searchByName/:name', UserController.getUsersByPartialName);
 
-router.post('/users/request-password-reset', UserController.forgotPassword);
-router.post('/users/reset-password', UserController.resetPassword);
+router.post('/users/getIdByEmail', UserController.getUserIdByEmail);
 
 module.exports = router;
