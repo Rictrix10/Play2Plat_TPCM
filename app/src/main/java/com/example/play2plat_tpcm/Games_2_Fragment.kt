@@ -33,6 +33,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.FrameLayout
 import android.widget.Toast
+import com.google.android.material.tabs.TabLayout
 
 class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
 
@@ -43,6 +44,8 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
     private lateinit var collectionAdapter: Collections_2_Adapter
     private lateinit var fragmentContainer: FrameLayout
     private lateinit var TitleLayout: ConstraintLayout
+    private lateinit var tabLayout: TabLayout
+    private lateinit var horizontal_line: View
 
     private val gameStateTranslationMap = mapOf(
         "Wish List" to "Lista de Desejos",
@@ -72,6 +75,8 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         collectionList = view.findViewById(R.id.collection_list)
         fragmentContainer = view.findViewById(R.id.fragment_container)
         TitleLayout = view.findViewById(R.id.title_container)
+        tabLayout = view.findViewById(R.id.tab_layout)
+        horizontal_line = view.findViewById(R.id.horizontal_line)
 
         loadCollections(view.context)
         showFilteredGames(collectionTitle.text.toString())
@@ -114,6 +119,25 @@ class Games_2_Fragment : Fragment(), GamesAdapter.OnGamePictureClickListener {
         } else {
             // Lidar com o caso em que o estado da instância já foi salvo
         }
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                if (tab.position == 0) {
+                    // Aba "Your Collections" selecionada
+                    collectionAccordion.visibility = View.VISIBLE
+                    horizontal_line.visibility = View.VISIBLE
+                    showFilteredGames(collectionTitle.text.toString())
+                } else if (tab.position == 1) {
+                    // Aba "Favorites" selecionada
+                    collectionAccordion.visibility = View.GONE
+                    horizontal_line.visibility = View.GONE
+                    showFilteredGames("Favorite")
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
 
         return view
     }
