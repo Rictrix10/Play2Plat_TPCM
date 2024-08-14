@@ -22,6 +22,8 @@ const sendEmail = (options) => {
         console.log('Email enviado:', info.response);
     });
 };
+
+
 */
 
 const asyncErrorHandler = fn => (req, res, next) => {
