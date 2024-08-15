@@ -75,6 +75,7 @@
     <string name="confirm_pass">Confirm Password</string>
     <string name="change_pass">Change Password</string>
 
+
     <string name="new_post">Write your new Post</string>
 
     <string name="collections">Collections</string>
@@ -138,6 +139,7 @@
     <string name="password_empty">Password cannot be empty</string>
 
     <string name="your_collections_title">Your Collections:</string>
+
 
     <string name="search_games_title">Search Games</string>
 

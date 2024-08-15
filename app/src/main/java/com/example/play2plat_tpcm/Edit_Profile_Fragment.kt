@@ -50,6 +50,9 @@ import android.content.res.Resources
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.NestedScrollView
+import com.google.android.material.tabs.TabLayout
 import java.util.*
 
 private const val ARG_PARAM1 = "param1"
@@ -73,10 +76,12 @@ class Edit_Profile_Fragment : Fragment() {
     private var isNewPasswordVisible: Boolean = false
     private var isConfirmPasswordVisible: Boolean = false
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var customizeButton: Button
     private lateinit var customizeLayout: View
     private lateinit var PassText: TextView
     private lateinit var CFPassText: TextView
+    private lateinit var TabLayout: TabLayout
+    private lateinit var scrollProfile : ConstraintLayout
+    private lateinit var scrollAppearance: NestedScrollView
 
     private val userViewModel: UserViewModel by viewModels()
     private val navigationViewModel: FragmentNavigationViewModel by viewModels()
@@ -132,14 +137,9 @@ class Edit_Profile_Fragment : Fragment() {
         selectImageView = view.findViewById(R.id.select_picture)
         backImageView = view.findViewById(R.id.back_icon)
         containerLayout = view.findViewById(R.id.container_layout)
-        customizeButton = view.findViewById(R.id.customize_button)
         customizeLayout = view.findViewById(R.id.radiogroup)
         PassText = view.findViewById(R.id.password_label)
         CFPassText = view.findViewById(R.id.cf_password_label)
-
-        customizeButton.setOnClickListener {
-            toggleCustomizeLayoutVisibility()
-        }
 
         // Adicionando os ícones de visibilidade da senha
         ivToggleNewPasswordVisibility = view.findViewById(R.id.ivToggleNewPasswordVisibility)
@@ -215,6 +215,34 @@ class Edit_Profile_Fragment : Fragment() {
         lifecycleScope.launch {
             loadUserProfile(userId)
         }
+
+        TabLayout = view.findViewById(R.id.tab_layout)
+        scrollProfile = view.findViewById(R.id.scroll_profile)
+        scrollAppearance = view.findViewById(R.id.scroll_appearance)
+
+        TabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                when (tab.position) {
+                    0 -> {
+                        scrollProfile.visibility = View.VISIBLE
+                        scrollAppearance.visibility = View.GONE
+                    }
+                    1 -> {
+                        scrollProfile.visibility = View.GONE
+                        scrollAppearance.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                // Não precisa fazer nada aqui
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                // Não precisa fazer nada aqui
+            }
+        })
+
     }
 
     private fun setupThemeRadioButtons(themeRadioGroup: RadioGroup) {
@@ -292,15 +320,6 @@ class Edit_Profile_Fragment : Fragment() {
         }
         editText.setSelection(editText.text.length)
     }
-
-    private fun toggleCustomizeLayoutVisibility() {
-        if (customizeLayout.visibility == View.VISIBLE) {
-            customizeLayout.visibility = View.GONE
-        } else {
-            customizeLayout.visibility = View.VISIBLE
-        }
-    }
-
 
     private fun selectVisualMedia() {
         pickVisualMediaLauncher.launch("image/*")
