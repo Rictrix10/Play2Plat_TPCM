@@ -50,6 +50,7 @@ class LoginPage : AppCompatActivity() {
     private lateinit var etPassword: EditText
     private lateinit var ivTogglePasswordVisibility: ImageView
     private lateinit var checkBoxRememberMe: CheckBox
+    private lateinit var forgotPassword: TextView
     private var isPasswordVisible: Boolean = false
 
     private val userViewModel: UserViewModel by viewModels()
@@ -73,6 +74,7 @@ class LoginPage : AppCompatActivity() {
 
         etPassword = findViewById(R.id.et_password)
         ivTogglePasswordVisibility = findViewById(R.id.iv_toggle_password_visibility)
+        forgotPassword = findViewById(R.id.forgot_password)
         checkBoxRememberMe = findViewById(R.id.checkbox_remember_me)
 
         ivTogglePasswordVisibility.setOnClickListener {
@@ -88,6 +90,11 @@ class LoginPage : AppCompatActivity() {
         signUpTextView.setOnClickListener {
             // Navigate to RegisterPage
             val intent = Intent(this, RegisterPage::class.java)
+            startActivity(intent)
+        }
+
+        forgotPassword.setOnClickListener{
+            val intent = Intent(this, SendEmailActivity::class.java)
             startActivity(intent)
         }
 

@@ -267,7 +267,9 @@
     <string name="laguage">Linguagem Definida:Português</string>
     <string name="passwords_not_empty">Os campos de palavra-passe não podem estar vazios.</string>
     <string name="passwords_do_not_match">As palavra-passes não coincidem.</string>
-
+    <string name="forgot_password">Esqueceu-se da palavra-passe?</string>
+    <string name="send">Enviar</string>
+    <string name="insert_email">Introduza o seu endereço de email para redefinir a sua palavra-passe</string>
 
 
 

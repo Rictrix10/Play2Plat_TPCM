@@ -258,4 +258,7 @@
     <string name="laguage">Idioma definido: Español</string>
     <string name="passwords_not_empty">Los campos de contraseña no pueden estar vacíos.</string>
     <string name="passwords_do_not_match">Las contraseñas no coinciden.</string>
+    <string name="forgot_password">¿Ha olvidado su contraseña?</string>
+    <string name="send">Enviar</string>
+    <string name="insert_email">Introduzca su dirección de correo electrónico para restablecer su contraseña</string>
 </resources>

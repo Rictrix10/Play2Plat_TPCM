@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,8 +20,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Play2Plat_TPCM"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31"
-        android:name=".MyApp">
+        tools:targetApi="31">
+        <activity
+            android:name=".SendEmailActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -29,44 +32,40 @@
         <activity
             android:name=".LoginPage"
             android:exported="false"
-            android:theme="@style/Theme.Play2Plat_TPCM"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Play2Plat_TPCM" />
         <activity
             android:name=".ViewGame"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden"
             android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Play2Plat_TPCM"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Play2Plat_TPCM" />
         <activity
             android:name=".Intro_Page"
             android:exported="true"
-            android:theme="@style/Theme.Play2Plat_TPCM"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Play2Plat_TPCM">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".RegisterPage"
             android:exported="false"
-            android:theme="@style/Theme.Play2Plat_TPCM"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Play2Plat_TPCM" />
         <activity
             android:name=".Add_New_Game"
             android:exported="false"
-            android:theme="@style/Theme.Play2Plat_TPCM"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Play2Plat_TPCM" />
     </application>
+
 </manifest>
