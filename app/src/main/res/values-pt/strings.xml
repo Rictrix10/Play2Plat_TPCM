@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Play2Plat</string>
     <string name="title_activity_main_page">Página_Principal</string>
-    <string name="tv_description_text">Explore as suas aventuras de jogos eletrónicos como nunca antes com o play2plat - a verdadeira aplicação para gravar, partilhar e se conectar.</string>
+    <string name="tv_description_text">Explore as suas aventuras de jogos eletrônicos como nunca antes com o play2plat - a verdadeira aplicação para gravar, partilhar e se conectar.</string>
     <string name="btn_get_started_text">Começa já</string>
     <string-array name="pegi_info_values">
         <item>3</item>
@@ -267,7 +267,9 @@
     <string name="laguage">Linguagem Definida:Português</string>
     <string name="passwords_not_empty">Os campos de palavra-passe não podem estar vazios.</string>
     <string name="passwords_do_not_match">As palavra-passes não coincidem.</string>
-
+    <string name="forgot_password">Esqueceu-se da palavra-passe?</string>
+    <string name="send">Enviar</string>
+    <string name="insert_email">Introduza o seu endereço de email para redefinir a sua palavra-passe</string>
 
 
 

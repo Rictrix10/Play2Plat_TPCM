@@ -271,6 +271,8 @@
     <string name="laguage">Defined Language:English</string>
     <string name="passwords_not_empty">Password fields must not be empty.</string>
     <string name="passwords_do_not_match">The passwords don´t match </string>
-
+    <string name="forgot_password">Forgot password?</string>
+    <string name="send">Send</string>
+    <string name="insert_email">Enter your email address to reset your password</string>
 
 </resources>
