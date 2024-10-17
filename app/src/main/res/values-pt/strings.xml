@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Play2Plat</string>
     <string name="title_activity_main_page">Página_Principal</string>
-    <string name="tv_description_text">Explore as suas aventuras de jogos eletrónicos como nunca antes com o play2plat - a verdadeira aplicação para gravar, partilhar e se conectar.</string>
+    <string name="tv_description_text">Explore as suas aventuras de jogos eletrônicos como nunca antes com o play2plat - a verdadeira aplicação para gravar, partilhar e se conectar.</string>
     <string name="btn_get_started_text">Começa já</string>
     <string-array name="pegi_info_values">
         <item>3</item>
