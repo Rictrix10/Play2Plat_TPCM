@@ -258,4 +258,5 @@
     <string name="laguage">Langue définie: Français</string>
     <string name="passwords_not_empty">Les champs de mot de passe ne peuvent pas être vides.</string>
     <string name="passwords_do_not_match">Les mots de passe ne correspondent pas.</string>
+    <string name="messages">Messages</string>
 </resources>

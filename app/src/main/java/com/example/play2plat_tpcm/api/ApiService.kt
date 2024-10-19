@@ -250,4 +250,7 @@ interface ApiService {
 
     @POST("send-email")
     fun sendEmail(@Body email: Email): Call<Email>
+
+    @GET("messages-between/{userOneId}/{userTwoId}")
+    fun getMessagesUsers(@Path("userOneId") userOneId: Int, @Path("userTwoId") userTwoId: Int): Call<List<Message>>
 }
