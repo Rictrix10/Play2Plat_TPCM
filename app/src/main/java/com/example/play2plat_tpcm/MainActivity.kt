@@ -63,8 +63,7 @@ class MainActivity : AppCompatActivity() {
     private fun getFragmentFromTabId(selectedTabId: Int): Fragment {
         return when (selectedTabId) {
             R.id.games_lay -> Games_2_Fragment()
-            //R.id.favorites_lay -> Favorites_Fragment()   // FAZER ALTERAÇÕES
-            R.id.favorites_lay -> MessagesFragment()
+            R.id.messages_lay -> MessagesFragment()
             R.id.profile_lay -> {
                 val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
                 val userId = sharedPreferences.getInt("user_id", 0)
@@ -96,16 +95,15 @@ class MainActivity : AppCompatActivity() {
                 updateTabSelection(R.id.games_lay)
                 saveSelectedTabId(R.id.games_lay)
             }
-            R.id.favorites_lay -> {
+            R.id.messages_lay -> {
                 if (isNetworkAvailable()) {
-                    //replaceFragment(Favorites_Fragment())    FAZER ALTERAÇÕES
                     replaceFragment(MessagesFragment())
                 }
                 else{
                     redirectToNoConnectionFragment()
                 }
-                updateTabSelection(R.id.favorites_lay)
-                saveSelectedTabId(R.id.favorites_lay)
+                updateTabSelection(R.id.messages_lay)
+                saveSelectedTabId(R.id.messages_lay)
             }
             R.id.profile_lay -> {
                 val sharedPreferences = getSharedPreferences("user_data", Context.MODE_PRIVATE)
@@ -141,7 +139,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateTabSelection(selectedTabId: Int) {
         val tabs = listOf(
             Triple(R.id.games_lay, R.id.games_icon, R.id.games_text),
-            Triple(R.id.favorites_lay, R.id.favorites_icon, R.id.favorites_text),
+            Triple(R.id.messages_lay, R.id.messages_icon, R.id.messages_text),
             Triple(R.id.profile_lay, R.id.profile_icon, R.id.profile_text),
             Triple(R.id.search_lay, R.id.search_icon, R.id.search_text),
             Triple(R.id.new_game_lay, R.id.add_new_game_icon, null) // Null para o texto do new_game_lay
@@ -194,7 +192,7 @@ class MainActivity : AppCompatActivity() {
     private fun getSelectedIconId(layoutId: Int): Int {
         return when (layoutId) {
             R.id.games_lay -> R.drawable.icon_games_selected
-            R.id.favorites_lay -> R.drawable.icon_favorites_selected
+            R.id.messages_lay -> R.drawable.icon_messages_selected
             R.id.profile_lay -> R.drawable.icon_profile_selected
             R.id.search_lay -> R.drawable.icon_search_selected
             R.id.new_game_lay -> R.drawable.icon_add_selected
@@ -205,7 +203,7 @@ class MainActivity : AppCompatActivity() {
     private fun getDefaultIconId(iconId: Int): Int {
         return when (iconId) {
             R.id.games_icon -> R.drawable.icon_games
-            R.id.favorites_icon -> R.drawable.icon_favorites
+            R.id.messages_icon -> R.drawable.icon_messages
             R.id.profile_icon -> R.drawable.icon_profile
             R.id.search_icon -> R.drawable.icon_search
             R.id.add_new_game_icon -> R.drawable.icon_add
