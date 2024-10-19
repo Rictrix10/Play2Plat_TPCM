@@ -245,4 +245,9 @@ interface ApiService {
     @GET("users-by-message/{userId}")
     fun getUsersByMessage(@Path("userId") userId: Int): Call<List<UserMessage>>
 
+    @GET("users/searchByName/{name}")
+    fun searchUsers(@Path("name") name: String): Call<List<UserMessage>>
+
+    @POST("send-email")
+    fun sendEmail(@Body email: Email): Call<Email>
 }

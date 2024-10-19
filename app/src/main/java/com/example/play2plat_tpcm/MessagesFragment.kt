@@ -1,59 +1,34 @@
 package com.example.play2plat_tpcm
 
-import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.GradientDrawable
-import android.location.Geocoder
-import android.location.Location
 import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Comment
-import com.example.play2plat_tpcm.api.GameCommentsResponse
-import com.example.play2plat_tpcm.api.GeoNamesResponse
-import com.example.play2plat_tpcm.api.GeoNamesServiceBuilder.service
-import com.example.play2plat_tpcm.api.LocationInfo
-import com.example.play2plat_tpcm.api.PatchComment
 import com.example.play2plat_tpcm.api.UserMessage
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.util.Locale
 
 class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListener {
 
@@ -68,6 +43,7 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListen
     private lateinit var deleteButton: Button
     private lateinit var more_options_layout: ConstraintLayout
     private lateinit var commentsTextView: TextView
+    private lateinit var searchButton: Button
 
     private var gameId: Int = 0
     private var gameName: String? = null
@@ -107,7 +83,7 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListen
 
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
+        searchButton = view.findViewById(R.id.search)
 
         val colors = intArrayOf(primaryColor, secondaryColor)
         val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors)
@@ -123,7 +99,9 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListen
         // Chama a API para obter os users
         getUsersByMessage(userId)
 
-
+        searchButton.setOnClickListener {
+            redirectToUsersSearched()
+        }
 
         return view
     }
@@ -149,6 +127,24 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListen
             .addToBackStack(null)
             .commit()
 
+    }
+
+    private fun redirectToUsersSearched() {
+
+        if (isNetworkAvailable()){
+            val usersSearchedFragment = UsersSearchedFragment()
+            navigationViewModel.addToStack(usersSearchedFragment)
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, usersSearchedFragment)
+                .addToBackStack(null)
+                .commit()
+
+        }
+        else{
+            redirectToNoConnectionFragment()
+
+        }
     }
 
 
