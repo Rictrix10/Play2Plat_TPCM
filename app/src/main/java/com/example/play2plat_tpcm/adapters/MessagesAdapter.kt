@@ -16,20 +16,42 @@ import de.hdodenhof.circleimageview.CircleImageView
 import android.util.Log
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.UserMessage
+import com.example.play2plat_tpcm.databinding.ItemGameHorizontalBinding
+import com.example.play2plat_tpcm.databinding.ItemUsersMessagesBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MessagesAdapter(
     private val usersMessages: List<UserMessage>,
-    private val onProfilePictureClickListener: OnProfilePictureClickListener,
+    private val listener: OnUserMessageListener,
+    //private val onProfilePictureClickListener: OnProfilePictureClickListener,
 ) : RecyclerView.Adapter<MessagesAdapter.MessagesViewHolder>() {
+    private lateinit var context: Context
 
     interface OnProfilePictureClickListener {
         fun onProfilePictureClick(userId: Int)
     }
 
+    interface OnUserMessageListener{
+        fun onUserMessageClick(userTwoId: Int)
+    }
 
+    inner class MessagesViewHolder(val binding: ItemUsersMessagesBinding) : RecyclerView.ViewHolder(binding.root){
+        val username: TextView = itemView.findViewById(R.id.username)
+        val profilePicture: CircleImageView = itemView.findViewById(R.id.profile_picture)
+        fun bind(userMessage: UserMessage){
+
+            binding.root.setOnClickListener{
+                userMessage.id.let{id ->
+                    listener.onUserMessageClick(id)
+
+                }
+            }
+        }
+    }
+
+    /*
     class MessagesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profilePicture: CircleImageView = itemView.findViewById(R.id.profile_picture)
         val username: TextView = itemView.findViewById(R.id.username)
@@ -39,15 +61,22 @@ class MessagesAdapter(
         val responseList: RecyclerView = itemView.findViewById(R.id.response_list)
     }
 
+     */
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessagesViewHolder {
+    context = parent.context
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_users_messages, parent, false)
-        return MessagesViewHolder(view)
+    val inflater = LayoutInflater.from(context)
+    val binding = ItemUsersMessagesBinding.inflate(inflater, parent, false)
+    return MessagesViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MessagesViewHolder, position: Int) {
         val usersMessage = usersMessages[position]
         val context = holder.itemView.context
         //if (usersMessage.username == null || usersMessage.isDeleted == true ){   USAR DEPOIS ESTA CONDIÇÃO
+        holder.bind(usersMessages[position])
+
         if (usersMessage.username == null){
             holder.username.text = context.getString(R.string.deleted_user)
         }
@@ -56,28 +85,15 @@ class MessagesAdapter(
         }
 
 
+
+
         if(usersMessage.avatar != null && usersMessage.avatar != "" && usersMessage.username != null){
             Picasso.get().load(usersMessage.avatar).into(holder.profilePicture)
         } else {
             Picasso.get().load(R.drawable.icon_noimageuser).into(holder.profilePicture)
         }
 
-        /*
-        if (post.location != "null, null") {
-            holder.location.text = post.location
-            holder.location.visibility = View.VISIBLE
-        } else {
-            holder.location.visibility = View.GONE
-        }
 
-         */
-
-
-        holder.profilePicture.setOnClickListener {
-            if(usersMessage.username != null){
-                onProfilePictureClickListener.onProfilePictureClick(usersMessage.id)
-            }
-        }
 
     }
 

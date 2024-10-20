@@ -253,4 +253,8 @@ interface ApiService {
 
     @GET("messages-between/{userOneId}/{userTwoId}")
     fun getMessagesUsers(@Path("userOneId") userOneId: Int, @Path("userTwoId") userTwoId: Int): Call<List<Message>>
+
+    @GET("users/{id}")
+    fun getUserDetails(@Path("id") id: Int): Call<UserDetails>
+
 }

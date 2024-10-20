@@ -30,9 +30,10 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 
-class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListener {
+class MessagesFragment : Fragment(), MessagesAdapter.OnUserMessageListener {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var messagesAdapter: MessagesAdapter
     private lateinit var gameTextView: TextView
     private lateinit var ReplyingTo: TextView
     private lateinit var commentEditTextView: EditText
@@ -177,7 +178,20 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListen
         })
     }
 
+    override fun onUserMessageClick(userTwoId: Int) {
+        if (isNetworkAvailable()) {
+            val userMessagesFragment = UserMessagesFragment.newInstance(userTwoId)
+            navigationViewModel.addToStack(userMessagesFragment)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.layout, userMessagesFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        else{
+            redirectToNoConnectionFragment()
+        }
 
+    }
 
 
 
@@ -194,6 +208,7 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListen
     }
 
 
+    /*
     override fun onProfilePictureClick(userId: Int) {
         val viewGameFragment = Profile_Fragment.newInstance(userId)
         navigationViewModel.addToStack(viewGameFragment)
@@ -202,6 +217,8 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnProfilePictureClickListen
             .addToBackStack(null)
             .commit()
     }
+
+     */
 
 
 

@@ -66,7 +66,7 @@ class UserMessagesAdapter(
             holder.username.text = post.user.username
         }
 
-        holder.textPost.text = post.comments
+        holder.textPost.text = message.message
         if(post.user.avatar != null && post.user.avatar != "" && post.user.username != null){
             Picasso.get().load(post.user.avatar).into(holder.profilePicture)
         } else {

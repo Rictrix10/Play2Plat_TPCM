@@ -71,7 +71,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
     private lateinit var more_options_layout: ConstraintLayout
     private lateinit var commentsTextView: TextView
 
-    private var gameId: Int = 0
+    private var userTwoId: Int = 0
     private var gameName: String? = null
     private var primaryColor: Int = 0
     private var secondaryColor: Int = 0
@@ -98,36 +98,22 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
         }
     }
 
-    private val locationPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
-
-        if (fineLocationGranted || coarseLocationGranted) {
-            // Permissão concedida
-
-        } else {
-            // Permissão negada
-            //Toast.makeText(requireContext(), "Permissão de localização negada", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            gameId = it.getInt(ARG_GAME_ID)
-            gameName = it.getString(ARG_GAME_NAME)
-            primaryColor = it.getInt(ARG_PRIMARY_COLOR)
-            secondaryColor = it.getInt(ARG_SECONDARY_COLOR)
+            userTwoId = it.getInt(ARG_USER_TWO_ID)
+            //primaryColor = it.getInt(ARG_PRIMARY_COLOR)
+            //secondaryColor = it.getInt(ARG_SECONDARY_COLOR)
         }
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_game_posts, container, false)
+        val view = inflater.inflate(R.layout.fragment_user_messages, container, false)
 
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -139,7 +125,6 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
         more_options_layout = view.findViewById(R.id.more_options_layout)
         ReplyingTo = view.findViewById(R.id.replying_to_text)
         gameTextView.text = gameName
-        seeMapButton = view.findViewById(R.id.button_see_map)
         editButton = view.findViewById(R.id.option_edit)
         deleteButton = view.findViewById(R.id.option_delete)
         iconCrossView = view.findViewById(R.id.icon_cross)
@@ -191,22 +176,13 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
         }
 
         // Chama a API para obter os posts do jogo
-        getMessagesUsers(userId, )
+        getMessagesUsers(userId, userTwoId)
 
-
-        seeMapButton.setOnClickListener(){
-            if (isNetworkAvailable()) {
-                redirectToMapsFragment()
-            }
-            else{
-                redirectToNoConnectionFragment()
-            }
-        }
 
 
         sendImageView.setOnClickListener {
             if (isNetworkAvailable()) {
-                getLocationAndPostComment(userId, gameId)
+                //getLocationAndPostComment(userId, gameId)
             }
             else{
                 Toast.makeText(
@@ -230,13 +206,6 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
             }
         }
 
-        if (!checkLocationPermissions()) {
-            // Permissões não concedidas, solicitar permissão
-            requestLocationPermissions()
-        } else {
-            // Permissões já concedidas, continuar com o fluxo normal
-            Log.d("GamePostsFragment", "Permissões de localização já concedidas")
-        }
 
         return view
     }
@@ -264,31 +233,6 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
     }
 
-    private fun requestLocationPermissions() {
-        locationPermissionRequest.launch(arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ))
-    }
-
-
-    private fun checkLocationPermissions(): Boolean {
-        return (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permissões concedidas, continuar com o fluxo do aplicativo
-                Log.d("GamePostsFragment", "Permissões de localização concedidas pelo usuário")
-            } else {
-                // Permissões negadas, mas vamos prosseguir mesmo assim
-                Log.d("GamePostsFragment", "Permissões de localização não concedidas pelo usuário")
-            }
-        }
-    }
 
 
     private fun getMessagesUsers(userOneId: Int, userTwoId: Int) {
@@ -298,11 +242,10 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                 response: Response<List<Message>>
             ) {
                 if (response.isSuccessful) {
-                    val gamePosts = response.body()
-                    if (gamePosts != null && gamePosts.isNotEmpty()) {
-                        getLocationName(gamePosts[0].latitude, gamePosts[0].longitude) { locationInfo ->
-                            recyclerView.adapter = UserMessagesAdapter(gamePosts, this@UserMessagesFragment, this@UserMessagesFragment, this@UserMessagesFragment, false)
-                        }
+                    val messages = response.body()
+                    if (messages != null && messages.isNotEmpty()) {
+                        recyclerView.adapter = UserMessagesAdapter(messages, this@UserMessagesFragment, this@UserMessagesFragment, this@UserMessagesFragment, false)
+
                     } else {
                         Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")
                         recyclerView.adapter = UserMessagesAdapter(emptyList(), this@UserMessagesFragment, this@UserMessagesFragment, this@UserMessagesFragment, false)
@@ -564,7 +507,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                         ReplyingTo.text = null
                         isAnswerPostId = null
                         iconCrossView.visibility = View.GONE
-                        getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
+                        getMessagesUsers(userId, userTwoId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error posting comment: ${response.message()}")
                         Toast.makeText(
@@ -622,7 +565,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                         ReplyingTo.visibility = View.GONE
                         iconCrossView.visibility = View.GONE
                         //edited = 1
-                        getGamePosts(gameId, userId)  // Refresh the posts after posting a new comment
+                        getMessagesUsers(userId, userTwoId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error updating comment: ${response.message()}")
                         Toast.makeText(
@@ -741,18 +684,6 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
             .commit()
     }
 
-    private fun redirectToMapsFragment() {
-        val mapsFragment = MapsFragment.newInstance(gameId, gameName!!, primaryColor, secondaryColor)
-        navigationViewModel.addToStack(mapsFragment)
-        if (!requireActivity().supportFragmentManager.isStateSaved()) {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.layout, mapsFragment)
-                .addToBackStack(null)
-                .commit()
-        } else {
-            Log.d("GamePostsFragment", "O estado da instância já foi salvo, transação de fragmento adiada.")
-        }
-    }
 
     override fun onReplyClick(postId: Int, username: String?) {
         val sharedPreferencesEdits = requireActivity().getSharedPreferences("Editions", Context.MODE_PRIVATE)
@@ -836,7 +767,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
                     if(sharedPreferencesEdits.getInt("edited", 0) == 0){
                         if(isNetworkAvailable()) {
-                            getLocationAndPatchComment(userId, gameId)
+                            //getLocationAndPatchComment(userId, gameId)
                             if (commentEditTextView.getText().toString().trim().isEmpty()) {
                             } else {
                                 clicked = 1
@@ -857,7 +788,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                     }
                     else{
                         if(isNetworkAvailable()) {
-                            getLocationAndPostComment(userId, gameId)
+                            //getLocationAndPostComment(userId, gameId)
                         }
                         else{
                             Toast.makeText(
@@ -877,7 +808,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                 sendImageView.setOnClickListener(null)
 
                 sendImageView.setOnClickListener {
-                    getLocationAndPostComment(userId, gameId)
+                    //getLocationAndPostComment(userId, gameId)
                 }
             }
 
@@ -942,7 +873,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
                     // Redirecionar para a tela de login após deletar a conta
                     more_options_layout.visibility = View.GONE
-                    getGamePosts(gameId, userId)
+                    getMessagesUsers(userId, userTwoId)
 
                 } else {
                     Toast.makeText(
@@ -982,20 +913,18 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
 
     companion object {
-        private const val ARG_GAME_ID = "gameId"
-        private const val ARG_GAME_NAME = "gameName"
-        private const val ARG_PRIMARY_COLOR = "primaryColor"
-        private const val ARG_SECONDARY_COLOR = "secondaryColor"
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+        private const val ARG_USER_TWO_ID = "userTwoId"
+        //private const val ARG_PRIMARY_COLOR = "primaryColor"
+        //private const val ARG_SECONDARY_COLOR = "secondaryColor"
 
         @JvmStatic
-        fun newInstance(gameId: Int, gameName: String, primaryColor: Int, secondaryColor: Int) =
+        //fun newInstance(userTwoId: Int, primaryColor: Int, secondaryColor: Int) =
+        fun newInstance(userTwoId: Int) =
             GamePostsFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_GAME_ID, gameId)
-                    putString(ARG_GAME_NAME, gameName)
-                    putInt(ARG_PRIMARY_COLOR, primaryColor)
-                    putInt(ARG_SECONDARY_COLOR, secondaryColor)
+                    putInt(ARG_USER_TWO_ID, userTwoId)
+                    //putInt(ARG_PRIMARY_COLOR, primaryColor)
+                    //putInt(ARG_SECONDARY_COLOR, secondaryColor)
                 }
             }
     }
