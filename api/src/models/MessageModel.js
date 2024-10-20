@@ -208,7 +208,46 @@ const MessageModel = {
                     username: user.username,
                     avatar: user.avatar
                 }));
-            }
+            },
+
+                getMessagesByUsersWithUserDetails: async (userOneId, userTwoId) => {
+                    return await prisma.message.findMany({
+                        where: {
+                            OR: [
+                                {
+                                    AND: [
+                                        { userOneId: userOneId },
+                                        { userTwoId: userTwoId }
+                                    ]
+                                },
+                                {
+                                    AND: [
+                                        { userOneId: userTwoId },
+                                        { userTwoId: userOneId }
+                                    ]
+                                }
+                            ]
+                        },
+                        include: {
+                            userOne: {
+                                select: {
+                                    id: true,
+                                    username: true,
+                                    avatar: true,
+                                    isDeleted: true
+                                }
+                            },
+                            userTwo: {
+                                select: {
+                                    id: true,
+                                    username: true,
+                                    avatar: true,
+                                    isDeleted: true
+                                }
+                            }
+                        }
+                    });
+                },
 
     };
 

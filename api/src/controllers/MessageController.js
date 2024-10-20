@@ -139,7 +139,24 @@ const MessageController = {
                 console.error('Erro ao buscar usuários por mensagens:', error);
                 res.status(500).json({ error: 'Erro ao buscar usuários' });
             }
-        }
+        },
+
+            getMessagesByUsersWithDetails: async (req, res) => {
+                try {
+                    const userOneId = parseInt(req.params.userOneId, 10);
+                    const userTwoId = parseInt(req.params.userTwoId, 10);
+
+                    if (isNaN(userOneId) || isNaN(userTwoId)) {
+                        return res.status(400).json({ error: 'userOneId ou userTwoId inválido' });
+                    }
+
+                    const messages = await MessageModel.getMessagesByUsersWithUserDetails(userOneId, userTwoId);
+                    res.json(messages);
+                } catch (error) {
+                    console.error('Erro ao buscar mensagens com detalhes dos usuários:', error);
+                    res.status(500).json({ error: 'Erro ao buscar mensagens' });
+                }
+            }
     };
 
 module.exports = MessageController;

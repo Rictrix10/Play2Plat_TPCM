@@ -25,6 +25,8 @@ router.delete('/message/:id', MessageController.deleteMessageById);
 // Novo endpoint para buscar usuários que têm mensagens com o userId
 router.get('/users-by-message/:userId', MessageController.getUsersByMessageId);
 
+router.get('/messages/users/:userOneId/:userTwoId/details', MessageController.getMessagesByUsersWithDetails);
+
 
 module.exports = router;
 
