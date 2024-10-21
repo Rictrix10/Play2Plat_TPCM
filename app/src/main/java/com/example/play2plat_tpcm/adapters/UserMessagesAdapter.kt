@@ -16,17 +16,18 @@ import de.hdodenhof.circleimageview.CircleImageView
 import android.util.Log
 import com.example.play2plat_tpcm.api.ApiManager
 import com.example.play2plat_tpcm.api.Message
+import com.example.play2plat_tpcm.api.MessagesDetails
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class UserMessagesAdapter(
-    private val messages: List<Message>,
+    private val messages: List<MessagesDetails>,
     private val onProfilePictureClickListener: OnProfilePictureClickListener,
     private val onReplyClickListener: OnReplyClickListener,
     private val onOptionsClickListener: onMoreOptionsClickListener, // Corrigir o nome da interface
     private val isPreview: Boolean
-) : RecyclerView.Adapter<GamePostsAdapter.GamePostViewHolder>() {
+) : RecyclerView.Adapter<UserMessagesAdapter.UserMessageViewHolder>() {
 
     interface OnProfilePictureClickListener {
         fun onProfilePictureClick(userId: Int)
@@ -43,7 +44,6 @@ class UserMessagesAdapter(
     class UserMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profilePicture: CircleImageView = itemView.findViewById(R.id.profile_picture)
         val username: TextView = itemView.findViewById(R.id.username)
-        val location: TextView = itemView.findViewById(R.id.location)
         val textPost: TextView = itemView.findViewById(R.id.text_post)
         val imagePost: ImageView = itemView.findViewById(R.id.image_post)
         val responseList: RecyclerView = itemView.findViewById(R.id.response_list)
@@ -59,22 +59,22 @@ class UserMessagesAdapter(
     override fun onBindViewHolder(holder: UserMessageViewHolder, position: Int) {
         val message = messages[position]
         val context = holder.itemView.context
-        if (message.user.username == null || post.user.isDeleted == true ){
+        if (message.userOne.username == null || message.userOne.isDeleted == true ){
             holder.username.text = context.getString(R.string.deleted_user)
         }
         else{
-            holder.username.text = post.user.username
+            holder.username.text = message.userOne.username
         }
 
         holder.textPost.text = message.message
-        if(post.user.avatar != null && post.user.avatar != "" && post.user.username != null){
-            Picasso.get().load(post.user.avatar).into(holder.profilePicture)
+        if(message.userOne.avatar != null && message.userOne.avatar != "" && message.userOne.username != null){
+            Picasso.get().load(message.userOne.avatar).into(holder.profilePicture)
         } else {
             Picasso.get().load(R.drawable.icon_noimageuser).into(holder.profilePicture)
         }
 
         holder.imagePost.setOnClickListener {
-            val fragment = FullScreenImageFragment.newInstance(post.image)
+            val fragment = FullScreenImageFragment.newInstance(message.image!!)
             val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
             fragment.show(fragmentManager, "FullScreenImageFragment")
         }
@@ -91,46 +91,42 @@ class UserMessagesAdapter(
         if (!isPreview) {
             // Carregar as respostas do post
             holder.responseList.layoutManager = LinearLayoutManager(holder.itemView.context)
-            getPostsAnswers(post.id, holder.responseList)
+            //getPostsAnswers(message.id, holder.responseList)
         }
 
         holder.profilePicture.setOnClickListener {
-            if(post.user.username != null){
-                onProfilePictureClickListener.onProfilePictureClick(post.user.id)
+            if(message.userOne.username != null){
+                onProfilePictureClickListener.onProfilePictureClick(message.userOne.id)
             }
         }
 
-        if (isPreview) {
-            holder.replyIcon.visibility = View.GONE
-            holder.moreOptions.visibility = View.GONE
-        } else {
             holder.replyIcon.visibility = View.VISIBLE
             holder.replyIcon.setOnClickListener {
-                post.user.username?.let { username ->
-                    onReplyClickListener.onReplyClick(post.id, username)
+                message.userTwo.username.let { username ->
+                    onReplyClickListener.onReplyClick(message.id, username)
                 } ?: run {
                     // Lidar com o caso onde username é nulo
-                    Log.e("GamePostsAdapter", "Username is null for post id: ${post.id}")
-                    onReplyClickListener.onReplyClick(post.id, context.getString(R.string.deleted_user))
+                    Log.e("GamePostsAdapter", "Username is null for post id: ${message.id}")
+                    onReplyClickListener.onReplyClick(message.id, context.getString(R.string.deleted_user))
                 }
             }
 
             holder.moreOptions.setOnClickListener {
-                onOptionsClickListener.onOptionsClick(post.id)
+                onOptionsClickListener.onOptionsClick(message.id)
             }
 
             val sharedPreferences = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
             val userId = sharedPreferences.getInt("user_id", 0)
 
             // Verificar se o userId do post corresponde ao userId do SharedPreferences
-            if (post.user.id == userId) {
+            if (message.userOne.id == userId) {
                 holder.moreOptions.visibility = View.VISIBLE
             } else {
                 holder.moreOptions.visibility = View.GONE
             }
-        }
 
-        if (post.isAnswer == null) {
+
+        if (message.isAnswer == null) {
             // Se for nulo, definir o background para button_bd_3
             holder.itemView.setBackgroundResource(R.drawable.button_bd_3)
         } else {
@@ -139,8 +135,9 @@ class UserMessagesAdapter(
         }
     }
 
-    override fun getItemCount(): Int = posts.size
+    override fun getItemCount(): Int = messages.size
 
+    /*
     private fun getPostsAnswers(postId: Int, recyclerView: RecyclerView) {
         ApiManager.apiService.getAnswers(postId).enqueue(object : Callback<List<GameCommentsResponse>> {
             override fun onResponse(
@@ -163,7 +160,9 @@ class UserMessagesAdapter(
         })
     }
 
-    fun getPostAtPosition(position: Int): GameCommentsResponse = posts[position]
+     */
+
+    fun getMessageAtPosition(position: Int): MessagesDetails = messages[position]
 }
 
 
