@@ -106,16 +106,21 @@ const MessageModel = {
     },
 
      updateMessageById: async (id, message, image, isAnswer, date) => {
-             return await prisma.message.update({
-                 where: { id: id },
-                 data: {
-                     message: message,
-                     image: image,
-                     isAnswer: isAnswer,
-                     date: date
-                 }
-             });
-         },
+         // Verifica se o id é um número antes de chamar o prisma
+         if (typeof id !== 'number') {
+             throw new Error('O ID deve ser um número.');
+         }
+
+         return await prisma.message.update({
+             where: { id: id },
+             data: {
+                 message: message,
+                 image: image,
+                 isAnswer: isAnswer,
+                 date: date
+             }
+         });
+     },
 
 
     deleteMessageById: async (id) => {

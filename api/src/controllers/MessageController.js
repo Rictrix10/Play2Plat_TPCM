@@ -92,27 +92,36 @@ const MessageController = {
     },
 
      updateMessageById: async (req, res) => {
-             try {
-                 const messageId = parseInt(req.params.id, 10);
-                 const { message, image, isAnswer, date } = req.body;
+         try {
+             // Converte o ID para número inteiro
+             const messageId = parseInt(req.params.id, 10);
 
-                 const updatedMessage = await MessageModel.updateMessageById(
-                     message,
-                     image,
-                     isAnswer,
-                     date
-                 );
-
-                 if (updatedMessage) {
-                     res.json(updatedMessage);
-                 } else {
-                     res.status(404).json({ error: 'Mensagem não encontrada' });
-                 }
-             } catch (error) {
-                 console.error('Erro ao atualizar mensagem:', error);
-                 res.status(500).json({ error: 'Erro ao atualizar mensagem' });
+             // Verifica se o ID é válido
+             if (isNaN(messageId)) {
+                 return res.status(400).json({ error: 'ID inválido. Deve ser um número inteiro.' });
              }
-         },
+
+             const { message, image, isAnswer, date } = req.body;
+
+             // Chama o método para atualizar a mensagem
+             const updatedMessage = await MessageModel.updateMessageById(
+                 messageId, // Corrigido: passar o ID como inteiro
+                 message,
+                 image,
+                 isAnswer,
+                 date
+             );
+
+             if (updatedMessage) {
+                 res.json(updatedMessage);
+             } else {
+                 res.status(404).json({ error: 'Mensagem não encontrada' });
+             }
+         } catch (error) {
+             console.error('Erro ao atualizar mensagem:', error);
+             res.status(500).json({ error: 'Erro ao atualizar mensagem' });
+         }
+     },
 
     deleteMessageById: async (req, res) => {
         try {
