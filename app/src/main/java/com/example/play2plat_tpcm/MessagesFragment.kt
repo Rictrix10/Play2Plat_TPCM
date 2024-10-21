@@ -163,7 +163,6 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnUserMessageListener {
                         recyclerView.adapter = MessagesAdapter(usersMessages, this@MessagesFragment)
 
                     } else {
-                        Log.e("MessagesFragment", "A lista de posts do jogo está vazia ou nula.")
                         recyclerView.adapter = MessagesAdapter(emptyList(), this@MessagesFragment)
                     }
                 } else {
@@ -179,6 +178,7 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnUserMessageListener {
     }
 
     override fun onUserMessageClick(userTwoId: Int) {
+        Log.d("MessagesFragment", "Ver direct messages")
         if (isNetworkAvailable()) {
             val userMessagesFragment = UserMessagesFragment.newInstance(userTwoId)
             navigationViewModel.addToStack(userMessagesFragment)
@@ -265,7 +265,7 @@ class MessagesFragment : Fragment(), MessagesAdapter.OnUserMessageListener {
 
         @JvmStatic
         fun newInstance(gameId: Int, gameName: String, primaryColor: Int, secondaryColor: Int) =
-            GamePostsFragment().apply {
+            MessagesFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_GAME_ID, gameId)
                     putString(ARG_GAME_NAME, gameName)

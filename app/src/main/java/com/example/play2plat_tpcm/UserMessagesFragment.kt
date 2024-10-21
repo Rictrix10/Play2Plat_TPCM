@@ -40,7 +40,9 @@ import com.example.play2plat_tpcm.api.GeoNamesResponse
 import com.example.play2plat_tpcm.api.GeoNamesServiceBuilder.service
 import com.example.play2plat_tpcm.api.LocationInfo
 import com.example.play2plat_tpcm.api.Message
+import com.example.play2plat_tpcm.api.MessagesDetails
 import com.example.play2plat_tpcm.api.PatchComment
+import com.example.play2plat_tpcm.api.PatchMessage
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -53,6 +55,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.Date
 import java.util.Locale
 
 class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureClickListener, UserMessagesAdapter.OnReplyClickListener, UserMessagesAdapter.onMoreOptionsClickListener {
@@ -63,7 +66,6 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
     private lateinit var commentEditTextView: EditText
     private lateinit var imageImageView: ImageView
     private lateinit var sendImageView: ImageView
-    private lateinit var seeMapButton: LinearLayout
     private lateinit var iconCrossView: ImageView
     private lateinit var editButton: Button
     private lateinit var deleteButton: Button
@@ -164,12 +166,12 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
 
         if (currentUserType == 1) {
-            seeMapButton.visibility = View.VISIBLE
+
             val params = commentsTextView.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = 28.dpToPx() // Defina a margem superior desejada
             commentsTextView.layoutParams = params
         } else {
-            seeMapButton.visibility = View.GONE
+
             val params = commentsTextView.layoutParams as ConstraintLayout.LayoutParams
             params.topMargin = 0 // Remove a margem superior
             commentsTextView.layoutParams = params
@@ -182,7 +184,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
         sendImageView.setOnClickListener {
             if (isNetworkAvailable()) {
-                //getLocationAndPostComment(userId, gameId)
+                sendMessage(userId, userTwoId)
             }
             else{
                 Toast.makeText(
@@ -195,7 +197,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
         deleteButton.setOnClickListener(){
             if (isNetworkAvailable()) {
-                deleteCommentWithConfirmation(userId)
+                deleteMessageWithConfirmation(userId)
             }
             else{
                 Toast.makeText(
@@ -236,10 +238,10 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
 
     private fun getMessagesUsers(userOneId: Int, userTwoId: Int) {
-        ApiManager.apiService.getMessagesUsers(userOneId, userTwoId).enqueue(object : Callback<List<Message>> {
+        ApiManager.apiService.getMessagesBetweenUsersDetails(userOneId, userTwoId).enqueue(object : Callback<List<MessagesDetails>> {
             override fun onResponse(
-                call: Call<List<Message>>,
-                response: Response<List<Message>>
+                call: Call<List<MessagesDetails>>,
+                response: Response<List<MessagesDetails>>
             ) {
                 if (response.isSuccessful) {
                     val messages = response.body()
@@ -247,7 +249,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                         recyclerView.adapter = UserMessagesAdapter(messages, this@UserMessagesFragment, this@UserMessagesFragment, this@UserMessagesFragment, false)
 
                     } else {
-                        Log.e("GamePostsFragment", "A lista de posts do jogo está vazia ou nula.")
+                        Log.e("UserMessagesFragment", "Sem mensagens.")
                         recyclerView.adapter = UserMessagesAdapter(emptyList(), this@UserMessagesFragment, this@UserMessagesFragment, this@UserMessagesFragment, false)
                     }
                 } else {
@@ -256,137 +258,16 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                 }
             }
 
-            override fun onFailure(call: Call<List<Message>>, t: Throwable) {
+            override fun onFailure(call: Call<List<MessagesDetails>>, t: Throwable) {
                 Log.e("GamePostsFragment", "Falha na chamada da API: ${t.message}")
             }
         })
     }
 
 
-    private fun getLocationAndPostComment(userId: Int, gameId: Int) {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
 
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                location?.let { loc ->
-                    latitude = loc.latitude
-                    longitude = loc.longitude
-
-                    getLocationName(latitude, longitude) { locationInfo ->
-                        val comments = commentEditTextView.text.toString()
-                        if (selectedImageUri != null) {
-                            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
-                            val file = bitmapToFile(requireContext(), bitmap)
-                            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
-
-                            val call = ApiManager.apiService.uploadImage(imagePart)
-                            call.enqueue(object : Callback<ResponseBody> {
-                                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                                    if (response.isSuccessful) {
-                                        val imageUrl = response.body()?.string()
-                                        imageUrl?.let {
-                                            val pattern = Regex("\"url\":\"(\\S+)\"")
-                                            val matchResult = pattern.find(it)
-                                            matchResult?.let { result ->
-                                                val coverImageUrl = result.groupValues[1]
-                                                postComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
-                                            }
-                                        }
-                                    } else {
-                                        val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                                        Log.e("AddNewComment", "Erro no upload: $errorBody")
-                                        Toast.makeText(
-                                            requireContext(),
-                                            getString(R.string.error_upload_image),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-
-                                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                                }
-                            })
-                        } else {
-                            postComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
-                        }
-                    }
-                } ?: run {
-                    postCommentWithNoLocation(userId, gameId)
-                }
-            }
-
-
-        } else {
-            //requestLocationPermissions()
-            postCommentWithNoLocation(userId, gameId)
-        }
-    }
-
-
-    private fun getLocationAndPatchComment(userId: Int, gameId: Int) {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                location?.let { loc ->
-                    latitude = loc.latitude
-                    longitude = loc.longitude
-
-                    getLocationName(latitude, longitude) { locationInfo ->
-                        val comments = commentEditTextView.text.toString()
-                        if (selectedImageUri != null) {
-                            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
-                            val file = bitmapToFile(requireContext(), bitmap)
-                            val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                            val imagePart = MultipartBody.Part.createFormData("file", "image.jpg", requestFile)
-
-                            val call = ApiManager.apiService.uploadImage(imagePart)
-                            call.enqueue(object : Callback<ResponseBody> {
-                                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                                    if (response.isSuccessful) {
-                                        val imageUrl = response.body()?.string()
-                                        imageUrl?.let {
-                                            val pattern = Regex("\"url\":\"(\\S+)\"")
-                                            val matchResult = pattern.find(it)
-                                            matchResult?.let { result ->
-                                                val coverImageUrl = result.groupValues[1]
-                                                patchComment(comments, coverImageUrl, userId, gameId, latitude, longitude, locationInfo)
-                                            }
-                                        }
-                                    } else {
-                                        val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                                        Log.e("AddNewComment", "Erro no upload: $errorBody")
-                                        Toast.makeText(
-                                            requireContext(),
-                                            getString(R.string.error_upload_image),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-
-                                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                    Log.e("AddNewComment", "Erro na requisição: ${t.message}")
-                                }
-                            })
-                        } else {
-                            patchComment(comments, null, userId, gameId, latitude, longitude, locationInfo)
-                        }
-                    }
-                } ?: run {
-                    patchCommentWithNoLocation(userId, gameId)
-                }
-            }
-
-        } else {
-            patchCommentWithNoLocation(userId, gameId)
-        }
-    }
-
-
-    private fun postCommentWithNoLocation(userId: Int, gameId: Int) {
-        val comments = commentEditTextView.text.toString()
+    private fun sendMessage(userId: Int, userTwoId: Int) {
+        val message = commentEditTextView.text.toString()
         if (selectedImageUri != null) {
             val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
             val file = bitmapToFile(requireContext(), bitmap)
@@ -403,7 +284,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                             val matchResult = pattern.find(it)
                             matchResult?.let { result ->
                                 val coverImageUrl = result.groupValues[1]
-                                postComment(comments, coverImageUrl, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
+                                postMessage(message, coverImageUrl, userId, userTwoId, null)
                             }
                         }
                     } else {
@@ -420,12 +301,12 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                 }
             })
         } else {
-            postComment(comments, null, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
+            postMessage(message, null, userId, userTwoId, null)
         }
     }
 
-    private fun patchCommentWithNoLocation(userId: Int, gameId: Int) {
-        val comments = commentEditTextView.text.toString()
+    private fun editMessage(userId: Int, userTwoId: Int) {
+        val message = commentEditTextView.text.toString()
         if (selectedImageUri != null) {
             val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImageUri)
             val file = bitmapToFile(requireContext(), bitmap)
@@ -442,7 +323,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                             val matchResult = pattern.find(it)
                             matchResult?.let { result ->
                                 val coverImageUrl = result.groupValues[1]
-                                patchComment(comments, coverImageUrl, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
+                                patchMessage(message, userId, userTwoId, null)
                             }
                         }
                     } else {
@@ -459,26 +340,24 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                 }
             })
         } else {
-            patchComment(comments, null, userId, gameId, null, null, LocationInfo(null, null, null, null, null, null))
+            patchMessage(message, userId, userTwoId, null)
         }
     }
 
 
 
-    private fun postComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double?, longitude: Double?, locationInfo: LocationInfo) {
-        val locationName = "${locationInfo.countryName}, ${locationInfo.adminName2}"
-        val newComment = Comment(
-            comments = comments,
-            image = imageUrl,
+    private fun postMessage(message: String, image: String?, userOneId: Int, userTwoId: Int, date: String?) {
+        val newMessage = Message(
+            id = 0,
+            message = message,
+            image = image,
             isAnswer = if (isAnswerPostId != 0) isAnswerPostId else null,
-            userId = userId,
-            gameId = gameId,
-            latitude = latitude,
-            longitude = longitude,
-            location = locationName
+            userOneId = userOneId,
+            userTwoId = userTwoId,
+            date = date
         )
 
-        if(comments.isEmpty()){
+        if(message.isEmpty()){
             Toast.makeText(
                 context,
                 getString(R.string.comment_empty_error),
@@ -488,11 +367,11 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
             return
         }
 
-        ApiManager.apiService.addComment(newComment)
-            .enqueue(object : Callback<Comment> {
-                override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+        ApiManager.apiService.sendMessage(newMessage)
+            .enqueue(object : Callback<Message> {
+                override fun onResponse(call: Call<Message>, response: Response<Message>) {
                     if (response.isSuccessful) {
-                        val postComment = response.body()
+                        val postMessage = response.body()
                         Toast.makeText(
                             context,
                             getString(R.string.comment_post_success),
@@ -507,7 +386,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                         ReplyingTo.text = null
                         isAnswerPostId = null
                         iconCrossView.visibility = View.GONE
-                        getMessagesUsers(userId, userTwoId)  // Refresh the posts after posting a new comment
+                        getMessagesUsers(userOneId, userTwoId)  // Refresh the posts after posting a new comment
                     } else {
                         Log.e("AddNewComment", "Error posting comment: ${response.message()}")
                         Toast.makeText(
@@ -519,21 +398,18 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                     }
                 }
 
-                override fun onFailure(call: Call<Comment>, t: Throwable) {
+                override fun onFailure(call: Call<Message>, t: Throwable) {
                     Log.e("AddNewComment", "Erro na requisição: ${t.message}")
                 }
             })
     }
 
-    private fun patchComment(comments: String, imageUrl: String?, userId: Int, gameId: Int, latitude: Double?, longitude: Double?, locationInfo: LocationInfo) {
-        val locationName = "${locationInfo.countryName}, ${locationInfo.adminName2}"
-        val newComment = PatchComment(
-            comments = comments,
-            userId = userId,
-            gameId = gameId,
-            latitude = latitude,
-            longitude = longitude,
-            location = locationName
+    private fun patchMessage(message: String, userOneId: Int, userTwoId: Int, date: String?) {
+        val editedMessage = PatchMessage(
+            message = message,
+            userOneId = userOneId,
+            userTwoId = userTwoId,
+            date = date
         )
 
         if(commentEditTextView.getText().toString().trim().isEmpty()){
@@ -546,9 +422,9 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
             return
         }
 
-        ApiManager.apiService.updateComment(selectedPostId, newComment)
-            .enqueue(object : Callback<PatchComment> {
-                override fun onResponse(call: Call<PatchComment>, response: Response<PatchComment>) {
+        ApiManager.apiService.editMessage(selectedPostId, editedMessage)
+            .enqueue(object : Callback<PatchMessage> {
+                override fun onResponse(call: Call<PatchMessage>, response: Response<PatchMessage>) {
                     if (response.isSuccessful) {
                         val patchComment = response.body()
                         Toast.makeText(
@@ -565,9 +441,9 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                         ReplyingTo.visibility = View.GONE
                         iconCrossView.visibility = View.GONE
                         //edited = 1
-                        getMessagesUsers(userId, userTwoId)  // Refresh the posts after posting a new comment
+                        getMessagesUsers(userOneId, userTwoId)  // Refresh the posts after posting a new comment
                     } else {
-                        Log.e("AddNewComment", "Error updating comment: ${response.message()}")
+                        Log.e("EditMessage", "Error updating message: ${response.message()}")
                         Toast.makeText(
                             context,
                             getString(R.string.error_update_comment),
@@ -577,84 +453,10 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                     }
                 }
 
-                override fun onFailure(call: Call<PatchComment>, t: Throwable) {
+                override fun onFailure(call: Call<PatchMessage>, t: Throwable) {
                     Log.e("AddNewComment", "Erro na requisição: ${t.message}")
                 }
             })
-    }
-
-    private fun getLocationName(
-        latitude: Double,
-        longitude: Double,
-        onResult: (LocationInfo) -> Unit
-    ) {
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
-        var locationInfo = LocationInfo(null, null, null, null, null, null)
-
-        try {
-            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null && addresses.isNotEmpty()) {
-                val address = addresses[0]
-                val cityName = address.locality
-                val countryName = address.countryName
-                val countryCode = address.countryCode
-                val postalCode = address.postalCode
-
-                locationInfo = LocationInfo(cityName, countryName, countryCode, postalCode, null, null)
-
-                if (postalCode != null && countryCode != null) {
-                    getPostalCodeInfo(postalCode, countryCode, "rictrix") { updatedLocationInfo ->
-                        val finalLocationInfo = locationInfo.copy(
-                            adminName1 = updatedLocationInfo.adminName1,
-                            adminName2 = updatedLocationInfo.adminName2
-                        )
-                        onResult(finalLocationInfo)
-                    }
-                } else {
-                    onResult(locationInfo)
-                }
-            } else {
-                onResult(locationInfo)
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            onResult(locationInfo)
-        }
-    }
-
-    private fun getPostalCodeInfo(
-        postalCode: String,
-        countryCode: String,
-        username: String,
-        onResult: (LocationInfo) -> Unit
-    ) {
-        val call = service.getLocationInfo(postalCode, countryCode, username)
-        call.enqueue(object : Callback<GeoNamesResponse> {
-            override fun onResponse(call: Call<GeoNamesResponse>, response: Response<GeoNamesResponse>) {
-                if (response.isSuccessful) {
-                    val locationInfoResponse = response.body()
-                    if (locationInfoResponse != null && locationInfoResponse.postalCodes.isNotEmpty()) {
-                        val firstResult = locationInfoResponse.postalCodes[0]
-                        val locationInfo = LocationInfo(
-                            null, null, null, postalCode,
-                            firstResult.adminName1, firstResult.adminName2
-                        )
-                        onResult(locationInfo)
-                    } else {
-                        Log.e("PostalCodeInfo", "No results found for postal code: $postalCode")
-                        onResult(LocationInfo(null, null, null, postalCode, null, null))
-                    }
-                } else {
-                    Log.e("PostalCodeInfo", "Error: ${response.message()}")
-                    onResult(LocationInfo(null, null, null, postalCode, null, null))
-                }
-            }
-
-            override fun onFailure(call: Call<GeoNamesResponse>, t: Throwable) {
-                Log.e("PostalCodeInfo", "Failure: ${t.message}")
-                onResult(LocationInfo(null, null, null, postalCode, null, null))
-            }
-        })
     }
 
 
@@ -760,13 +562,14 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
                 val editing = getString(R.string.editing)
                 ReplyingTo.text = SpannableStringBuilder().append(editing).append(" ")
-                getCommentDetails(postId)
+                getMessageDetails(postId)
                 sendImageView.setOnClickListener(null)
 
                 sendImageView.setOnClickListener {
 
                     if(sharedPreferencesEdits.getInt("edited", 0) == 0){
                         if(isNetworkAvailable()) {
+                            editMessage(userId, userTwoId)
                             //getLocationAndPatchComment(userId, gameId)
                             if (commentEditTextView.getText().toString().trim().isEmpty()) {
                             } else {
@@ -789,6 +592,8 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                     else{
                         if(isNetworkAvailable()) {
                             //getLocationAndPostComment(userId, gameId)
+                            sendMessage(userId, userTwoId)
+                            sendMessage(userId, userTwoId)
                         }
                         else{
                             Toast.makeText(
@@ -828,13 +633,13 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
     }
 
 
-    private fun getCommentDetails(postId: Int) {
-        ApiManager.apiService.getCommentById(postId).enqueue(object : Callback<Comment> {
-            override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+    private fun getMessageDetails(postId: Int) {
+        ApiManager.apiService.getMessage(postId).enqueue(object : Callback<Message> {
+            override fun onResponse(call: Call<Message>, response: Response<Message>) {
                 if (response.isSuccessful) {
                     val comment = response.body()
                     comment?.let {
-                        commentEditTextView.setText(it.comments)
+                        commentEditTextView.setText(it.message)
                     }
                 } else {
                     Log.e("GamePostsFragment", "Erro ao obter detalhes do comentário: ${response.message()}")
@@ -847,7 +652,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
                 }
             }
 
-            override fun onFailure(call: Call<Comment>, t: Throwable) {
+            override fun onFailure(call: Call<Message>, t: Throwable) {
                 Log.e("GamePostsFragment", "Falha na requisição para obter detalhes do comentário: ${t.message}")
                 Toast.makeText(
                     context,
@@ -861,8 +666,8 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
 
 
 
-    private fun deleteComment(postId: Int, userId: Int) {
-        ApiManager.apiService.deleteComment(postId).enqueue(object : Callback<Void> {
+    private fun deleteMessage(postId: Int, userId: Int) {
+        ApiManager.apiService.deleteMessage(postId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(
@@ -892,7 +697,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
     }
 
 
-    private fun deleteCommentWithConfirmation(userId: Int) {
+    private fun deleteMessageWithConfirmation(userId: Int) {
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.delete_comment, null)
 
@@ -900,7 +705,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
             setTitle(getString(R.string.confirm))
             setView(view)
             setPositiveButton(getString(R.string.confirm_yes)) { dialog, which ->
-                deleteComment(selectedPostId, userId)
+                deleteMessage(selectedPostId, userId)
             }
             setNegativeButton(getString(R.string.confirm_no)) { dialog, which ->
                 dialog.dismiss()
@@ -920,7 +725,7 @@ class UserMessagesFragment : Fragment(), UserMessagesAdapter.OnProfilePictureCli
         @JvmStatic
         //fun newInstance(userTwoId: Int, primaryColor: Int, secondaryColor: Int) =
         fun newInstance(userTwoId: Int) =
-            GamePostsFragment().apply {
+            UserMessagesFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_USER_TWO_ID, userTwoId)
                     //putInt(ARG_PRIMARY_COLOR, primaryColor)

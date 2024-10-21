@@ -254,7 +254,18 @@ interface ApiService {
     @GET("messages-between/{userOneId}/{userTwoId}")
     fun getMessagesUsers(@Path("userOneId") userOneId: Int, @Path("userTwoId") userTwoId: Int): Call<List<Message>>
 
-    @GET("users/{id}")
-    fun getUserDetails(@Path("id") id: Int): Call<UserDetails>
+    @GET("messages/users/{userOneId}/{userTwoId}/details")
+    fun getMessagesBetweenUsersDetails(@Path("userOneId") userOneId: Int, @Path("userTwoId") userTwoId: Int): Call<List<MessagesDetails>>
 
+    @POST("message")
+    fun sendMessage(@Body message: Message): Call<Message>
+
+    @PATCH("message/{id}")
+    fun editMessage(@Path("id") id: Int, @Body message: PatchMessage): Call<PatchMessage>
+
+    @DELETE("message/{id}")
+    fun deleteMessage(@Path("id") id: Int): Call<Void>
+
+    @GET("message/{id}")
+    fun getMessage(@Path("id") id: Int): Call<Message>
 }
