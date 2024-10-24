@@ -158,127 +158,135 @@ const MessageModel = {
 
     // ENDPOINT DE LISTAR USERS QUE SE ENVIOU MENSAGENS
 
- getUsersByMessageId: async (userId) => {
-     // Passo 1: Obter mensagens com usuários associados ordenadas por ID da mensagem decrescente
-     const messages = await prisma.message.findMany({
-         where: {
-             OR: [
-                 { userOneId: userId },
-                 { userTwoId: userId }
-             ]
-         },
-         orderBy: {
-             id: 'desc'
-         },
-         include: {
-             userOne: {
-                 select: {
-                     id: true,
-                     username: true,
-                     avatar: true
-                 }
-             },
-             userTwo: {
-                 select: {
-                     id: true,
-                     username: true,
-                     avatar: true
-                 }
-             }
-         }
-     });
+getUsersByMessageId: async (userId) => {
+    // Passo 1: Obter mensagens com usuários associados ordenadas por ID da mensagem decrescente
+    const messages = await prisma.message.findMany({
+        where: {
+            OR: [
+                { userOneId: userId },
+                { userTwoId: userId }
+            ]
+        },
+        orderBy: {
+            id: 'desc'
+        },
+        include: {
+            userOne: {
+                select: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                    isDeleted: true
+                }
+            },
+            userTwo: {
+                select: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                    isDeleted: true
+                }
+            }
+        }
+    });
 
-     // Passo 2: Armazenar os usuários únicos com o ID da mensagem mais recente
-     const userMap = new Map();
+    // Passo 2: Armazenar os usuários únicos com o ID da mensagem mais recente
+    const userMap = new Map();
 
-     for (const message of messages) {
-         let otherUser = null;
-         if (message.userOneId !== userId) {
-             otherUser = message.userOne;
-         } else if (message.userTwoId !== userId) {
-             otherUser = message.userTwo;
-         }
+    for (const message of messages) {
+        let otherUser = null;
+        if (message.userOneId !== userId) {
+            otherUser = message.userOne;
+        } else if (message.userTwoId !== userId) {
+            otherUser = message.userTwo;
+        }
 
-         if (otherUser && !userMap.has(otherUser.id)) {
-             // Verificar se há uma amizade entre userId e otherUser.id
-             const isFriend = await prisma.friendRequest.findFirst({
-                 where: {
-                     OR: [
-                         { sentUserId: userId, receivedUserId: otherUser.id, isAccepted: true },
-                         { sentUserId: otherUser.id, receivedUserId: userId, isAccepted: true }
-                     ]
-                 }
-             });
+        if (otherUser && !userMap.has(otherUser.id)) {
+            // Verificar se há uma amizade entre userId e otherUser.id
+            const isFriend = await prisma.friendRequest.findFirst({
+                where: {
+                    OR: [
+                        { sentUserId: userId, receivedUserId: otherUser.id, isAccepted: true },
+                        { sentUserId: otherUser.id, receivedUserId: userId, isAccepted: true }
+                    ]
+                }
+            });
 
-             userMap.set(otherUser.id, {
-                 id: otherUser.id,
-                 username: otherUser.username,
-                 avatar: otherUser.avatar,
-                 messageId: message.id,
-                 isFriend: !!isFriend // Retorna true se a amizade for encontrada, false caso contrário
-             });
-         }
-     }
+            // Determinar o conteúdo da mensagem
+            const messageContent = message.message || "send you an image";
 
-     // Passo 3: Buscar todos os amigos do usuário, mesmo sem mensagens
-     const friends = await prisma.friendRequest.findMany({
-         where: {
-             isAccepted: true,
-             OR: [
-                 { sentUserId: userId },
-                 { receivedUserId: userId }
-             ]
-         },
-         include: {
-             sentUser: {
-                 select: {
-                     id: true,
-                     username: true,
-                     avatar: true
-                 }
-             },
-             receivedUser: {
-                 select: {
-                     id: true,
-                     username: true,
-                     avatar: true
-                 }
-             }
-         }
-     });
+            userMap.set(otherUser.id, {
+                id: otherUser.id,
+                username: otherUser.username,
+                avatar: otherUser.avatar,
+                messageId: message.id,
+                isFriend: !!isFriend,
+                lastMessage: messageContent // Adicionar a última mensagem para retornar
+            });
+        }
+    }
 
-     // Passo 4: Adicionar os amigos que ainda não estão no userMap
-     for (const friend of friends) {
-         const friendId = friend.sentUserId === userId ? friend.receivedUser.id : friend.sentUser.id;
-         const friendData = friend.sentUserId === userId ? friend.receivedUser : friend.sentUser;
+    // Passo 3: Buscar todos os amigos do usuário, mesmo sem mensagens
+    const friends = await prisma.friendRequest.findMany({
+        where: {
+            isAccepted: true,
+            OR: [
+                { sentUserId: userId },
+                { receivedUserId: userId }
+            ]
+        },
+        include: {
+            sentUser: {
+                select: {
+                    id: true,
+                    username: true,
+                    avatar: true
+                }
+            },
+            receivedUser: {
+                select: {
+                    id: true,
+                    username: true,
+                    avatar: true
+                }
+            }
+        }
+    });
 
-         if (!userMap.has(friendId)) {
-             userMap.set(friendId, {
-                 id: friendData.id,
-                 username: friendData.username,
-                 avatar: friendData.avatar,
-                 isFriend: true,
-                 messageId: null // Usado para identificar que não há mensagem associada
-             });
-         }
-     }
+    // Passo 4: Adicionar os amigos que ainda não estão no userMap
+    for (const friend of friends) {
+        const friendId = friend.sentUserId === userId ? friend.receivedUser.id : friend.sentUser.id;
+        const friendData = friend.sentUserId === userId ? friend.receivedUser : friend.sentUser;
 
-     // Passo 5: Converter o mapa para um array e ordenar pelo ID da mensagem (os amigos sem mensagens ficam no fim)
-     const users = Array.from(userMap.values()).sort((a, b) => {
-         // Colocar aqueles com mensagens primeiro (messageId não nulo) e ordenar pelo ID da mensagem
-         if (a.messageId && !b.messageId) return -1;
-         if (!a.messageId && b.messageId) return 1;
-         return b.messageId - a.messageId;
-     });
+        if (!userMap.has(friendId)) {
+            userMap.set(friendId, {
+                id: friendData.id,
+                username: friendData.username,
+                avatar: friendData.avatar,
+                isFriend: true,
+                messageId: null,
+                lastMessage: null // Sem mensagens, portanto, nenhum conteúdo
+            });
+        }
+    }
 
-     // Remover o campo messageId antes de retornar
-     return users.map(user => ({
-         id: user.id,
-         username: user.username,
-         avatar: user.avatar,
-         isFriend: user.isFriend
-     }));
- },
+    // Passo 5: Converter o mapa para um array e ordenar pelo ID da mensagem (os amigos sem mensagens ficam no fim)
+    const users = Array.from(userMap.values()).sort((a, b) => {
+        // Colocar aqueles com mensagens primeiro (messageId não nulo) e ordenar pelo ID da mensagem
+        if (a.messageId && !b.messageId) return -1;
+        if (!a.messageId && b.messageId) return 1;
+        return b.messageId - a.messageId;
+    });
+
+    // Remover o campo messageId antes de retornar, mantendo o conteúdo da última mensagem
+    return users.map(user => ({
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar,
+        isFriend: user.isFriend,
+        lastMessage: user.lastMessage
+    }));
+},
 
 
 
