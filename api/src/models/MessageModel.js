@@ -228,6 +228,7 @@ getUsersByMessageId: async (userId) => {
                 avatar: otherUser.avatar,
                 messageId: message.id,
                 isFriend: !!isFriend,
+                isDeleted: otherUser.isDeleted,
                 lastMessage: messageContent // Adicionar a última mensagem para retornar
             });
         }
@@ -247,14 +248,16 @@ getUsersByMessageId: async (userId) => {
                 select: {
                     id: true,
                     username: true,
-                    avatar: true
+                    avatar: true,
+                    isDeleted: true
                 }
             },
             receivedUser: {
                 select: {
                     id: true,
                     username: true,
-                    avatar: true
+                    avatar: true,
+                    isDeleted: true
                 }
             }
         }
@@ -270,6 +273,7 @@ getUsersByMessageId: async (userId) => {
                 id: friendData.id,
                 username: friendData.username,
                 avatar: friendData.avatar,
+                isDeleted: friendData.isDeleted,
                 isFriend: true,
                 messageId: null,
                 lastMessage: null // Sem mensagens, portanto, nenhum conteúdo
@@ -291,6 +295,7 @@ getUsersByMessageId: async (userId) => {
         username: user.username,
         avatar: user.avatar,
         isFriend: user.isFriend,
+        isDeleted: user.isDeleted,
         lastMessage: user.lastMessage
     }));
 },
