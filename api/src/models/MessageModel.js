@@ -155,7 +155,7 @@ const MessageModel = {
 
     // ENDPOINT DE LISTAR USERS QUE SE ENVIOU MENSAGENS
 
- const getUsersByMessageId = async (userId) => {
+ getUsersByMessageId: async (userId) => {
      // Passo 1: Obter mensagens com usuários associados ordenadas por ID da mensagem decrescente
      const messages = await prisma.message.findMany({
          where: {
