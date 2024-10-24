@@ -168,7 +168,7 @@ model avaliation {
 
 model userGameComment {
   id            Int         @id @default(autoincrement())
-  comments      String
+  comments      String?
   image         String?
   isAnswer      Int?
   user          user        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -184,7 +184,7 @@ model userGameComment {
 
 model message {
   id             Int         @id @default(autoincrement())
-  message        String
+  message        String?
   image          String?
   isAnswer       Int?
   userOne        user       @relation("UserOne", fields: [userOneId], references: [id], onDelete: Cascade)
