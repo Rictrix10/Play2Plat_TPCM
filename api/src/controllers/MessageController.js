@@ -137,18 +137,18 @@ const MessageController = {
     // ENDPOINT DE LISTAR USERS QUE SE ENVIOU MENSAGENS
 
        getUsersByMessageId: async (req, res) => {
-            try {
-                const userId = parseInt(req.params.userId, 10);
-                if (isNaN(userId)) {
-                    return res.status(400).json({ error: 'userId inválido' });
-                }
-                const users = await MessageModel.getUsersByMessageId(userId);
-                res.json(users);
-            } catch (error) {
-                console.error('Erro ao buscar usuários por mensagens:', error);
-                res.status(500).json({ error: 'Erro ao buscar usuários' });
-            }
-        },
+           try {
+               const userId = parseInt(req.params.userId, 10);
+               if (isNaN(userId)) {
+                   return res.status(400).json({ error: 'userId inválido' });
+               }
+               const users = await MessageModel.getUsersByMessageId(userId);
+               res.json(users);
+           } catch (error) {
+               console.error('Erro ao buscar usuários por mensagens:', error);
+               res.status(500).json({ error: 'Erro ao buscar usuários' });
+           }
+       },
 
             getMessagesByUsersWithDetails: async (req, res) => {
                 try {
