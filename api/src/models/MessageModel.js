@@ -226,7 +226,8 @@ const MessageModel = {
          username: user.username,
          avatar: user.avatar,
          isFriend: user.isFriend
-     }));,
+     }));
+     },
 
 
 
