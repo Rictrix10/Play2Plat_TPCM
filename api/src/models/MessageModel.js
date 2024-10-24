@@ -155,7 +155,7 @@ const MessageModel = {
 
     // ENDPOINT DE LISTAR USERS QUE SE ENVIOU MENSAGENS
 
- const getUsersByMessageId = async (userId) => {
+ getUsersByMessageId: async (userId) => {
      // Passo 1: Obter mensagens com usuários associados ordenadas por ID da mensagem decrescente
      const messages = await prisma.message.findMany({
          where: {
@@ -220,13 +220,13 @@ const MessageModel = {
      // Passo 3: Converter o mapa para um array e ordenar pelo ID da mensagem
      const users = Array.from(userMap.values()).sort((a, b) => b.messageId - a.messageId);
 
-     // Remover o campo messageId antes de retornar
-     return users.map(user => ({
-         id: user.id,
-         username: user.username,
-         avatar: user.avatar,
-         isFriend: user.isFriend
-     }));
+         // Remover o campo messageId antes de retornar
+         return users.map(user => ({
+             id: user.id,
+             username: user.username,
+             avatar: user.avatar,
+             isFriend: user.isFriend
+         }));
      },
 
 
