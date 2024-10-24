@@ -303,6 +303,9 @@ const MessageModel = {
                                 }
                             ]
                         },
+                        orderBy: {
+                                     id: 'desc'
+                        },
                         include: {
                             userOne: {
                                 select: {
