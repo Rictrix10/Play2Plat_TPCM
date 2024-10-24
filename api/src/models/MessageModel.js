@@ -195,10 +195,14 @@ getUsersByMessageId: async (userId) => {
 
     for (const message of messages) {
         let otherUser = null;
-        if (message.userOneId !== userId) {
-            otherUser = message.userOne;
-        } else if (message.userTwoId !== userId) {
+        let isUserSender = false;
+
+        // Determinar quem é o outro usuário na conversa e se o `userId` é o remetente
+        if (message.userOneId === userId) {
             otherUser = message.userTwo;
+            isUserSender = true;
+        } else if (message.userTwoId === userId) {
+            otherUser = message.userOne;
         }
 
         if (otherUser && !userMap.has(otherUser.id)) {
@@ -212,8 +216,11 @@ getUsersByMessageId: async (userId) => {
                 }
             });
 
-            // Determinar o conteúdo da mensagem
-            const messageContent = message.message || "send you an image";
+            // Determinar o conteúdo da mensagem e incluir o prefixo se o `userId` foi o remetente
+            let messageContent = message.message || "send you an image";
+            if (isUserSender) {
+                messageContent = `You: ${messageContent}`;
+            }
 
             userMap.set(otherUser.id, {
                 id: otherUser.id,
