@@ -73,6 +73,9 @@ const MessageModel = {
                             ]
                         }
                     ]
+                },
+                orderBy: {
+                    id: 'asc' // Ordena as mensagens pelo ID de forma crescente
                 }
             });
         },
